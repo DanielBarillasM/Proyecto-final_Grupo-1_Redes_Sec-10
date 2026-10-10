@@ -1,0 +1,31 @@
+\chapter{Conclusiones y recomendaciones}
+
+\section{Conclusiones}
+
+El diseño demuestra que las necesidades de RedNova GT caben holgadamente dentro de \code{10.10.0.0/24}. VLSM permite entregar capacidad distinta a cada departamento y reservar un cuarto del bloque para evolución. La selección no se basó únicamente en contar usuarios: también incorporó las cinco direcciones que AWS reserva por subred y el mínimo \code{/28} admitido por la plataforma.
+
+Ventas ofrece el ejemplo más importante de juicio de ingeniería. Un \code{/27} satisface formalmente 25 usuarios, pero deja sólo dos direcciones asignables. Elegir \code{/26} aumenta el margen de operación y evita que una expansión pequeña obligue a migrar el segmento. TI requiere \code{/27}; Data Center utiliza \code{/28}; y Visitas recibe \code{/26} a partir del supuesto explícito de 30 clientes concurrentes.
+
+La separación lógica se completa con enrutamiento y grupos de seguridad. Ventas, TI y Data Center carecen de ruta directa a Internet. El bastión temporal concentra la entrada administrativa y las instancias de prueba permanecen privadas. La prueba propuesta de ICMP usa la ruta local de la VPC y una regla auto-referenciada, por lo que valida conectividad interna sin exponer los hosts.
+
+Terraform convierte la propuesta en un artefacto repetible, revisable y desmontable. La configuración pasó las pruebas locales de formato y validez, y el direccionamiento fue comprobado mediante un script independiente. No obstante, la estación de trabajo no dispone de credenciales AWS; por integridad académica, el informe identifica las pruebas cloud como pendientes y no inventa capturas ni resultados.
+
+\section{Recomendaciones inmediatas}
+
+\begin{enumerate}
+  \item Configurar localmente una identidad AWS autorizada sin colocar secretos en el repositorio.
+  \item Confirmar región, créditos, presupuesto y permisos antes de crear cómputo.
+  \item Ejecutar el plan con \code{enable\_compute=false} y revisar primero la red.
+  \item Generar una llave temporal y limitar \code{admin\_cidr} a la IPv4 real del operador.
+  \item Activar cómputo, capturar las IP privadas y ejecutar las pruebas P-04 y P-05.
+  \item Destruir inmediatamente y completar la prueba P-06.
+  \item Incorporar capturas reales y recompilar el PDF antes de la entrega académica.
+\end{enumerate}
+
+\section{Evolución hacia producción}
+
+Una fase posterior debería distribuir subredes en al menos dos zonas, incorporar acceso administrado sin bastión público, registros VPC Flow Logs, monitoreo, presupuestos, respaldos y una política IAM específica. También debe evaluar IPv6 y segmentar servicios por sensibilidad. Si se necesita salida desde subredes privadas, la elección entre NAT, endpoints o proxies debe basarse en flujos y costos medidos, no agregarse por defecto.
+
+\section{Cierre}
+
+La propuesta satisface el objetivo de diseño y deja una implementación técnicamente lista para una cuenta autorizada. Su principal fortaleza es la trazabilidad: cada requisito se conecta con un cálculo, un recurso, una prueba y una evidencia esperada. La condición restante no es de diseño ni de código, sino de acceso externo a AWS.

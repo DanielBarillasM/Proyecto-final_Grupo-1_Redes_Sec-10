@@ -1,0 +1,61 @@
+\documentclass[11pt,oneside]{report}
+\input{preamble}
+
+\begin{document}
+
+\hypersetup{pageanchor=false}
+\begin{titlepage}
+  \thispagestyle{empty}
+  \centering
+  \textcolor{Blue}{\large Universidad del Valle de Guatemala}\\[2pt]
+  \textcolor{MidGray}{Facultad de Ingeniería · Departamento de Ciencias de la Computación}\\[2pt]
+  \textcolor{MidGray}{CC3067 Redes · Sección 10 · Grupo 1}
+
+  \vspace{0.7cm}
+  \HRule\\[0.45cm]
+  {\Huge\bfseries\textcolor{Navy}{Proyecto Final: Fase 1}}\\[0.3cm]
+  {\LARGE\bfseries\textcolor{Blue}{Diseño, Subneteo e Implementación Base en la Nube}}\\[0.22cm]
+  {\large\textcolor{MidGray}{Propuesta técnica para RedNova GT}}
+  \vspace{0.35cm}
+
+  \includegraphics[width=0.61\textwidth,height=10.4cm,keepaspectratio]{portada-red-nube.png}
+
+  \vfill
+  \begin{tabular}{@{}ll@{}}
+    \textbf{Pablo Daniel Barillas Moreno} & 22193 \\
+    \textbf{Andrés Rafael Chivalán} & 21534 \\
+    \textbf{Roberto Emiliano Otoniel Camposeco Torres} & 23968 \\
+  \end{tabular}
+
+  \vspace{0.45cm}
+  \textcolor{MidGray}{Guatemala, octubre de 2026}
+\end{titlepage}
+
+\hypersetup{pageanchor=true}
+\pagenumbering{roman}
+\pagestyle{plain}
+\input{sections/00-control}
+\tableofcontents
+\listoffigures
+\listoftables
+\clearpage
+\pagenumbering{arabic}
+\pagestyle{headings}
+
+\input{sections/01-resumen}
+\input{sections/02-alcance}
+\input{sections/03-proveedor}
+\input{sections/04-requerimientos}
+\input{sections/05-diseno}
+\input{sections/06-subneteo}
+\input{sections/07-seguridad}
+\input{sections/08-implementacion}
+\input{sections/09-pruebas}
+\input{sections/10-planeacion}
+\input{sections/11-costos}
+\input{sections/12-conclusiones}
+\appendix
+\input{sections/13-anexos}
+\input{sections/14-referencias}
+
+\end{document}

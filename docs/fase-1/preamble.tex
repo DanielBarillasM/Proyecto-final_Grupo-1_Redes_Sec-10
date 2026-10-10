@@ -1,0 +1,87 @@
+\usepackage[utf8]{inputenc}
+\usepackage[a4paper,top=2.4cm,bottom=2.4cm,left=2.5cm,right=2.5cm]{geometry}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{amsmath,amssymb}
+\usepackage{array,booktabs,tabularx,longtable}
+\usepackage{float}
+\usepackage{fancyvrb}
+\usepackage{hyperref}
+
+\definecolor{Navy}{HTML}{0B1F33}
+\definecolor{Blue}{HTML}{16697A}
+\definecolor{Cyan}{HTML}{2EC4B6}
+\definecolor{Sky}{HTML}{4EA8DE}
+\definecolor{Amber}{HTML}{F4A261}
+\definecolor{Coral}{HTML}{E76F51}
+\definecolor{Pale}{HTML}{EDF6F9}
+\definecolor{SoftGray}{HTML}{F2F4F7}
+\definecolor{MidGray}{HTML}{5C677D}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=Blue,
+  citecolor=Blue,
+  urlcolor=Blue,
+  pdftitle={Proyecto Final Fase 1 - Diseño, Subneteo e Implementación Base en la Nube},
+  pdfauthor={Grupo 1 - CC3067 Redes},
+  pdfsubject={Propuesta técnica de red empresarial segmentada en AWS}
+}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.65em}
+\setlength{\emergencystretch}{2em}
+\linespread{1.08}
+\renewcommand{\arraystretch}{1.22}
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{2}
+\renewcommand{\contentsname}{Contenido}
+\renewcommand{\listfigurename}{Índice de figuras}
+\renewcommand{\listtablename}{Índice de tablas}
+\renewcommand{\chaptername}{Capítulo}
+\renewcommand{\bibname}{Referencias}
+\renewcommand{\figurename}{Figura}
+\renewcommand{\tablename}{Tabla}
+\renewcommand{\appendixname}{Anexo}
+
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+\newcolumntype{C}[1]{>{\centering\arraybackslash}p{#1}}
+\newcolumntype{R}[1]{>{\raggedleft\arraybackslash}p{#1}}
+
+\newcommand{\HRule}{\rule{\linewidth}{0.7pt}}
+\newcommand{\code}[1]{\texttt{#1}}
+\newcommand{\awsreserved}{\textcolor{Coral}{reservada por AWS}}
+\newcommand{\statusok}{\textcolor{Blue}{\textbf{Verificado}}}
+\newcommand{\statuspending}{\textcolor{Coral}{\textbf{Pendiente de evidencia externa}}}
+
+\newenvironment{infobox}[1][Nota técnica]
+{\begin{center}\begin{minipage}{0.92\linewidth}\textcolor{Blue}{\rule{\linewidth}{1.2pt}}\par\smallskip\textcolor{Blue}{\textbf{#1}}\par\smallskip}
+{\smallskip\textcolor{Blue}{\rule{\linewidth}{1.2pt}}\end{minipage}\end{center}}
+
+\newenvironment{warningbox}[1][Precaución]
+{\begin{center}\begin{minipage}{0.92\linewidth}\textcolor{Coral}{\rule{\linewidth}{1.2pt}}\par\smallskip\textcolor{Coral}{\textbf{#1}}\par\smallskip}
+{\smallskip\textcolor{Coral}{\rule{\linewidth}{1.2pt}}\end{minipage}\end{center}}
+
+\makeatletter
+\renewcommand\chapter{\if@openright\cleardoublepage\else\clearpage\fi
+  \thispagestyle{plain}\global\@topnum\z@
+  \@afterindentfalse\secdef\@chapter\@schapter}
+\def\@makechapterhead#1{%
+  \vspace*{8pt}%
+  {\parindent\z@\raggedright\normalfont
+    \textcolor{Cyan}{\Large\bfseries \chaptername\space\thechapter}\par\nobreak
+    \vskip 8pt
+    \textcolor{Navy}{\Huge\bfseries #1}\par\nobreak
+    \vskip 10pt
+    \textcolor{Cyan}{\rule{0.22\textwidth}{3pt}}\par\nobreak
+    \vskip 24pt}}
+\def\@makeschapterhead#1{%
+  \vspace*{8pt}%
+  {\parindent\z@\raggedright\normalfont
+    \textcolor{Navy}{\Huge\bfseries #1}\par\nobreak
+    \vskip 10pt
+    \textcolor{Cyan}{\rule{0.22\textwidth}{3pt}}\par\nobreak
+    \vskip 24pt}}
+\makeatother
+
+\graphicspath{{assets/diagrams/}{assets/generated/}{assets/screenshots/}}

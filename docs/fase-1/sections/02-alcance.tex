@@ -1,0 +1,71 @@
+\chapter{Contexto, alcance y supuestos}
+
+\section{Contexto empresarial}
+
+RedNova GT desarrolla una plataforma SaaS para inventario, facturación y análisis de ventas. El equipo de Ventas consulta demostraciones y oportunidades comerciales; TI administra sistemas, identidades y soporte; el Data Center aloja servicios internos y bases de datos; y los visitantes requieren conectividad aislada. Aunque la organización es ficticia, la separación responde a un patrón empresarial real: distintos grupos tienen necesidades y niveles de confianza distintos, por lo que compartir una red plana aumentaría tanto el dominio de falla como la superficie de exposición.
+
+La fase no intenta construir una plataforma productiva de alta disponibilidad. Su propósito es producir un prototipo verificable que demuestre diseño, subneteo, configuración base y conectividad interna. La solución se concentra en una sola región y una sola zona de disponibilidad para reducir complejidad y costo. Una versión productiva debería duplicar los segmentos críticos en al menos dos zonas, incorporar monitoreo, registro centralizado, respaldo, balanceo y mecanismos administrados de acceso.
+
+\section{Objetivos}
+
+\subsection{Objetivo general}
+
+Diseñar y prototipar en AWS una red empresarial segmentada para RedNova GT, demostrando mediante cálculos y pruebas que la asignación de direcciones, las rutas y los controles de acceso cumplen las necesidades declaradas.
+
+\subsection{Objetivos específicos}
+
+\begin{itemize}
+  \item Comparar proveedores de nube con criterios técnicos, académicos y económicos.
+  \item Traducir cantidades de usuarios y servidores a prefijos CIDR válidos para AWS.
+  \item reservar espacio suficiente para crecimiento sin exceder el bloque principal.
+  \item Separar segmentos públicos y privados mediante tablas de rutas explícitas.
+  \item Aplicar mínimo privilegio con grupos de seguridad orientados a función.
+  \item Automatizar la infraestructura para reducir errores manuales y permitir repetición.
+  \item Demostrar conectividad ICMP entre dos instancias privadas dentro de Ventas.
+  \item Documentar costos, riesgos, evidencias y el procedimiento de destrucción.
+\end{itemize}
+
+\section{Alcance incluido}
+
+\begin{tabularx}{\textwidth}{p{4.4cm}Y}
+\toprule
+\textbf{Componente} & \textbf{Cobertura de esta fase} \\
+\midrule
+Direccionamiento & Una VPC IPv4 privada, cinco subredes implementables y un bloque de reserva. \\
+Enrutamiento & Tabla pública con ruta por Internet Gateway y tabla privada sin salida directa. \\
+Seguridad & Dos grupos de seguridad, restricción SSH por \code{/32} e ICMP interno controlado. \\
+Cómputo & Un bastión temporal y dos instancias pequeñas de prueba cuando se habilita \code{enable\_compute}. \\
+Automatización & Código Terraform, variables, salidas, etiquetas y scripts de validación. \\
+Pruebas & Capacidad CIDR, no solapamiento, validación Terraform y ping mediante direcciones privadas. \\
+Documentación & Informe, diagramas, evidencias y README de la fase. \\
+\bottomrule
+\end{tabularx}
+
+\section{Fuera de alcance}
+
+Quedan fuera de esta fase: arquitectura multirregión, alta disponibilidad en múltiples zonas, VPN hacia oficinas físicas, directorio corporativo, balanceadores, bases de datos administradas, inspección profunda de paquetes, IPv6, observabilidad completa, pruebas de rendimiento y recuperación ante desastres. Estos elementos aparecen como recomendaciones de evolución, no como componentes supuestamente implementados.
+
+\section{Supuestos y restricciones}
+
+\begin{longtable}{p{4.0cm}p{8.2cm}p{2.1cm}}
+\toprule
+\textbf{Supuesto} & \textbf{Justificación e impacto} & \textbf{Estado} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Supuesto} & \textbf{Justificación e impacto} & \textbf{Estado} \\
+\midrule
+\endhead
+30 visitantes concurrentes & El enunciado no cuantifica Visitas. Se adopta una carga razonable que exige \code{/26} en AWS y deja margen. & Explícito \\
+25 dispositivos en Ventas & Se interpreta una dirección primaria por colaborador, más crecimiento operativo separado. & Dado \\
+15 dispositivos en TI & Se interpreta una dirección primaria por colaborador; \code{/27} deja doce libres. & Dado \\
+5 servidores lógicos & La cifra dimensiona Data Center; no obliga a ejecutar cinco EC2 durante el prototipo. & Dado \\
+Una zona de disponibilidad & Es suficiente para demostrar segmentación, pero no ofrece tolerancia a la falla de zona. & Limitación \\
+Acceso administrativo conocido & El equipo debe conocer su IPv4 pública y expresarla como \code{/32}. & Operativo \\
+Cuenta con permisos mínimos & Se requieren permisos para VPC, EC2, grupos de seguridad, llaves y etiquetas. & Externo \\
+\bottomrule
+\end{longtable}
+
+\begin{warningbox}[Restricción económica]
+El diseño evita NAT Gateway y direcciones públicas innecesarias. Sin embargo, AWS cobra por direcciones IPv4 públicas asociadas y ociosas \cite{aws-vpc-pricing}. El bastión sólo debe existir durante la prueba y su dirección debe liberarse al destruir el prototipo.
+\end{warningbox}

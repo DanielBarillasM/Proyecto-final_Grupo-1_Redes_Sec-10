@@ -1,0 +1,58 @@
+\chapter{Análisis de requerimientos}
+
+\section{Requerimientos funcionales}
+
+\begin{longtable}{C{1.2cm}p{5.0cm}p{7.3cm}}
+\toprule
+\textbf{ID} & \textbf{Requerimiento} & \textbf{Criterio de aceptación} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{ID} & \textbf{Requerimiento} & \textbf{Criterio de aceptación} \\
+\midrule
+\endhead
+RF-01 & Crear una red empresarial en la nube. & Existe una VPC con CIDR \code{10.10.0.0/24} y DNS habilitado. \\
+RF-02 & Segmentar Ventas. & La subred soporta al menos 25 direcciones asignables a recursos. \\
+RF-03 & Segmentar TI. & La subred soporta al menos 15 direcciones asignables a recursos. \\
+RF-04 & Segmentar Data Center. & La subred soporta al menos cinco servidores. \\
+RF-05 & Segmentar Visitas. & Existe un bloque separado, con capacidad documentada para 30 conexiones concurrentes. \\
+RF-06 & Demostrar conectividad. & Cuatro respuestas exitosas de ICMP entre dos IP privadas de Ventas. \\
+RF-07 & Conservar configuración. & Terraform describe todos los recursos base y valida sin errores. \\
+RF-08 & Documentar implementación. & Cada etapa indica entrada, acción, verificación y evidencia esperada. \\
+\bottomrule
+\end{longtable}
+
+\section{Requerimientos no funcionales}
+
+\begin{itemize}
+  \item \textbf{Seguridad:} acceso denegado por defecto entre dominios; SSH limitado a una IP administrativa; metadatos EC2 únicamente mediante IMDSv2; volúmenes cifrados.
+  \item \textbf{Reproducibilidad:} una segunda ejecución con las mismas variables debe producir una arquitectura equivalente.
+  \item \textbf{Auditabilidad:} nombres, etiquetas, salidas y archivos de evidencia deben permitir relacionar la documentación con el despliegue.
+  \item \textbf{Economía:} evitar componentes permanentes y eliminar recursos al terminar la prueba.
+  \item \textbf{Legibilidad:} diagramas vectoriales, tablas autoexplicativas y referencias cruzadas.
+  \item \textbf{Mantenibilidad:} separación modular entre red, seguridad y cómputo.
+\end{itemize}
+
+\section{Criterios de aceptación y evidencia}
+
+\begin{table}[H]
+\centering
+\caption{Trazabilidad entre entregables y evidencia}
+\begin{tabularx}{\textwidth}{p{4.3cm}Y p{3.2cm}}
+\toprule
+\textbf{Entregable solicitado} & \textbf{Respuesta del proyecto} & \textbf{Evidencia} \\
+\midrule
+Justificación del proveedor & Capítulo 3 y matriz ponderada. & Figura \ref{fig:providers} \\
+Diagrama de red & Arquitectura pública/privada y flujo administrativo. & Figura \ref{fig:architecture} \\
+Cálculos de segmentación & Derivación matemática, tabla detallada y mapa VLSM. & Capítulo 6 \\
+Pasos de implementación & Flujo Terraform y descripción recurso por recurso. & Capítulo 8 \\
+Prueba de ping & Procedimiento, comando, salida y criterios de éxito. & Capítulo 9 \\
+Archivos de configuración & Módulos Terraform y scripts versionados. & Anexos y repositorio \\
+Control de costos & Diseño temporal, etiquetas y destrucción. & Capítulo 11 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Riesgos de interpretación}
+
+La palabra ``privada'' puede describir tanto un bloque de direcciones internas como una subred sin ruta directa a Internet. Para evitar ambigüedad, este documento aplica la definición operativa de AWS: Ventas, TI y Data Center no tienen ruta \code{0.0.0.0/0} hacia un Internet Gateway. Visitas y Administración sí se asocian con una tabla pública, pero el acceso real depende además de una dirección pública y de reglas explícitas. Una ruta, por sí sola, no abre puertos.

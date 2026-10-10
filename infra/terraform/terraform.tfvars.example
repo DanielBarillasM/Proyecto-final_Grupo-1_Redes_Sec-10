@@ -1,0 +1,5 @@
+aws_region       = "us-east-1"
+enable_compute   = true
+admin_cidr       = "203.0.113.10/32" # Reemplazar por la IP pública del equipo
+public_key_path  = "../../tmp/rednova-fase1.pub"
+instance_type    = "t3.micro"

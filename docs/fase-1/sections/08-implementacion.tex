@@ -1,0 +1,91 @@
+\chapter{Implementación del prototipo}
+
+\section{Estrategia reproducible}
+
+La implementación se define en \code{infra/terraform}. En lugar de crear recursos manualmente y depender de memoria o capturas aisladas, el equipo conserva una descripción declarativa. Terraform compara esa descripción con el proveedor y presenta un plan antes de realizar cambios. La separación de archivos no altera el resultado, pero facilita la revisión: \code{network.tf} contiene VPC, subredes y rutas; \code{security.tf} contiene políticas; y \code{compute.tf} contiene recursos temporales.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{flujo-implementacion.pdf}
+\caption{Flujo controlado para implementar, evidenciar y destruir. Elaboración propia.}
+\label{fig:workflow}
+\end{figure}
+
+\section{Preparación}
+
+\subsection{Identidad y región}
+
+La identidad AWS debe pertenecer a una cuenta autorizada por el equipo. No se aceptan credenciales escritas dentro de archivos Terraform ni almacenadas en el repositorio. Antes de desplegar se verifica la identidad con un mecanismo de autenticación local, se confirma la región y se revisan los límites de servicio. La variable predeterminada es \code{us-east-1}, pero puede cambiarse sin alterar los CIDR.
+
+\subsection{Llave temporal}
+
+La prueba necesita una llave SSH sólo durante la ventana de ejecución. El equipo genera el par fuera del repositorio, entrega a Terraform únicamente la ruta de la parte pública y protege la parte privada. Al destruir el entorno se elimina el recurso \code{aws\_key\_pair}; el archivo privado local se elimina mediante un procedimiento controlado después de verificar que ya no se necesita.
+
+\subsection{Variables}
+
+El archivo \code{terraform.tfvars.example} sirve de plantilla. \code{admin\_cidr} debe sustituirse por la IPv4 pública del operador con \code{/32}; \code{public\_key\_path} apunta a la llave pública temporal; y \code{enable\_compute=true} activa las tres instancias. El valor predeterminado es \code{false}, por lo que un uso descuidado no crea cómputo.
+
+\section{Creación de la red}
+
+La secuencia lógica es la siguiente:
+
+\begin{enumerate}
+  \item El proveedor consulta zonas disponibles y la AMI más reciente de Amazon Linux 2023.
+  \item Se crea la VPC \code{10.10.0.0/24}, con DNS habilitado.
+  \item Se crea un Internet Gateway y se adjunta a la VPC.
+  \item Se crean cinco subredes canónicas en la primera zona disponible.
+  \item Se crea una tabla pública con \code{0.0.0.0/0} hacia el gateway.
+  \item Se crea una tabla privada sin salida predeterminada.
+  \item Visitas y Administración se asocian con la tabla pública.
+  \item Ventas, TI y Data Center se asocian con la tabla privada.
+\end{enumerate}
+
+Una tabla pública no asigna por sí sola direcciones públicas. La asignación automática mediante \path{map_public_ip_on_launch} permanece desactivada en todas las subredes. Únicamente el recurso del bastión solicita una dirección pública de manera explícita.
+
+\section{Aplicación de seguridad}
+
+Terraform crea dos grupos. El primero permite SSH desde la IP administrativa y salida sólo dentro de la VPC. El segundo permite SSH desde el grupo del bastión e ICMP entre sus propios miembros. Las dependencias se infieren a partir de las referencias entre recursos; por ejemplo, Ventas utiliza el identificador del grupo del bastión, no una cadena escrita manualmente.
+
+\section{Creación del cómputo}
+
+Con \code{enable\_compute=true}, se registra la llave pública, se crea un bastión en Administración y dos instancias en Ventas. Las tres usan volúmenes raíz GP3 de 8 GiB cifrados. El bastión recibe IP pública; las dos instancias de Ventas sólo reciben IP privadas. Las salidas de Terraform muestran la IP del bastión y la lista de IP privadas sin revelar secretos.
+
+\section{Comandos de ejecución}
+
+\begin{Verbatim}[fontsize=\small,frame=single]
+terraform init
+terraform fmt -check -recursive
+terraform validate
+terraform plan -out=tfplan
+terraform apply tfplan
+
+# Después de capturar la evidencia:
+terraform destroy
+\end{Verbatim}
+
+\section{Estado verificable de esta entrega}
+
+\begin{table}[H]
+\centering
+\caption{Estado de la implementación al cerrar el documento}
+\begin{tabularx}{\textwidth}{p{4.0cm}p{3.2cm}Y}
+\toprule
+\textbf{Actividad} & \textbf{Estado} & \textbf{Evidencia o condición} \\
+\midrule
+Cálculo CIDR & \statusok & Validación Python almacenada en \code{evidence/deployment}. \\
+Formato Terraform & \statusok & \code{terraform fmt -check} sin diferencias. \\
+Validación Terraform & \statusok & Proveedor AWS inicializado y configuración válida. \\
+Plan contra AWS & \statuspending & La estación no contiene una fuente válida de credenciales AWS. \\
+Creación de VPC y EC2 & \statuspending & Requiere una cuenta autorizada y confirmación de costos. \\
+Destrucción en AWS & \statuspending & Sólo aplica después de una creación real. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{warningbox}[Integridad de la evidencia]
+La ausencia de credenciales es un estado externo comprobable, no un resultado exitoso. Este informe no presenta recursos simulados como si hubieran sido creados en AWS. La infraestructura está preparada y validada localmente; la evidencia cloud debe incorporarse después de ejecutar el flujo en una cuenta autorizada.
+\end{warningbox}
+
+\section{Capturas que debe producir la ejecución autorizada}
+
+Para completar la trazabilidad externa se capturan: identidad y región sin exponer secretos; resumen de la VPC; lista de cinco subredes con CIDR; asociaciones de tablas de rutas; reglas de ambos grupos; tres instancias con sus direcciones; salida del ping; y confirmación final de destrucción. Cada captura debe mostrar fecha, nombre de proyecto o identificador y un pie que explique qué prueba.

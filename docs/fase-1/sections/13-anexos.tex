@@ -1,0 +1,103 @@
+\chapter{Inventario de archivos entregados}
+
+\small
+\begin{longtable}{p{5.3cm}p{8.0cm}}
+\toprule
+\textbf{Ruta} & \textbf{Propósito} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Ruta} & \textbf{Propósito} \\
+\midrule
+\endhead
+\path{docs/fase-1/main.tex} & Documento maestro LaTeX. \\
+\path{docs/fase-1/preamble.tex} & Tipografía, colores, geometría y componentes visuales. \\
+\path{docs/fase-1/sections/} & Capítulos modulares del informe. \\
+\path{docs/fase-1/assets/diagrams/} & Diagramas PDF vectoriales y vistas PNG. \\
+\path{docs/fase-1/assets/generated/} & Ilustración original de portada. \\
+\path{infra/terraform/} & VPC, subredes, rutas, seguridad, cómputo y salidas. \\
+\path{scripts/generate-figures.py} & Generación reproducible de figuras con Matplotlib. \\
+\path{scripts/validate-network.py} & Pruebas matemáticas del direccionamiento. \\
+\path{scripts/test-connectivity.ps1} & Ping privado con salto SSH y registro de evidencia. \\
+\path{scripts/build-report.ps1} & Generación de figuras, validación y compilación del PDF. \\
+\path{evidence/} & Resultados verificables y guía de evidencias. \\
+\path{output/pdf/} & PDF final estable. \\
+\bottomrule
+\end{longtable}
+\normalsize
+
+Las figuras se generaron con la interfaz orientada a objetos de Matplotlib y se exportaron como PDF vectorial y PNG de revisión. Esta metodología adopta prácticas de composición, accesibilidad y exportación documentadas en Scientific Agent Skills \cite{kassis2026skills}; el script queda incluido para que colores, etiquetas y datos puedan auditarse.
+
+\chapter{Extractos de configuración}
+
+\section{Definición de segmentos}
+
+\begin{Verbatim}[fontsize=\footnotesize,frame=single]
+subnets = {
+  visitas        = { cidr = "10.10.0.0/26",   public = true  }
+  ventas         = { cidr = "10.10.0.64/26",  public = false }
+  ti             = { cidr = "10.10.0.128/27", public = false }
+  datacenter     = { cidr = "10.10.0.160/28", public = false }
+  administracion = { cidr = "10.10.0.176/28", public = true  }
+}
+\end{Verbatim}
+
+\section{Regla ICMP de Ventas}
+
+\begin{Verbatim}[fontsize=\footnotesize,frame=single]
+ingress {
+  description = "ICMP entre miembros del mismo grupo"
+  from_port   = -1
+  to_port     = -1
+  protocol    = "icmp"
+  self        = true
+}
+\end{Verbatim}
+
+\section{Salidas relevantes}
+
+\begin{Verbatim}[fontsize=\footnotesize,frame=single]
+output "bastion_public_ip" {
+  value = try(aws_instance.bastion[0].public_ip, null)
+}
+
+output "ventas_private_ips" {
+  value = aws_instance.ventas[*].private_ip
+}
+\end{Verbatim}
+
+\chapter{Procedimiento operativo abreviado}
+
+\begin{enumerate}
+  \item Autenticarse en AWS por un mecanismo local autorizado.
+  \item Consultar identidad y región sin registrar secretos.
+  \item Generar llave SSH temporal.
+  \item Copiar y completar \code{terraform.tfvars.example}.
+  \item Ejecutar \code{terraform init}, \code{fmt}, \code{validate} y \code{plan}.
+  \item Revisar el plan con otro integrante.
+  \item Aplicar y esperar estado saludable de las instancias.
+  \item Ejecutar \code{scripts/test-connectivity.ps1} con las salidas obtenidas.
+  \item Capturar VPC, subredes, rutas, reglas, instancias y resultados.
+  \item Ejecutar \code{terraform destroy}.
+  \item Auditar la ausencia de recursos etiquetados.
+  \item Recompilar, inspeccionar el PDF y publicar el repositorio.
+\end{enumerate}
+
+\chapter{Lista final de revisión}
+
+\begin{tabularx}{\textwidth}{C{1.7cm}Y}
+\toprule
+\textbf{Estado} & \textbf{Control} \\
+\midrule
+$\square$ & Los tres nombres y carnés coinciden con el registro del curso. \\
+$\square$ & El docente confirmó la integración de tres personas frente al enunciado de cinco. \\
+$\square$ & La cuenta y región AWS aparecen en evidencia sin secretos. \\
+$\square$ & Los cinco CIDR desplegados coinciden con la Tabla \ref{tab:addressing}. \\
+$\square$ & Las dos IP del ping pertenecen a Ventas y son privadas. \\
+$\square$ & La pérdida del ping es 0\%. \\
+$\square$ & La prueba negativa desde el bastión falla como se esperaba. \\
+$\square$ & La destrucción queda registrada y se auditan recursos residuales. \\
+$\square$ & No existen \code{tfstate}, \code{tfvars}, llaves o credenciales en Git. \\
+$\square$ & Todas las páginas del PDF se revisaron visualmente. \\
+\bottomrule
+\end{tabularx}

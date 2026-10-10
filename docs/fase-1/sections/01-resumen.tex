@@ -1,0 +1,15 @@
+\chapter{Resumen ejecutivo}
+
+RedNova GT es una empresa guatemalteca ficticia que ofrece software de gestión comercial a pequeñas y medianas empresas. Su crecimiento exige separar lógicamente las funciones de Ventas, Tecnologías de la Información (TI), Data Center y acceso de visitantes. El presente documento propone trasladar ese ecosistema a Amazon Web Services (AWS), dentro de una nube privada virtual con direccionamiento IPv4 privado, controles de ruta y reglas de seguridad específicas.
+
+La solución parte del bloque \code{10.10.0.0/24}. Mediante Variable Length Subnet Masking (VLSM) se reservan bloques diferentes según la demanda: \code{/26} para Visitas, \code{/26} para Ventas, \code{/27} para TI, \code{/28} para Data Center y \code{/28} para Administración. El último \code{/26} queda sin asignar para crecimiento. Esta distribución considera una particularidad esencial de AWS: en cada subred, las primeras cuatro direcciones y la última no pueden asignarse a recursos \cite{aws-subnet-sizing}. Por esa razón el cálculo operativo utiliza $2^{32-p}-5$ y no la fórmula tradicional $2^h-2$.
+
+La arquitectura separa dos dominios de exposición. Visitas y Administración se asocian con una tabla de rutas pública; Ventas, TI y Data Center se asocian con una tabla privada que sólo conserva la ruta local de la VPC. Para la prueba de concepto, dos instancias pequeñas se ubican dentro de Ventas y reciben exclusivamente direcciones privadas. El acceso administrativo atraviesa un bastión temporal cuyo puerto SSH se limita a una sola dirección IPv4 \code{/32}. El tráfico ICMP entre las dos instancias se autoriza mediante un grupo de seguridad común.
+
+La infraestructura se describe como código en Terraform. El cómputo está deshabilitado de forma predeterminada para prevenir cargos involuntarios. Cuando el equipo activa la prueba, el flujo previsto es: validar credenciales y presupuesto, revisar el plan, desplegar, ejecutar el ping, conservar la evidencia y destruir todos los recursos temporales. Este ciclo atiende la advertencia de costos incluida en el enunciado y la recomendación de AWS de establecer un proceso explícito de desmantelamiento \cite{aws-decommission}.
+
+\begin{infobox}[Resultado principal]
+El diseño satisface las capacidades solicitadas, mantiene bloques canónicos sin solapamiento y conserva 64 direcciones para crecimiento. Ventas recibe 59 direcciones asignables: aunque un \code{/27} cubriría exactamente 25 personas con sólo dos direcciones libres en AWS, el \code{/26} elegido reduce el riesgo de agotamiento y admite dispositivos o interfaces adicionales.
+\end{infobox}
+
+El proyecto entrega además seis diagramas vectoriales, una ilustración original de portada, scripts de validación, archivos Terraform, procedimiento de pruebas y un informe LaTeX compilable. La prioridad no es únicamente demostrar que existe conectividad; se busca que cualquier integrante pueda reconstruir el diseño, verificar cada cálculo y retirar los recursos sin dejar componentes facturables.

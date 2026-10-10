@@ -1,0 +1,60 @@
+\chapter{Control de costos y ciclo de vida}
+
+\section{Principios adoptados}
+
+El prototipo se diseña para existir durante minutos u horas, no durante todo el curso. El costo se controla con cinco decisiones: cómputo optativo, una sola dirección pública, ausencia de NAT Gateway, volúmenes mínimos y destrucción automatizada. Las subredes, tablas de rutas, grupos de seguridad e Internet Gateway no justifican por sí solos mantener instancias encendidas.
+
+AWS publica un cargo horario por cada dirección IPv4 pública, tanto asociada como ociosa \cite{aws-vpc-pricing}. Por ello el bastión se crea sólo al habilitar la prueba y se destruye después de recopilar la salida. El diseño tampoco reserva una Elastic IP, evitando que una dirección permanezca en la cuenta tras apagar una instancia.
+
+\section{Componentes potencialmente facturables}
+
+\begin{table}[H]
+\centering
+\caption{Superficie de costo del prototipo}
+\begin{tabularx}{\textwidth}{p{4.0cm}Y p{3.0cm}}
+\toprule
+\textbf{Componente} & \textbf{Control} & \textbf{Duración esperada} \\
+\midrule
+Tres instancias EC2 pequeñas & Activación explícita y destrucción tras pruebas. & Menos de 2 horas \\
+Tres volúmenes GP3 de 8 GiB & Eliminación junto con las instancias. & Menos de 2 horas \\
+Una IPv4 pública & Sólo en el bastión; no se reserva Elastic IP. & Menos de 2 horas \\
+Transferencia de datos & Únicamente administración y paquetes de prueba. & Volumen mínimo \\
+VPC y subredes & No requieren cómputo activo; se eliminan al final. & Ventana de prueba \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+No se fija un precio total en el informe porque las tarifas, impuestos, créditos, región y condiciones de la cuenta pueden cambiar. Antes del \code{apply}, el equipo debe consultar la página vigente de precios y el panel de facturación. Cualquier crédito académico se trata como beneficio eventual, no como garantía.
+
+\section{Etiquetado}
+
+Todos los recursos incorporan:
+
+\begin{itemize}
+  \item \code{Project=CC3067-Fase-1}
+  \item \code{Group=Grupo-1}
+  \item \code{Environment=academic-poc}
+  \item \code{ManagedBy=Terraform}
+  \item \code{DeleteAfter=2026-10-19}
+\end{itemize}
+
+Las etiquetas permiten filtrar componentes y detectar residuos. AWS recomienda rastrear recursos durante todo su ciclo de vida y usar etiquetas para identificar activos que pueden retirarse \cite{aws-track-resources}.
+
+\section{Lista de cierre}
+
+Después de \code{terraform destroy} se revisa:
+
+\begin{enumerate}
+  \item cero instancias con etiqueta del proyecto;
+  \item cero volúmenes EBS residuales;
+  \item cero direcciones públicas o Elastic IP del proyecto;
+  \item cero interfaces de red huérfanas;
+  \item Internet Gateway separado y eliminado;
+  \item VPC y subredes eliminadas;
+  \item estado local protegido y no agregado a Git;
+  \item archivo \code{destroy.txt} con el resultado final.
+\end{enumerate}
+
+\begin{warningbox}[Regla de operación]
+Detener una instancia no equivale a destruir todos sus recursos. La puerta de salida exige revisar volúmenes, IP, interfaces y gateways, no solamente el estado de EC2.
+\end{warningbox}

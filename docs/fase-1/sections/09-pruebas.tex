@@ -1,0 +1,91 @@
+\chapter{Plan y resultados de pruebas}
+
+\section{Principio de verificación}
+
+Cada prueba define precondición, acción, resultado esperado y evidencia. Esta estructura impide confundir una intención de diseño con un resultado observado. Las pruebas locales se ejecutaron sobre los archivos versionados; las pruebas cloud están preparadas pero dependen de una cuenta AWS autorizada.
+
+\section{Prueba P-01: capacidad y no solapamiento}
+
+\textbf{Precondición:} Python 3 disponible.
+
+\textbf{Acción:} ejecutar \code{python scripts/validate-network.py}.
+
+\textbf{Criterios:} todas las subredes deben pertenecer al \code{/24}; ninguna puede superponerse; $2^{32-p}-5$ debe cubrir la demanda; el bloque de reserva no debe intersectar una subred activa.
+
+\textbf{Resultado:} \statusok. La suma de bloques es 256, todos los comienzos son canónicos y cada capacidad supera la demanda declarada. La salida completa se conserva como texto UTF-8.
+
+\section{Prueba P-02: formato y validez de Terraform}
+
+\textbf{Precondición:} Terraform y el proveedor oficial de AWS inicializados.
+
+\textbf{Acción:} ejecutar \code{terraform fmt -check -recursive} y \code{terraform validate -no-color}.
+
+\textbf{Criterio:} el formateador no propone cambios y la validación finaliza con código cero.
+
+\textbf{Resultado:} \statusok. La salida registrada indica: ``Success! The configuration is valid.''
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.93\textwidth]{validacion-local.png}
+\caption{Captura reproducible de las validaciones locales.}
+\label{fig:local-validation}
+\end{figure}
+
+\section{Prueba P-03: planificación contra el proveedor}
+
+\textbf{Precondición:} credenciales AWS configuradas mediante un mecanismo admitido por el proveedor.
+
+\textbf{Acción:} ejecutar \code{terraform plan} primero con cómputo deshabilitado y luego con las variables de prueba.
+
+\textbf{Criterio:} el plan reconoce la identidad, consulta zona y AMI, y propone exclusivamente los recursos documentados.
+
+\textbf{Resultado actual:} \statuspending. La consulta devolvió`No valid credential sources found''. El error se conserva como diagnóstico local, pero no se presenta como evidencia de implementación.
+
+\section{Prueba P-04: conectividad privada}
+
+\textbf{Precondición:} bastión y dos instancias de Ventas en estado \emph{running}; llaves y reglas activas.
+
+\textbf{Acción:} desde la instancia Ventas A ejecutar:
+
+\begin{Verbatim}[fontsize=\small,frame=single]
+ping -c 4 <IP_PRIVADA_VENTAS_B>
+\end{Verbatim}
+
+El script \code{scripts/test-connectivity.ps1} utiliza SSH con salto por el bastión, registra origen, destino, fecha y salida, y guarda \code{evidence/connectivity/ping-private.txt}.
+
+\textbf{Criterio:} cuatro paquetes transmitidos, cuatro recibidos y 0\% de pérdida. Las dos direcciones deben pertenecer a \code{10.10.0.64/26}; ninguna debe ser pública.
+
+\textbf{Resultado actual:} \statuspending. No se crearon instancias por falta de credenciales. Se prohíbe sustituir este resultado con texto inventado.
+
+\section{Prueba P-05: aislamiento}
+
+Después del ping exitoso, se intenta ICMP desde el bastión hacia una instancia de Ventas. La regla de Ventas acepta ICMP sólo desde su propio grupo, por lo que el tráfico del bastión debe fallar. Esta prueba negativa demuestra que permitir administración SSH no equivale a permitir todo protocolo.
+
+\section{Prueba P-06: desmantelamiento}
+
+\textbf{Acción:} ejecutar \code{terraform destroy}, confirmar el plan y revisar que el estado no contenga recursos. Además, verificar en AWS la ausencia de instancias, volúmenes, IP públicas y gateways del proyecto.
+
+\textbf{Criterio:} Terraform informa destrucción completa y no quedan componentes con la etiqueta \path{Project=CC3067-Fase-1}.
+
+\section{Matriz de resultados}
+
+\begin{table}[H]
+\centering
+\caption{Resumen de verificación}
+\begin{tabularx}{\textwidth}{p{1.6cm}Y p{3.4cm}}
+\toprule
+\textbf{Prueba} & \textbf{Propiedad observada} & \textbf{Estado} \\
+\midrule
+P-01 & Capacidad, contención, canonicidad y no solapamiento. & \statusok \\
+P-02 & Sintaxis, formato y relaciones del código Terraform. & \statusok \\
+P-03 & Resolución de recursos mediante una identidad AWS. & \statuspending \\
+P-04 & Conectividad ICMP privada dentro de Ventas. & \statuspending \\
+P-05 & Rechazo ICMP desde el bastión. & \statuspending \\
+P-06 & Eliminación completa de recursos temporales. & \statuspending \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Interpretación}
+
+Los resultados locales confirman que el diseño es internamente consistente y que Terraform puede interpretarlo. No confirman la disponibilidad de permisos, tipos de instancia o conectividad efectiva en una cuenta específica. Esa distinción es esencial: una validación de configuración no sustituye un \code{apply}, y un \code{apply} no sustituye una prueba de tráfico.

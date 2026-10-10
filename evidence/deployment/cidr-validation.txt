@@ -1,0 +1,12 @@
+VALIDACIÓN DEL PLAN CIDR - CC3067 FASE 1
+VPC: 10.10.0.0/24 (256 direcciones)
+Fórmula AWS: asignables = 2^(32-prefijo) - 5
+
+Visitas         10.10.0.0/26       total= 64 AWS= 59 requeridas=30 rango=10.10.0.4-10.10.0.62 OK
+Ventas          10.10.0.64/26      total= 64 AWS= 59 requeridas=25 rango=10.10.0.68-10.10.0.126 OK
+TI              10.10.0.128/27     total= 32 AWS= 27 requeridas=15 rango=10.10.0.132-10.10.0.158 OK
+Data Center     10.10.0.160/28     total= 16 AWS= 11 requeridas= 5 rango=10.10.0.164-10.10.0.174 OK
+Administración  10.10.0.176/28     total= 16 AWS= 11 requeridas= 3 rango=10.10.0.180-10.10.0.190 OK
+Reserva         10.10.0.192/26     total= 64 sin asignar OK
+
+RESULTADO: todos los bloques son canónicos, suficientes, contenidos y no se superponen.
