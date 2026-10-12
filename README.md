@@ -6,7 +6,7 @@
 
 El repositorio contiene el informe técnico en LaTeX, diagramas, infraestructura como código con Terraform y evidencias de validación para la Fase 1.
 
-## Entregables a revisar por parte del auxiliar o docente correspondiente
+## Entregables a revisar por parte del auxiliar o del docente correspondiente
 
 - PDF final: [`output/pdf/Proyecto_Final_Fase_1_Grupo_1.pdf`](output/pdf/Proyecto_Final_Fase_1_Grupo_1.pdf)
 - Infraestructura: [`infra/terraform/`](infra/terraform/)
