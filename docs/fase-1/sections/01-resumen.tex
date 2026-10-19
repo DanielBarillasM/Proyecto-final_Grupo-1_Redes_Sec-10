@@ -1,4 +1,4 @@
-\chapter{Resumen ejecutivo}
+\chapter{Resumen}
 
 RedNova GT es una empresa guatemalteca ficticia que ofrece software de gestión comercial a pequeñas y medianas empresas. Su crecimiento exige separar lógicamente las funciones de Ventas, Tecnologías de la Información (TI), Data Center y acceso de visitantes. El presente documento propone trasladar ese ecosistema a Amazon Web Services (AWS), dentro de una nube privada virtual con direccionamiento IPv4 privado, controles de ruta y reglas de seguridad específicas.
 
@@ -9,7 +9,7 @@ La arquitectura separa dos dominios de exposición. Visitas y Administración se
 La infraestructura se describe como código en Terraform. El cómputo está deshabilitado de forma predeterminada para prevenir cargos involuntarios. Cuando el equipo activa la prueba, el flujo previsto es: validar credenciales y presupuesto, revisar el plan, desplegar, ejecutar el ping, conservar la evidencia y destruir todos los recursos temporales. Este ciclo atiende la advertencia de costos incluida en el enunciado y la recomendación de AWS de establecer un proceso explícito de desmantelamiento \cite{aws-decommission}.
 
 \begin{infobox}[Resultado principal]
-El diseño satisface las capacidades solicitadas, mantiene bloques canónicos sin solapamiento y conserva 64 direcciones para crecimiento. Ventas recibe 59 direcciones asignables: aunque un \code{/27} cubriría exactamente 25 personas con sólo dos direcciones libres en AWS, el \code{/26} elegido reduce el riesgo de agotamiento y admite dispositivos o interfaces adicionales.
+El plan satisface las capacidades solicitadas, utiliza bloques canónicos sin solapamiento y conserva 64 direcciones para crecimiento. La subred \code{10.10.0.64/26} asignada a Ventas ofrece 59 direcciones utilizables en AWS. Este margen evita que el segmento opere cerca de su capacidad máxima y permite incorporar equipos o interfaces adicionales.
 \end{infobox}
 
-El proyecto entrega además seis diagramas vectoriales, una ilustración original de portada, scripts de validación, archivos Terraform, procedimiento de pruebas y un informe LaTeX compilable. La prioridad no es únicamente demostrar que existe conectividad; se busca que cualquier integrante pueda reconstruir el diseño, verificar cada cálculo y retirar los recursos sin dejar componentes facturables.
+El proyecto incluye seis diagramas vectoriales, una portada original, scripts de validación, configuración Terraform y fuentes LaTeX reproducibles. Estos artefactos permiten verificar los cálculos y reconstruir el diseño.

@@ -50,7 +50,7 @@ Terraform crea dos grupos. El primero permite SSH desde la IP administrativa y s
 
 Con \code{enable\_compute=true}, se registra la llave pública, se crea un bastión en Administración y dos instancias en Ventas. Las tres usan volúmenes raíz GP3 de 8 GiB cifrados. El bastión recibe IP pública; las dos instancias de Ventas sólo reciben IP privadas. Las salidas de Terraform muestran la IP del bastión y la lista de IP privadas sin revelar secretos.
 
-\section{Comandos de ejecución}
+\section{Comandos de ejecución previstos}
 
 \begin{Verbatim}[fontsize=\small,frame=single]
 terraform init
@@ -62,30 +62,3 @@ terraform apply tfplan
 # Después de capturar la evidencia:
 terraform destroy
 \end{Verbatim}
-
-\section{Estado verificable de esta entrega}
-
-\begin{table}[H]
-\centering
-\caption{Estado de la implementación al cerrar el documento}
-\begin{tabularx}{\textwidth}{p{4.0cm}p{3.2cm}Y}
-\toprule
-\textbf{Actividad} & \textbf{Estado} & \textbf{Evidencia o condición} \\
-\midrule
-Cálculo CIDR & \statusok & Validación Python almacenada en \code{evidence/deployment}. \\
-Formato Terraform & \statusok & \code{terraform fmt -check} sin diferencias. \\
-Validación Terraform & \statusok & Proveedor AWS inicializado y configuración válida. \\
-Plan contra AWS & \statuspending & La estación no contiene una fuente válida de credenciales AWS. \\
-Creación de VPC y EC2 & \statuspending & Requiere una cuenta autorizada y confirmación de costos. \\
-Destrucción en AWS & \statuspending & Sólo aplica después de una creación real. \\
-\bottomrule
-\end{tabularx}
-\end{table}
-
-\begin{warningbox}[Integridad de la evidencia]
-La ausencia de credenciales es un estado externo comprobable, no un resultado exitoso. Este informe no presenta recursos simulados como si hubieran sido creados en AWS. La infraestructura está preparada y validada localmente; la evidencia cloud debe incorporarse después de ejecutar el flujo en una cuenta autorizada.
-\end{warningbox}
-
-\section{Capturas que debe producir la ejecución autorizada}
-
-Para completar la trazabilidad externa se capturan: identidad y región sin exponer secretos; resumen de la VPC; lista de cinco subredes con CIDR; asociaciones de tablas de rutas; reglas de ambos grupos; tres instancias con sus direcciones; salida del ping; y confirmación final de destrucción. Cada captura debe mostrar fecha, nombre de proyecto o identificador y un pie que explique qué prueba.
