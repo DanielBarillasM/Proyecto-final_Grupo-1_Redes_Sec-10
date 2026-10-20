@@ -8,18 +8,18 @@ Ventas ofrece el ejemplo más importante de juicio de ingeniería. Un \code{/27}
 
 La separación lógica se completa con enrutamiento y grupos de seguridad. Ventas, TI y Data Center carecen de ruta directa a Internet. El bastión temporal concentra la entrada administrativa y las instancias de prueba permanecen privadas. La prueba propuesta de ICMP usa la ruta local de la VPC y una regla auto-referenciada, por lo que valida conectividad interna sin exponer los hosts.
 
-Terraform convierte la propuesta en un artefacto repetible, revisable y desmontable. La configuración pasó las pruebas locales de formato y validez, y el direccionamiento fue comprobado mediante un script independiente. No obstante, la estación de trabajo no dispone de credenciales AWS; por integridad académica, el informe identifica las pruebas cloud como pendientes y no inventa capturas ni resultados.
+Terraform convierte la propuesta en un artefacto repetible, revisable y desmontable. La configuración pasó las pruebas locales de formato y validez, y el direccionamiento fue comprobado mediante un script independiente. También se verificaron una identidad AWS activa, la región \code{us-east-1} y un plan de creación coherente con la arquitectura. El equipo detuvo el flujo antes del \code{apply} para evitar cargos fuera de la ventana de implementación; por integridad académica, el informe mantiene como pendientes la creación real, el ping, el aislamiento y el desmantelamiento.
 
 \section{Recomendaciones inmediatas}
 
 \begin{enumerate}
-  \item Configurar localmente una identidad AWS autorizada sin colocar secretos en el repositorio.
-  \item Confirmar región, créditos, presupuesto y permisos antes de crear cómputo.
-  \item Ejecutar el plan con \code{enable\_compute=false} y revisar primero la red.
+  \item Reautenticar la identidad AWS autorizada el día de la implementación sin colocar secretos en el repositorio.
+  \item Confirmar región, créditos, presupuesto, alertas de facturación y permisos antes de crear cómputo.
+  \item Regenerar el plan y comprobar que coincide con la evidencia y el código versionado.
   \item Generar una llave temporal y limitar \code{admin\_cidr} a la IPv4 real del operador.
   \item Activar cómputo, capturar las IP privadas y ejecutar las pruebas P-04 y P-05.
   \item Destruir inmediatamente y completar la prueba P-06.
-  \item Incorporar capturas reales y recompilar el PDF antes de la entrega académica.
+  \item Incorporar las capturas reales del \code{apply}, recursos, ping y destrucción, y recompilar el PDF antes de la entrega académica.
 \end{enumerate}
 
 \section{Evolución hacia producción}
@@ -28,4 +28,4 @@ Una fase posterior debería distribuir subredes en al menos dos zonas, incorpora
 
 \section{Cierre}
 
-La propuesta satisface el objetivo de diseño y deja una implementación técnicamente lista para una cuenta autorizada. Su principal fortaleza es la trazabilidad: cada requisito se conecta con un cálculo, un recurso, una prueba y una evidencia esperada. La condición restante no es de diseño ni de código, sino de acceso externo a AWS.
+La propuesta satisface el objetivo de diseño y deja una implementación técnicamente lista y planificada contra AWS. Su principal fortaleza es la trazabilidad: cada requisito se conecta con un cálculo, un recurso, una prueba y una evidencia esperada. Las condiciones restantes son ejecutar el \code{apply} en una ventana controlada de costos, probar el tráfico y destruir los recursos inmediatamente después.
