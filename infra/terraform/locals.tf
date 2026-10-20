@@ -29,6 +29,6 @@ locals {
     Group       = "Grupo-1"
     Environment = "academic-poc"
     ManagedBy   = "Terraform"
-    DeleteAfter = "2026-10-19"
+    DeleteAfter = "2026-10-20"
   }
 }
