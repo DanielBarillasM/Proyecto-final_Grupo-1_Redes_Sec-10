@@ -39,7 +39,16 @@ Cada prueba define precondición, acción, resultado esperado y evidencia. Esta 
 
 \textbf{Criterio:} el plan reconoce la identidad, consulta zona y AMI, y propone exclusivamente los recursos documentados.
 
-\textbf{Resultado actual:} \statuspending. La consulta devolvió`No valid credential sources found''. El error se conserva como diagnóstico local, pero no se presenta como evidencia de implementación.
+\textbf{Resultado actual:} \statusok. La identidad AWS fue reconocida, la región se confirmó como \code{us-east-1} y Terraform produjo un plan compuesto únicamente por altas previstas. La Figura~\ref{fig:terraform-cloud-plan} muestra recursos para la VPC, cinco subredes, tablas y asociaciones de rutas, grupos de seguridad, llave temporal, bastión y dos instancias de Ventas.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.96\textwidth]{terraform-plan-recursos-previstos.jpeg}
+\caption{Evidencia genuina del plan Terraform contra AWS. Todas las acciones visibles son de creación; esta salida no implica que se haya ejecutado \code{terraform apply}.}
+\label{fig:terraform-cloud-plan}
+\end{figure}
+
+Por control de costos, el equipo detuvo el procedimiento antes del \code{apply}. Por tanto, esta prueba verifica autenticación y planificación contra el proveedor, no la existencia de infraestructura desplegada.
 
 \section{Prueba P-04: conectividad privada}
 
@@ -55,17 +64,21 @@ El script \code{scripts/test-connectivity.ps1} utiliza SSH con salto por el bast
 
 \textbf{Criterio:} cuatro paquetes transmitidos, cuatro recibidos y 0\% de pérdida. Las dos direcciones deben pertenecer a \code{10.10.0.64/26}; ninguna debe ser pública.
 
-\textbf{Resultado actual:} \statuspending. No se crearon instancias por falta de credenciales. Se prohíbe sustituir este resultado con texto inventado.
+\textbf{Resultado actual:} \statuspending. No se crearon las instancias porque el equipo decidió reservar la ejecución para la ventana evaluada y evitar cargos anticipados. Se prohíbe sustituir este resultado con texto inventado.
 
 \section{Prueba P-05: aislamiento}
 
 Después del ping exitoso, se intenta ICMP desde el bastión hacia una instancia de Ventas. La regla de Ventas acepta ICMP sólo desde su propio grupo, por lo que el tráfico del bastión debe fallar. Esta prueba negativa demuestra que permitir administración SSH no equivale a permitir todo protocolo.
+
+\textbf{Resultado actual:} \statuspending. La prueba necesita los recursos temporales creados mediante \code{apply}; el plan por sí solo no permite observar tráfico.
 
 \section{Prueba P-06: desmantelamiento}
 
 \textbf{Acción:} ejecutar \code{terraform destroy}, confirmar el plan y revisar que el estado no contenga recursos. Además, verificar en AWS la ausencia de instancias, volúmenes, IP públicas y gateways del proyecto.
 
 \textbf{Criterio:} Terraform informa destrucción completa y no quedan componentes con la etiqueta \path{Project=CC3067-Fase-1}.
+
+\textbf{Resultado actual:} \statuspending. No hubo infraestructura que destruir porque el procedimiento se detuvo antes del \code{apply}. En la ejecución final, esta prueba debe realizarse en la misma sesión para limitar costos.
 
 \section{Matriz de resultados}
 
@@ -78,7 +91,7 @@ Después del ping exitoso, se intenta ICMP desde el bastión hacia una instancia
 \midrule
 P-01 & Capacidad, contención, canonicidad y no solapamiento. & \statusok \\
 P-02 & Sintaxis, formato y relaciones del código Terraform. & \statusok \\
-P-03 & Resolución de recursos mediante una identidad AWS. & \statuspending \\
+P-03 & Resolución de recursos mediante una identidad AWS. & \statusok \\
 P-04 & Conectividad ICMP privada dentro de Ventas. & \statuspending \\
 P-05 & Rechazo ICMP desde el bastión. & \statuspending \\
 P-06 & Eliminación completa de recursos temporales. & \statuspending \\
@@ -88,4 +101,4 @@ P-06 & Eliminación completa de recursos temporales. & \statuspending \\
 
 \section{Interpretación}
 
-Los resultados locales confirman que el diseño es internamente consistente y que Terraform puede interpretarlo. No confirman la disponibilidad de permisos, tipos de instancia o conectividad efectiva en una cuenta específica. Esa distinción es esencial: una validación de configuración no sustituye un \code{apply}, y un \code{apply} no sustituye una prueba de tráfico.
+Los resultados locales confirman que el diseño es internamente consistente y que Terraform puede interpretarlo. La evidencia externa confirma además una identidad activa, la región y la generación del plan contra AWS. Todavía no confirma infraestructura creada ni conectividad efectiva. Esa distinción es esencial: un \code{plan} no sustituye un \code{apply}, y un \code{apply} no sustituye una prueba de tráfico.

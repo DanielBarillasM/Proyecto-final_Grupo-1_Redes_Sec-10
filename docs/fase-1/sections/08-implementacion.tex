@@ -17,6 +17,19 @@ La implementación se define en \code{infra/terraform}. En lugar de crear recurs
 
 La identidad AWS debe pertenecer a una cuenta autorizada por el equipo. No se aceptan credenciales escritas dentro de archivos Terraform ni almacenadas en el repositorio. Antes de desplegar se verifica la identidad con un mecanismo de autenticación local, se confirma la región y se revisan los límites de servicio. La variable predeterminada es \code{us-east-1}, pero puede cambiarse sin alterar los CIDR.
 
+El 20 de octubre de 2026 se verificó una sesión activa mediante \code{aws sts get-caller-identity} y se confirmó el perfil configurado en \code{us-east-1}. La Figura~\ref{fig:aws-identity-region} conserva los identificadores sensibles parcialmente ocultos y no muestra claves, tokens ni contraseñas.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.96\textwidth]{aws-identidad-region-us-east-1.jpeg}
+\caption{Verificación genuina de identidad AWS y región configurada. Los identificadores de cuenta fueron redactados antes de incorporarlos al informe.}
+\label{fig:aws-identity-region}
+\end{figure}
+
+\begin{warningbox}[Control de privilegios]
+La salida capturada identifica al principal raíz de la cuenta. Esta evidencia confirma acceso, pero no justifica usar privilegios raíz durante el despliegue. En la ventana de implementación debe preferirse un rol o usuario temporal con permisos limitados a los recursos del laboratorio.
+\end{warningbox}
+
 \subsection{Llave temporal}
 
 La prueba necesita una llave SSH sólo durante la ventana de ejecución. El equipo genera el par fuera del repositorio, entrega a Terraform únicamente la ruta de la parte pública y protege la parte privada. Al destruir el entorno se elimina el recurso \code{aws\_key\_pair}; el archivo privado local se elimina mediante un procedimiento controlado después de verificar que ya no se necesita.
@@ -62,3 +75,9 @@ terraform apply tfplan
 # Después de capturar la evidencia:
 terraform destroy
 \end{Verbatim}
+
+\begin{warningbox}[Nota sobre la ejecución final y el control de costos]
+Las capturas incorporadas en esta versión demuestran que existe una identidad AWS configurada y que Terraform puede generar el plan de creación esperado. El equipo detuvo deliberadamente el procedimiento antes de \code{terraform apply} para evitar cargos por instancias EC2, almacenamiento y dirección IPv4 pública fuera de la ventana definitiva de pruebas.
+
+La implementación real se realizará al final del proyecto, dentro de una única ventana corta y supervisada. En esa misma sesión se aplicará el plan, se capturarán la VPC, las subredes, las tablas de rutas, los grupos de seguridad y las instancias; se ejecutará el ping entre las dos instancias privadas de Ventas; y se destruirán todos los recursos inmediatamente después de conservar la evidencia. Por tanto, estas actividades representan compromisos de ejecución final y no resultados ya obtenidos.
+\end{warningbox}

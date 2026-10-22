@@ -61,7 +61,7 @@ H7 & Cierre & Destrucción confirmada, PDF revisado y repositorio limpio. \\
 \textbf{Riesgo} & \textbf{Prob.} & \textbf{Impacto} & \textbf{Respuesta} \\
 \midrule
 \endhead
-Credenciales AWS ausentes & Alta & Alto & Configurar una identidad autorizada localmente; nunca copiar claves al informe o Git. \\
+Credenciales AWS temporales o expiradas & Alta & Alto & Reautenticar una identidad autorizada para la ventana final; nunca copiar claves al informe o Git. \\
 Permisos insuficientes & Media & Alto & Revisar errores por acción y ajustar sólo los permisos necesarios. \\
 Cargos imprevistos & Media & Alto & Cómputo apagado por defecto, sin NAT, ventana corta y destrucción obligatoria. \\
 CIDR incorrecto & Baja & Alto & Script de contención y no solapamiento antes de planificar. \\
