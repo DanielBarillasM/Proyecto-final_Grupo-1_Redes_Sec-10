@@ -1,0 +1,91 @@
+﻿{
+  "bastion_public_ip": {
+    "sensitive": false,
+    "type": "string",
+    "value": "3.231.222.53"
+  },
+  "subnet_ids": {
+    "sensitive": false,
+    "type": [
+      "object",
+      {
+        "administracion": [
+          "object",
+          {
+            "cidr": "string",
+            "id": "string"
+          }
+        ],
+        "datacenter": [
+          "object",
+          {
+            "cidr": "string",
+            "id": "string"
+          }
+        ],
+        "ti": [
+          "object",
+          {
+            "cidr": "string",
+            "id": "string"
+          }
+        ],
+        "ventas": [
+          "object",
+          {
+            "cidr": "string",
+            "id": "string"
+          }
+        ],
+        "visitas": [
+          "object",
+          {
+            "cidr": "string",
+            "id": "string"
+          }
+        ]
+      }
+    ],
+    "value": {
+      "administracion": {
+        "cidr": "10.10.0.176/28",
+        "id": "subnet-017b4aa0a12bf3abd"
+      },
+      "datacenter": {
+        "cidr": "10.10.0.160/28",
+        "id": "subnet-054d222ee72d6a60f"
+      },
+      "ti": {
+        "cidr": "10.10.0.128/27",
+        "id": "subnet-0dff5e4a8513f2dfa"
+      },
+      "ventas": {
+        "cidr": "10.10.0.64/26",
+        "id": "subnet-093f66750864ffd2d"
+      },
+      "visitas": {
+        "cidr": "10.10.0.0/26",
+        "id": "subnet-0bd61bea7daecadee"
+      }
+    }
+  },
+  "ventas_private_ips": {
+    "sensitive": false,
+    "type": [
+      "tuple",
+      [
+        "string",
+        "string"
+      ]
+    ],
+    "value": [
+      "10.10.0.71",
+      "10.10.0.79"
+    ]
+  },
+  "vpc_id": {
+    "sensitive": false,
+    "type": "string",
+    "value": "vpc-0072ddea68455b412"
+  }
+}

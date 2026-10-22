@@ -1,0 +1,15 @@
+﻿PRUEBA DE CONECTIVIDAD PRIVADA - CC3067 FASE 1
+Origen: 10.10.0.71 (subred Ventas)
+Destino: 10.10.0.79 (subred Ventas)
+BastiÃ³n: 3.231.222.53 (sÃ³lo transporte administrativo)
+Fecha local: 2026-10-22 15:37:16 -06:00
+
+PING 10.10.0.79 (10.10.0.79) 56(84) bytes of data.
+64 bytes from 10.10.0.79: icmp_seq=1 ttl=127 time=0.631 ms
+64 bytes from 10.10.0.79: icmp_seq=2 ttl=127 time=0.264 ms
+64 bytes from 10.10.0.79: icmp_seq=3 ttl=127 time=0.220 ms
+64 bytes from 10.10.0.79: icmp_seq=4 ttl=127 time=0.236 ms
+
+--- 10.10.0.79 ping statistics ---
+4 packets transmitted, 4 received, 0% packet loss, time 3158ms
+rtt min/avg/max/mdev = 0.220/0.337/0.631/0.170 ms

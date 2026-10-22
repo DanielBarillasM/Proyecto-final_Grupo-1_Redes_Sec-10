@@ -7,7 +7,7 @@ Terraform will perform the following actions:
 
   # aws_instance.bastion[0] will be created
   + resource "aws_instance" "bastion" {
-      + ami                                  = "ami-0567589d25e06853e"
+      + ami                                  = "ami-08c46876c64a927b8"
       + arn                                  = (known after apply)
       + associate_public_ip_address          = true
       + availability_zone                    = (known after apply)
@@ -50,7 +50,7 @@ Terraform will perform the following actions:
           + "Role" = "temporary-management"
         }
       + tags_all                             = {
-          + "DeleteAfter" = "2026-10-20"
+          + "DeleteAfter" = "2026-10-22"
           + "Environment" = "academic-poc"
           + "Group"       = "Grupo-1"
           + "ManagedBy"   = "Terraform"
@@ -109,7 +109,7 @@ Terraform will perform the following actions:
 
   # aws_instance.ventas[0] will be created
   + resource "aws_instance" "ventas" {
-      + ami                                  = "ami-0567589d25e06853e"
+      + ami                                  = "ami-08c46876c64a927b8"
       + arn                                  = (known after apply)
       + associate_public_ip_address          = false
       + availability_zone                    = (known after apply)
@@ -152,7 +152,7 @@ Terraform will perform the following actions:
           + "Role" = "connectivity-test"
         }
       + tags_all                             = {
-          + "DeleteAfter" = "2026-10-20"
+          + "DeleteAfter" = "2026-10-22"
           + "Environment" = "academic-poc"
           + "Group"       = "Grupo-1"
           + "ManagedBy"   = "Terraform"
@@ -211,7 +211,7 @@ Terraform will perform the following actions:
 
   # aws_instance.ventas[1] will be created
   + resource "aws_instance" "ventas" {
-      + ami                                  = "ami-0567589d25e06853e"
+      + ami                                  = "ami-08c46876c64a927b8"
       + arn                                  = (known after apply)
       + associate_public_ip_address          = false
       + availability_zone                    = (known after apply)
@@ -254,7 +254,7 @@ Terraform will perform the following actions:
           + "Role" = "connectivity-test"
         }
       + tags_all                             = {
-          + "DeleteAfter" = "2026-10-20"
+          + "DeleteAfter" = "2026-10-22"
           + "Environment" = "academic-poc"
           + "Group"       = "Grupo-1"
           + "ManagedBy"   = "Terraform"
@@ -321,7 +321,7 @@ Terraform will perform the following actions:
           + "Name" = "rednova-fase1-igw"
         }
       + tags_all = {
-          + "DeleteAfter" = "2026-10-20"
+          + "DeleteAfter" = "2026-10-22"
           + "Environment" = "academic-poc"
           + "Group"       = "Grupo-1"
           + "ManagedBy"   = "Terraform"
@@ -346,7 +346,7 @@ Terraform will perform the following actions:
           + "Name" = "rednova-fase1-key"
         }
       + tags_all        = {
-          + "DeleteAfter" = "2026-10-20"
+          + "DeleteAfter" = "2026-10-22"
           + "Environment" = "academic-poc"
           + "Group"       = "Grupo-1"
           + "ManagedBy"   = "Terraform"
@@ -367,7 +367,7 @@ Terraform will perform the following actions:
           + "Name" = "rednova-fase1-private-rt"
         }
       + tags_all         = {
-          + "DeleteAfter" = "2026-10-20"
+          + "DeleteAfter" = "2026-10-22"
           + "Environment" = "academic-poc"
           + "Group"       = "Grupo-1"
           + "ManagedBy"   = "Terraform"
@@ -395,7 +395,7 @@ Terraform will perform the following actions:
           + "Name" = "rednova-fase1-public-rt"
         }
       + tags_all         = {
-          + "DeleteAfter" = "2026-10-20"
+          + "DeleteAfter" = "2026-10-22"
           + "Environment" = "academic-poc"
           + "Group"       = "Grupo-1"
           + "ManagedBy"   = "Terraform"
@@ -468,7 +468,7 @@ Terraform will perform the following actions:
       + ingress                = [
           + {
               + cidr_blocks      = [
-                  + "186.151.24.243/32",
+                  + "186.151.223.96/32",
                 ]
               + description      = "SSH desde una unica IP administrativa"
               + from_port        = 22
@@ -489,7 +489,7 @@ Terraform will perform the following actions:
           + "Name" = "rednova-fase1-bastion-sg"
         }
       + tags_all               = {
-          + "DeleteAfter" = "2026-10-20"
+          + "DeleteAfter" = "2026-10-22"
           + "Environment" = "academic-poc"
           + "Group"       = "Grupo-1"
           + "ManagedBy"   = "Terraform"
@@ -552,7 +552,7 @@ Terraform will perform the following actions:
           + "Name" = "rednova-fase1-ventas-sg"
         }
       + tags_all               = {
-          + "DeleteAfter" = "2026-10-20"
+          + "DeleteAfter" = "2026-10-22"
           + "Environment" = "academic-poc"
           + "Group"       = "Grupo-1"
           + "ManagedBy"   = "Terraform"
@@ -586,7 +586,7 @@ Terraform will perform the following actions:
           + "Visibility" = "public"
         }
       + tags_all                                       = {
-          + "DeleteAfter" = "2026-10-20"
+          + "DeleteAfter" = "2026-10-22"
           + "Environment" = "academic-poc"
           + "Group"       = "Grupo-1"
           + "ManagedBy"   = "Terraform"
@@ -622,7 +622,7 @@ Terraform will perform the following actions:
           + "Visibility" = "private"
         }
       + tags_all                                       = {
-          + "DeleteAfter" = "2026-10-20"
+          + "DeleteAfter" = "2026-10-22"
           + "Environment" = "academic-poc"
           + "Group"       = "Grupo-1"
           + "ManagedBy"   = "Terraform"
@@ -658,7 +658,7 @@ Terraform will perform the following actions:
           + "Visibility" = "private"
         }
       + tags_all                                       = {
-          + "DeleteAfter" = "2026-10-20"
+          + "DeleteAfter" = "2026-10-22"
           + "Environment" = "academic-poc"
           + "Group"       = "Grupo-1"
           + "ManagedBy"   = "Terraform"
@@ -694,7 +694,7 @@ Terraform will perform the following actions:
           + "Visibility" = "private"
         }
       + tags_all                                       = {
-          + "DeleteAfter" = "2026-10-20"
+          + "DeleteAfter" = "2026-10-22"
           + "Environment" = "academic-poc"
           + "Group"       = "Grupo-1"
           + "ManagedBy"   = "Terraform"
@@ -730,7 +730,7 @@ Terraform will perform the following actions:
           + "Visibility" = "public"
         }
       + tags_all                                       = {
-          + "DeleteAfter" = "2026-10-20"
+          + "DeleteAfter" = "2026-10-22"
           + "Environment" = "academic-poc"
           + "Group"       = "Grupo-1"
           + "ManagedBy"   = "Terraform"
@@ -765,7 +765,7 @@ Terraform will perform the following actions:
           + "Name" = "rednova-fase1-vpc"
         }
       + tags_all                             = {
-          + "DeleteAfter" = "2026-10-20"
+          + "DeleteAfter" = "2026-10-22"
           + "Environment" = "academic-poc"
           + "Group"       = "Grupo-1"
           + "ManagedBy"   = "Terraform"
