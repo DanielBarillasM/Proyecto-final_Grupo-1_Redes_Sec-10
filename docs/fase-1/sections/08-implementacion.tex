@@ -63,7 +63,7 @@ Terraform crea dos grupos. El primero permite SSH desde la IP administrativa y s
 
 Con \code{enable\_compute=true}, se registra la llave pública, se crea un bastión en Administración y dos instancias en Ventas. Las tres usan volúmenes raíz GP3 de 8 GiB cifrados. El bastión recibe IP pública; las dos instancias de Ventas sólo reciben IP privadas. Las salidas de Terraform muestran la IP del bastión y la lista de IP privadas sin revelar secretos.
 
-\section{Comandos de ejecución previstos}
+\section{Comandos de ejecución y cierre}
 
 \begin{Verbatim}[fontsize=\small,frame=single]
 terraform init
@@ -72,12 +72,41 @@ terraform validate
 terraform plan -out=tfplan
 terraform apply tfplan
 
-# Después de capturar la evidencia:
+# Cierre operativo recomendado después de las pruebas:
 terraform destroy
 \end{Verbatim}
 
-\begin{warningbox}[Nota sobre la ejecución final y el control de costos]
-Las capturas incorporadas en esta versión demuestran que existe una identidad AWS configurada y que Terraform puede generar el plan de creación esperado. El equipo detuvo deliberadamente el procedimiento antes de \code{terraform apply} para evitar cargos por instancias EC2, almacenamiento y dirección IPv4 pública fuera de la ventana definitiva de pruebas.
+\section{Resultado observado en AWS}
 
-La implementación real se realizará al final del proyecto, dentro de una única ventana corta y supervisada. En esa misma sesión se aplicará el plan, se capturarán la VPC, las subredes, las tablas de rutas, los grupos de seguridad y las instancias; se ejecutará el ping entre las dos instancias privadas de Ventas; y se destruirán todos los recursos inmediatamente después de conservar la evidencia. Por tanto, estas actividades representan compromisos de ejecución final y no resultados ya obtenidos.
-\end{warningbox}
+El 22 de octubre de 2026 se ejecutó \code{terraform apply} con el cómputo activado. Terraform informó \emph{20 added, 0 changed, 0 destroyed}. La VPC creada fue \code{vpc-0072ddea68455b412}; las salidas registraron cinco subredes y dos interfaces privadas de Ventas con las direcciones \code{10.10.0.71} y \code{10.10.0.79}.
+
+Los identificadores completos se conservan en \path{evidence/deployment/terraform-outputs.json}.
+
+\VerbatimInput[fontsize=\footnotesize,frame=single,firstline=41,lastline=45]{../../evidence/deployment/terraform-apply.txt}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.96\textwidth]{01-aws-vpc-creada-disponible.png}
+
+\vspace{0.4em}
+\begin{minipage}[t]{0.49\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{02-aws-cinco-subredes-segmentadas.png}
+
+  \small\textbf{a)} Cinco subredes en \code{us-east-1a}.
+\end{minipage}\hfill
+\begin{minipage}[t]{0.49\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{03-aws-tablas-rutas-e-internet-gateway.png}
+
+  \small\textbf{b)} Tablas pública/privada e Internet Gateway.
+\end{minipage}
+\caption{Evidencia genuina de la VPC disponible y de su segmentación y enrutamiento en AWS.}
+\label{fig:aws-deployment-real}
+\end{figure}
+
+\begin{infobox}[Cierre del alcance de la Fase 1]
+La VPC, las cinco subredes, el enrutamiento, las instancias y las pruebas de conectividad solicitadas quedaron documentadas con evidencia genuina. Por ello, el alcance académico y técnico de esta fase se considera completo.
+
+El comando \code{terraform destroy} se conserva como procedimiento operativo de control de costos: después de cada ventana temporal de pruebas, el equipo debe revisar la consola y retirar cualquier recurso que ya no sea necesario.
+\end{infobox}

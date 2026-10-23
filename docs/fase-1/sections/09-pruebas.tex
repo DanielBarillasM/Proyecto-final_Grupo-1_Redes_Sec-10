@@ -2,7 +2,7 @@
 
 \section{Principio de verificación}
 
-Cada prueba define precondición, acción, resultado esperado y evidencia. Esta estructura impide confundir una intención de diseño con un resultado observado. Las pruebas locales se ejecutaron sobre los archivos versionados; las pruebas cloud están preparadas pero dependen de una cuenta AWS autorizada.
+Cada prueba define precondición, acción, resultado esperado y evidencia. Esta estructura impide confundir una intención de diseño con un resultado observado. Las pruebas locales se ejecutaron sobre los archivos versionados. La evidencia del 22 de octubre de 2026 demuestra también el despliegue en AWS y las dos pruebas de conectividad. Los cinco controles definidos para el alcance de la Fase 1 están verificados.
 
 \section{Prueba P-01: capacidad y no solapamiento}
 
@@ -44,11 +44,11 @@ Cada prueba define precondición, acción, resultado esperado y evidencia. Esta 
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.96\textwidth]{terraform-plan-recursos-previstos.jpeg}
-\caption{Evidencia genuina del plan Terraform contra AWS. Todas las acciones visibles son de creación; esta salida no implica que se haya ejecutado \code{terraform apply}.}
+\caption{Evidencia genuina del plan Terraform contra AWS. Esta captura documenta la revisión previa al \code{apply}; la ejecución real se acredita por separado.}
 \label{fig:terraform-cloud-plan}
 \end{figure}
 
-Por control de costos, el equipo detuvo el procedimiento antes del \code{apply}. Por tanto, esta prueba verifica autenticación y planificación contra el proveedor, no la existencia de infraestructura desplegada.
+Esta prueba verifica autenticación y planificación contra el proveedor. La existencia posterior de la infraestructura no se infiere del plan: se demuestra mediante la salida real de \code{terraform apply}, los identificadores observados y las capturas de la Figura~\ref{fig:aws-deployment-real}.
 
 \section{Prueba P-04: conectividad privada}
 
@@ -64,21 +64,22 @@ El script \code{scripts/test-connectivity.ps1} utiliza SSH con salto por el bast
 
 \textbf{Criterio:} cuatro paquetes transmitidos, cuatro recibidos y 0\% de pérdida. Las dos direcciones deben pertenecer a \code{10.10.0.64/26}; ninguna debe ser pública.
 
-\textbf{Resultado actual:} \statuspending. No se crearon las instancias porque el equipo decidió reservar la ejecución para la ventana evaluada y evitar cargos anticipados. Se prohíbe sustituir este resultado con texto inventado.
+\textbf{Resultado:} \statusok. Desde \code{10.10.0.71} se enviaron cuatro paquetes a \code{10.10.0.79}; se recibieron los cuatro y se observó 0\% de pérdida. Ambas direcciones pertenecen a la subred de Ventas \code{10.10.0.64/26}. El siguiente extracto proviene del registro genuino conservado en el repositorio:
+
+\VerbatimInput[fontsize=\footnotesize,frame=single,firstline=7,lastline=15]{../../evidence/connectivity/ping-private.txt}
 
 \section{Prueba P-05: aislamiento}
 
 Después del ping exitoso, se intenta ICMP desde el bastión hacia una instancia de Ventas. La regla de Ventas acepta ICMP sólo desde su propio grupo, por lo que el tráfico del bastión debe fallar. Esta prueba negativa demuestra que permitir administración SSH no equivale a permitir todo protocolo.
 
-\textbf{Resultado actual:} \statuspending. La prueba necesita los recursos temporales creados mediante \code{apply}; el plan por sí solo no permite observar tráfico.
+\textbf{Resultado:} \statusok. El bastión intentó alcanzar \code{10.10.0.71}; se transmitieron cuatro paquetes, ninguno fue recibido y la pérdida fue 100\%. El resultado es coherente con la regla que acepta ICMP sólo entre miembros del grupo de Ventas.
 
-\section{Prueba P-06: desmantelamiento}
-
-\textbf{Acción:} ejecutar \code{terraform destroy}, confirmar el plan y revisar que el estado no contenga recursos. Además, verificar en AWS la ausencia de instancias, volúmenes, IP públicas y gateways del proyecto.
-
-\textbf{Criterio:} Terraform informa destrucción completa y no quedan componentes con la etiqueta \path{Project=CC3067-Fase-1}.
-
-\textbf{Resultado actual:} \statuspending. No hubo infraestructura que destruir porque el procedimiento se detuvo antes del \code{apply}. En la ejecución final, esta prueba debe realizarse en la misma sesión para limitar costos.
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.94\textwidth]{04-prueba-icmp-bastion-bloqueada.png}
+\caption{Prueba genuina de aislamiento: ICMP desde el bastión hacia Ventas fue bloqueado.}
+\label{fig:bastion-negative-test}
+\end{figure}
 
 \section{Matriz de resultados}
 
@@ -92,13 +93,12 @@ Después del ping exitoso, se intenta ICMP desde el bastión hacia una instancia
 P-01 & Capacidad, contención, canonicidad y no solapamiento. & \statusok \\
 P-02 & Sintaxis, formato y relaciones del código Terraform. & \statusok \\
 P-03 & Resolución de recursos mediante una identidad AWS. & \statusok \\
-P-04 & Conectividad ICMP privada dentro de Ventas. & \statuspending \\
-P-05 & Rechazo ICMP desde el bastión. & \statuspending \\
-P-06 & Eliminación completa de recursos temporales. & \statuspending \\
+P-04 & Conectividad ICMP privada dentro de Ventas. & \statusok \\
+P-05 & Rechazo ICMP desde el bastión. & \statusok \\
 \bottomrule
 \end{tabularx}
 \end{table}
 
 \section{Interpretación}
 
-Los resultados locales confirman que el diseño es internamente consistente y que Terraform puede interpretarlo. La evidencia externa confirma además una identidad activa, la región y la generación del plan contra AWS. Todavía no confirma infraestructura creada ni conectividad efectiva. Esa distinción es esencial: un \code{plan} no sustituye un \code{apply}, y un \code{apply} no sustituye una prueba de tráfico.
+Los resultados locales confirman que el diseño es internamente consistente y que Terraform puede interpretarlo. La evidencia externa confirma una identidad activa, la región, el plan, la creación de 20 recursos, la conectividad privada y el aislamiento del bastión. Esa cadena conserva la distinción entre intención y observación: el \code{plan} no sustituye el \code{apply}, y el \code{apply} no sustituye las pruebas de tráfico. Las cinco pruebas definidas para el alcance de la Fase 1 están verificadas.
