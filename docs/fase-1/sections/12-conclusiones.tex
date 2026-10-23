@@ -8,18 +8,15 @@ Ventas ofrece el ejemplo más importante de juicio de ingeniería. Un \code{/27}
 
 La separación lógica se completa con enrutamiento y grupos de seguridad. Ventas, TI y Data Center carecen de ruta directa a Internet. El bastión temporal concentra la entrada administrativa y las instancias de prueba permanecen privadas. La prueba propuesta de ICMP usa la ruta local de la VPC y una regla auto-referenciada, por lo que valida conectividad interna sin exponer los hosts.
 
-Terraform convierte la propuesta en un artefacto repetible, revisable y desmontable. La configuración pasó las pruebas locales de formato y validez, y el direccionamiento fue comprobado mediante un script independiente. También se verificaron una identidad AWS activa, la región \code{us-east-1} y un plan de creación coherente con la arquitectura. El equipo detuvo el flujo antes del \code{apply} para evitar cargos fuera de la ventana de implementación; por integridad académica, el informe mantiene como pendientes la creación real, el ping, el aislamiento y el desmantelamiento.
+Terraform convierte la propuesta en un artefacto repetible, revisable y desmontable. La configuración pasó las pruebas locales de formato y validez, y el direccionamiento fue comprobado mediante un script independiente. En AWS se verificaron la identidad, la región \code{us-east-1}, un plan coherente y un \code{apply} de 20 recursos. La comunicación \code{10.10.0.71} $\rightarrow$ \code{10.10.0.79} alcanzó 0\% de pérdida y el intento desde el bastión fue bloqueado con 100\% de pérdida. Con ello, las cinco pruebas del alcance técnico quedan verificadas y la Fase 1 se considera completa.
 
 \section{Recomendaciones inmediatas}
 
-\begin{enumerate}
-  \item Reautenticar la identidad AWS autorizada el día de la implementación sin colocar secretos en el repositorio.
-  \item Confirmar región, créditos, presupuesto, alertas de facturación y permisos antes de crear cómputo.
-  \item Regenerar el plan y comprobar que coincide con la evidencia y el código versionado.
-  \item Generar una llave temporal y limitar \code{admin\_cidr} a la IPv4 real del operador.
-  \item Activar cómputo, capturar las IP privadas y ejecutar las pruebas P-04 y P-05.
-  \item Destruir inmediatamente y completar la prueba P-06.
-  \item Incorporar las capturas reales del \code{apply}, recursos, ping y destrucción, y recompilar el PDF antes de la entrega académica.
+\begin{enumerate}\small
+  \item Revisar \code{us-east-1} al finalizar cada ventana de laboratorio y buscar recursos etiquetados con \code{CC3067-Fase-1}.
+  \item Retirar cualquier recurso temporal mediante el estado original de Terraform o un procedimiento manual controlado.
+  \item Conservar los registros de cierre operativo para futuras auditorías de costos.
+  \item Eliminar o resguardar la llave temporal sin incorporarla al repositorio.
 \end{enumerate}
 
 \section{Evolución hacia producción}
@@ -28,4 +25,4 @@ Una fase posterior debería distribuir subredes en al menos dos zonas, incorpora
 
 \section{Cierre}
 
-La propuesta satisface el objetivo de diseño y deja una implementación técnicamente lista y planificada contra AWS. Su principal fortaleza es la trazabilidad: cada requisito se conecta con un cálculo, un recurso, una prueba y una evidencia esperada. Las condiciones restantes son ejecutar el \code{apply} en una ventana controlada de costos, probar el tráfico y destruir los recursos inmediatamente después.
+La propuesta satisface el objetivo de diseño y cuenta con evidencia de implementación y tráfico en AWS. Su principal fortaleza es la trazabilidad: cada requisito se conecta con un cálculo, un recurso, una prueba y una evidencia observada. Con los cinco controles técnicos verificados, la Fase 1 queda completa como base para la siguiente etapa del proyecto. El control de costos continúa como una responsabilidad operativa después de cada ejecución temporal.
