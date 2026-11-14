@@ -1,0 +1,7 @@
+Comando: terraform validate -no-color
+Terraform: 1.17.2 windows_amd64
+Proveedor: hashicorp/aws 6.73.0
+Rama: Andrés (fase-2-pablo integrada)
+Fecha local: 2026-11-14
+
+Success! The configuration is valid.

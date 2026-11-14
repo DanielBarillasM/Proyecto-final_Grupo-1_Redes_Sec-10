@@ -1,5 +1,6 @@
 # LaTeX
 docs/fase-1/build/
+docs/fase-final/build/
 *.aux
 *.bbl
 *.bcf
@@ -18,9 +19,10 @@ infra/terraform/*.tfstate
 infra/terraform/*.tfstate.*
 infra/terraform/*.tfvars
 !infra/terraform/terraform.tfvars.example
-infra/terraform/.terraform.lock.hcl
 infra/terraform/tfplan
 infra/terraform/*.tfplan
+evidence/fase-2/**/*.tfplan
+handoff-retorno/*.tfplan
 crash.log
 override.tf
 override.tf.json

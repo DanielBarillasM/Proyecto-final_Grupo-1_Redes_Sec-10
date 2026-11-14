@@ -1,0 +1,27 @@
+\chapter{Integración Terraform de la Fase 2}
+
+La infraestructura nueva se separa en archivos con responsabilidades claras:
+
+\begin{itemize}
+  \item \code{dmz.tf}: tabla y asociación de ruta de la DMZ.
+  \item \code{nacls.tf}: NACL y asociaciones de Visitas, TI y DMZ.
+  \item \code{phase2-security.tf}: Security Groups base de servicios y pruebas.
+  \item \code{locals.tf}: DMZ, reserva, direcciones y etiquetas.
+  \item \code{variables.tf}: dominios, IP, HTTPS y control de cómputo.
+  \item \code{outputs.tf}: identificadores y datos de integración.
+\end{itemize}
+
+La variable \code{enable\_phase2\_compute} utiliza \code{false} como valor predeterminado.
+Agregarla no habilita recursos por sí mismo: los archivos de cómputo de los demás responsables
+deben condicionar sus instancias con esta variable.
+
+La validación local se ejecutó con Terraform 1.17.2 y el proveedor oficial AWS 6.73.0. El
+formato recursivo y \code{terraform validate} finalizaron correctamente. Además,
+\code{scripts/validate-pablo-phase2.py} verificó contención, no solapamiento, capacidad,
+direcciones asignables y presencia de los controles estructurales esperados.
+
+\begin{warningbox}[Plan y despliegue pendientes]
+La validación sintáctica no consulta la cuenta AWS. El plan requiere una identidad autorizada y
+la resolución previa del estado de Fase 1. No se ejecutó \code{terraform apply} durante el
+trabajo local.
+\end{warningbox}

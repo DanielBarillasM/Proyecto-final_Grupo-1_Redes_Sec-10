@@ -30,11 +30,15 @@ FORBIDDEN = {
     "DMZ": ipaddress.ip_network("10.10.0.192/27"),
 }
 
-results: list[tuple[bool, str]] = []
+results: list[tuple[bool | None, str]] = []
 
 
 def check(ok: bool, message: str) -> None:
     results.append((ok, message))
+
+
+def skip(message: str) -> None:
+    results.append((None, message))
 
 
 def networks(text: str) -> set[ipaddress.IPv4Network]:
@@ -113,24 +117,29 @@ def main() -> int:
             ok, out = run(["named-checkconf", "-t", str(root), "-z", "/etc/named.conf"])
             check(ok, "named-checkconf -z: " + (out.replace("\n", " | ") or "OK"))
         else:
-            check(True, "named-checkconf no instalado: se omite (se ejecuta en user_data)")
+            skip("named-checkconf no instalado: se omite (se ejecuta en user_data)")
         if shutil.which("named-checkzone"):
             for name, z in (("rednova.internal", "db.rednova.internal"), ("0.10.10.in-addr.arpa", "db.10.10.0")):
                 ok, out = run(["named-checkzone", name, str(DNS / z)])
                 check(ok, f"named-checkzone {name}: " + out.splitlines()[-1])
+        else:
+            skip("named-checkzone no instalado: se omite (se ejecuta en user_data)")
         if shutil.which("nginx"):
             conf = root / "nginx.conf"
             conf.write_text(nginx.replace("user nginx;", "# user nginx;").replace("/run/nginx.pid", str(root / "nginx.pid")))
             ok, out = run(["nginx", "-t", "-c", str(conf)])
             check(ok, "nginx -t: " + ("sintaxis correcta" if ok else out))
         else:
-            check(True, "nginx no instalado: se omite (se ejecuta en user_data)")
+            skip("nginx no instalado: se omite (se ejecuta en user_data)")
 
     stamp = dt.datetime.now().astimezone().isoformat(timespec="seconds")
     lines = [f"Validación local DNS interno e intranet - {stamp}", ""]
-    lines += [f"[{'OK' if ok else 'FALLA'}] {msg}" for ok, msg in results]
-    failed = sum(1 for ok, _ in results if not ok)
-    lines += ["", f"Resultado: {len(results) - failed} correctas, {failed} fallidas"]
+    status = {True: "OK", False: "FALLA", None: "OMITIDA"}
+    lines += [f"[{status[ok]}] {msg}" for ok, msg in results]
+    passed = sum(1 for ok, _ in results if ok is True)
+    skipped = sum(1 for ok, _ in results if ok is None)
+    failed = sum(1 for ok, _ in results if ok is False)
+    lines += ["", f"Resultado: {passed} correctas, {skipped} omitidas, {failed} fallidas"]
     report = "\n".join(lines) + "\n"
     EVIDENCE.parent.mkdir(parents=True, exist_ok=True)
     EVIDENCE.write_text(report, encoding="utf-8")

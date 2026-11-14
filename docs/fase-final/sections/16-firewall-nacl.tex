@@ -1,0 +1,39 @@
+\chapter{Firewall, Security Groups y NACL}
+
+La solución utiliza Security Groups como firewall stateful asociado a las instancias y Network
+ACL como control stateless asociado a las subredes. Esta combinación implementa defensa en
+profundidad sin incorporar AWS Network Firewall, cuyo costo y complejidad no son necesarios
+para el escenario académico. La aceptación de esta interpretación debe confirmarse con el
+docente antes del despliegue.
+
+\section{Política de Visitas}
+
+El Security Group de Visitas permite DNS hacia el resolvedor de la VPC y HTTP/HTTPS hacia
+Internet. La NACL evalúa primero una denegación dirigida a \code{10.10.0.0/24}; por ello los
+permisos generales hacia \code{0.0.0.0/0} no abren la intranet ni otras redes internas. El
+bastión conserva SSH administrativo y TI puede iniciar pruebas controladas.
+
+\section{Política de TI}
+
+TI puede iniciar tráfico hacia la VPC. Su Security Group solo acepta SSH desde el bastión; no
+existe una regla de entrada para Ventas, Visitas, Data Center o DMZ. La NACL permite puertos
+efímeros de retorno y deniega el resto del tráfico iniciado hacia el segmento.
+
+\section{Política de DMZ}
+
+La DMZ acepta HTTP público y HTTPS cuando la opción correspondiente está activa. SSH se
+limita al Security Group del bastión. Las reglas de salida permiten DNS, actualizaciones y
+respuestas a clientes, pero una denegación de menor número bloquea conexiones iniciadas hacia
+la VPC antes de alcanzar los permisos generales de Internet.
+
+\begin{warningbox}[Naturaleza stateless]
+Las NACL no conservan estado. Los retornos TCP y UDP requieren reglas explícitas para puertos
+efímeros \code{1024-65535}. Los Security Groups continúan siendo el control principal de
+identidad y servicio en cada instancia.
+\end{warningbox}
+
+\section{Hardening incorporado en la base}
+
+La base mantiene IMDSv2 obligatorio, EBS cifrado, SSH restringido al bastión, cómputo de Fase
+2 deshabilitado por defecto y ausencia de claves o estados en Git. El hardening del sistema
+operativo y de Nginx/BIND9 se integrará con los archivos de los responsables de servicio.

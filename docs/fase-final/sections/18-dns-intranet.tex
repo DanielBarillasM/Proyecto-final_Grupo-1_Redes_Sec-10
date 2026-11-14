@@ -138,10 +138,10 @@ Terraform y el plan de direccionamiento, y ejecuta los validadores nativos dispo
 salida se guarda en \code{evidence/fase-2/dns/andres-validation.txt}.
 
 \begin{infobox}[Resultado local]
-32 comprobaciones correctas y 0 fallidas: zonas cargadas con serial \code{2026111401},
-\code{named-checkconf -z} sin errores y sintaxis de Nginx correcta. Se verificó además, en un
-entorno local, que BIND9 responde \code{REFUSED} a un origen fuera de la ACL y que Nginx
-responde 403 a un origen no autorizado.
+28 comprobaciones estructurales correctas, 3 omitidas y 0 fallidas. El entorno Windows de
+integración no dispone de \code{named-checkconf}, \code{named-checkzone} ni \code{nginx}; por ello esas pruebas
+nativas se ejecutan en el \code{user\_data} antes de habilitar cada servicio. Las respuestas DNS,
+HTTP y los bloqueos reales permanecen pendientes de la ventana AWS autorizada.
 \end{infobox}
 
 \section{Pruebas en AWS}

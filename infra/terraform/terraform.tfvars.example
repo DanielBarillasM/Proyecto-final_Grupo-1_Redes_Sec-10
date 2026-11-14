@@ -1,5 +1,22 @@
 aws_region       = "us-east-1"
-enable_compute   = true
+enable_compute   = false
 admin_cidr       = "203.0.113.10/32" # Reemplazar por la IP pública del equipo
 public_key_path  = "../../tmp/rednova-fase1.pub"
 instance_type    = "t3.micro"
+
+# Fase 2: el cómputo permanece apagado hasta una ventana AWS autorizada.
+phase2_project_name    = "rednova-fase2"
+enable_phase2_compute = false
+phase2_instance_type  = "t3.micro"
+phase2_delete_after   = "2026-11-16"
+internal_domain       = "rednova.internal"
+public_domain         = "ventas.example.com" # Reemplazar por el dominio controlado por el equipo.
+enable_https          = false
+
+phase2_private_ips = {
+  visitas_client = "10.10.0.4"
+  ti_client      = "10.10.0.132"
+  dns            = "10.10.0.164"
+  intranet       = "10.10.0.165"
+  public_web     = "10.10.0.196"
+}

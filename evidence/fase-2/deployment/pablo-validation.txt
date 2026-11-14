@@ -1,0 +1,20 @@
+VALIDACIÓN LOCAL - BLOQUE DE PABLO - FASE 2
+VPC: 10.10.0.0/24
+
+visitas         10.10.0.0/26       asignables=59 rango=10.10.0.4-10.10.0.62 OK
+ventas          10.10.0.64/26      asignables=59 rango=10.10.0.68-10.10.0.126 OK
+ti              10.10.0.128/27     asignables=27 rango=10.10.0.132-10.10.0.158 OK
+datacenter      10.10.0.160/28     asignables=11 rango=10.10.0.164-10.10.0.174 OK
+administracion  10.10.0.176/28     asignables=11 rango=10.10.0.180-10.10.0.190 OK
+dmz             10.10.0.192/27     asignables=27 rango=10.10.0.196-10.10.0.222 OK
+reserva         10.10.0.224/27     sin asignar OK
+
+IP visitas_client   10.10.0.4 pertenece a visitas OK
+IP ti_client        10.10.0.132 pertenece a ti OK
+IP dns              10.10.0.164 pertenece a datacenter OK
+IP intranet         10.10.0.165 pertenece a datacenter OK
+IP public_web       10.10.0.196 pertenece a dmz OK
+
+Terraform estructural: DMZ, ruta, NACL, asociaciones, variables y SG OK
+SSH público 0.0.0.0/0: no detectado OK
+RESULTADO: bloque local de Pablo válido.

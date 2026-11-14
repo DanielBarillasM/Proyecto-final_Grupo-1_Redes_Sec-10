@@ -1,4 +1,4 @@
-Validación local DNS interno e intranet - 2026-11-14T01:02:48-06:00
+Validación local DNS interno e intranet - 2026-11-14T14:58:50-06:00
 
 [OK] DNS 10.10.0.164 pertenece a Data Center 10.10.0.160/28
 [OK] Intranet 10.10.0.165 pertenece a Data Center 10.10.0.160/28
@@ -28,9 +28,8 @@ Validación local DNS interno e intranet - 2026-11-14T01:02:48-06:00
 [OK] EC2 de Data Center sin IP pública
 [OK] IMDSv2 obligatorio en DNS e intranet
 [OK] EBS cifrado en DNS e intranet
-[OK] named-checkconf -z: zone rednova.internal/IN: loaded serial 2026111401 | zone 0.10.10.in-addr.arpa/IN: loaded serial 2026111401
-[OK] named-checkzone rednova.internal: OK
-[OK] named-checkzone 0.10.10.in-addr.arpa: OK
-[OK] nginx -t: sintaxis correcta
+[OMITIDA] named-checkconf no instalado: se omite (se ejecuta en user_data)
+[OMITIDA] named-checkzone no instalado: se omite (se ejecuta en user_data)
+[OMITIDA] nginx no instalado: se omite (se ejecuta en user_data)
 
-Resultado: 32 correctas, 0 fallidas
+Resultado: 28 correctas, 3 omitidas, 0 fallidas

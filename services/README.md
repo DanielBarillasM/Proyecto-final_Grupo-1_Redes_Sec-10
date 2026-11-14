@@ -1,6 +1,6 @@
 # Servicios de Data Center: DNS interno e intranet de RR. HH.
 
-**Responsable:** Andrés Rafael Chivalán · **Rama:** `fase-2-andres` (sobre `fase-2-pablo`)
+**Responsable:** Andrés Rafael Chivalán · **Rama integrada:** `Andrés` (incluye `fase-2-pablo`)
 
 | Servicio | Host | IP | Puerto | Permitido desde |
 |---|---|---|---|---|
