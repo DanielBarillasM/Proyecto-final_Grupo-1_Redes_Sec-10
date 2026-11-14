@@ -44,3 +44,90 @@ variable "instance_type" {
   type        = string
   default     = "t3.micro"
 }
+
+variable "phase2_project_name" {
+  description = "Prefijo para los recursos nuevos de la Fase 2."
+  type        = string
+  default     = "rednova-fase2"
+}
+
+variable "enable_phase2_compute" {
+  description = "Habilita las instancias de servicios y prueba de Fase 2. Debe permanecer en false fuera de una ventana autorizada."
+  type        = bool
+  default     = false
+}
+
+variable "phase2_instance_type" {
+  description = "Tipo de instancia pequeño para los servicios de Fase 2."
+  type        = string
+  default     = "t3.micro"
+}
+
+variable "phase2_delete_after" {
+  description = "Fecha ISO prevista para retirar los recursos temporales de Fase 2."
+  type        = string
+  default     = "2026-11-16"
+
+  validation {
+    condition     = can(regex("^[0-9]{4}-[0-9]{2}-[0-9]{2}$", var.phase2_delete_after))
+    error_message = "phase2_delete_after debe usar el formato YYYY-MM-DD."
+  }
+}
+
+variable "internal_domain" {
+  description = "Dominio interno administrado por BIND9. Se evita .local para no interferir con mDNS."
+  type        = string
+  default     = "rednova.internal"
+
+  validation {
+    condition = (
+      can(regex("^[A-Za-z0-9][A-Za-z0-9.-]*[A-Za-z0-9]$", var.internal_domain)) &&
+      !endswith(lower(var.internal_domain), ".local")
+    )
+    error_message = "internal_domain debe ser un nombre DNS válido y no debe terminar en .local."
+  }
+}
+
+variable "public_domain" {
+  description = "Dominio o subdominio público de la web de Ventas. Puede quedar vacío durante la validación local."
+  type        = string
+  default     = ""
+
+  validation {
+    condition = (
+      var.public_domain == "" ||
+      can(regex("^[A-Za-z0-9][A-Za-z0-9.-]*\\.[A-Za-z]{2,}$", var.public_domain))
+    )
+    error_message = "public_domain debe estar vacío o contener un dominio público válido."
+  }
+}
+
+variable "enable_https" {
+  description = "Documenta si la web pública habilitará HTTPS. Solo debe activarse cuando public_domain ya resuelva."
+  type        = bool
+  default     = false
+}
+
+variable "phase2_private_ips" {
+  description = "Direcciones privadas propuestas para los servicios y clientes de prueba de Fase 2."
+  type = object({
+    visitas_client = string
+    ti_client      = string
+    dns            = string
+    intranet       = string
+    public_web     = string
+  })
+
+  default = {
+    visitas_client = "10.10.0.4"
+    ti_client      = "10.10.0.132"
+    dns            = "10.10.0.164"
+    intranet       = "10.10.0.165"
+    public_web     = "10.10.0.196"
+  }
+
+  validation {
+    condition     = alltrue([for ip in values(var.phase2_private_ips) : can(cidrhost("${ip}/32", 0))])
+    error_message = "Todas las phase2_private_ips deben ser direcciones IPv4 válidas."
+  }
+}

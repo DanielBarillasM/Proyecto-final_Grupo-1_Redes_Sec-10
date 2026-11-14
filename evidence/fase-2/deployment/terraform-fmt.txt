@@ -1,0 +1,4 @@
+Comando: terraform fmt -check -recursive
+Terraform: 1.17.2 windows_amd64
+Fecha local: 2026-11-13
+Resultado: EXIT 0 - todos los archivos Terraform tienen formato válido.

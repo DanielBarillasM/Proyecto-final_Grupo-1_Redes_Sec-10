@@ -24,11 +24,14 @@ resource "aws_subnet" "segments" {
   availability_zone       = local.availability_zone
   map_public_ip_on_launch = false
 
-  tags = {
-    Name       = "${var.project_name}-${each.key}"
-    Segment    = each.key
-    Visibility = each.value.public ? "public" : "private"
-  }
+  tags = merge(
+    {
+      Name       = each.value.phase == 2 ? "${var.phase2_project_name}-${each.key}" : "${var.project_name}-${each.key}"
+      Segment    = each.key
+      Visibility = each.value.public ? "public" : "private"
+    },
+    each.value.phase == 2 ? local.phase2_tags : {}
+  )
 }
 
 resource "aws_route_table" "public" {
@@ -53,7 +56,7 @@ resource "aws_route_table" "private" {
 }
 
 resource "aws_route_table_association" "public" {
-  for_each = { for name, cfg in local.subnets : name => cfg if cfg.public }
+  for_each = { for name, cfg in local.subnets : name => cfg if cfg.public && name != "dmz" }
 
   subnet_id      = aws_subnet.segments[each.key].id
   route_table_id = aws_route_table.public.id

@@ -22,3 +22,50 @@ output "ventas_private_ips" {
   description = "IP privadas usadas en la prueba de ping."
   value       = aws_instance.ventas[*].private_ip
 }
+
+output "dmz_subnet" {
+  description = "Identificador y CIDR de la DMZ de Fase 2."
+  value = {
+    id   = aws_subnet.segments["dmz"].id
+    cidr = aws_subnet.segments["dmz"].cidr_block
+  }
+}
+
+output "dmz_route_table_id" {
+  description = "Tabla de rutas pública dedicada a la DMZ."
+  value       = aws_route_table.dmz_public.id
+}
+
+output "phase2_reserved_cidr" {
+  description = "Bloque conservado para crecimiento después de separar la DMZ."
+  value       = local.phase2_reserved_cidr
+}
+
+output "phase2_service_ips" {
+  description = "Direcciones privadas propuestas para servicios y clientes de Fase 2."
+  value       = local.phase2_service_ips
+}
+
+output "phase2_domains" {
+  description = "Dominios configurados para los servicios internos y públicos."
+  value = {
+    internal = var.internal_domain
+    rrhh     = "rrhh.${var.internal_domain}"
+    public   = var.public_domain
+    https    = var.enable_https
+  }
+}
+
+output "phase2_network_acl_ids" {
+  description = "NACL administradas para Visitas, TI y DMZ."
+  value = {
+    visitas = aws_network_acl.visitas.id
+    ti      = aws_network_acl.ti.id
+    dmz     = aws_network_acl.dmz.id
+  }
+}
+
+output "phase2_compute_enabled" {
+  description = "Indica si el cómputo de Fase 2 fue habilitado explícitamente."
+  value       = var.enable_phase2_compute
+}
