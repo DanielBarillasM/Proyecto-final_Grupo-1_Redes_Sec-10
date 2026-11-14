@@ -8,5 +8,12 @@
 *.txt text eol=lf
 *.example text eol=lf
 
+# Archivos que se ejecutan o leen en Linux: CRLF rompería user_data, BIND9 y Nginx.
+*.tftpl text eol=lf
+*.sh text eol=lf
+*.conf text eol=lf
+*.html text eol=lf
+services/dns/db.* text eol=lf
+
 *.pdf binary
 *.png binary

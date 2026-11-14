@@ -1,0 +1,36 @@
+Validación local DNS interno e intranet - 2026-11-14T01:02:48-06:00
+
+[OK] DNS 10.10.0.164 pertenece a Data Center 10.10.0.160/28
+[OK] Intranet 10.10.0.165 pertenece a Data Center 10.10.0.160/28
+[OK] variables.tf asigna la IP del DNS
+[OK] variables.tf asigna la IP de la intranet
+[OK] variables.tf usa el dominio rednova.internal
+[OK] ACL de BIND9 = Ventas, TI, Data Center y Administración
+[OK] ACL de BIND9 excluye Visitas 10.10.0.0/26
+[OK] ACL de BIND9 excluye DMZ 10.10.0.192/27
+[OK] BIND9 escucha solo en loopback y la IP del DNS
+[OK] Transferencias de zona deshabilitadas
+[OK] Reenvío al resolvedor de la VPC 10.10.0.2
+[OK] rrhh.rednova.internal A 10.10.0.165
+[OK] ns1.rednova.internal A 10.10.0.164
+[OK] PTR 10.10.0.165 -> rrhh
+[OK] allow de Nginx = Ventas, TI, Data Center y Administración
+[OK] Nginx termina con deny all
+[OK] Nginx oculta su versión
+[OK] server_name incluye el FQDN y la IP
+[OK] El HTML no depende de recursos externos
+[OK] SG dns: ingreso solo desde ventas, ti, datacenter y administracion
+[OK] SG dns: sin reglas hacia/desde 0.0.0.0/0
+[OK] SG dns: salida HTTPS al prefijo S3 del endpoint
+[OK] SG intranet: ingreso solo desde ventas, ti, datacenter y administracion
+[OK] SG intranet: sin reglas hacia/desde 0.0.0.0/0
+[OK] SG intranet: salida HTTPS al prefijo S3 del endpoint
+[OK] EC2 de Data Center sin IP pública
+[OK] IMDSv2 obligatorio en DNS e intranet
+[OK] EBS cifrado en DNS e intranet
+[OK] named-checkconf -z: zone rednova.internal/IN: loaded serial 2026111401 | zone 0.10.10.in-addr.arpa/IN: loaded serial 2026111401
+[OK] named-checkzone rednova.internal: OK
+[OK] named-checkzone 0.10.10.in-addr.arpa: OK
+[OK] nginx -t: sintaxis correcta
+
+Resultado: 32 correctas, 0 fallidas

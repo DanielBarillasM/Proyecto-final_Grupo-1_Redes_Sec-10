@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Intranet RR. HH. | RedNova GT</title>
+  <style>
+    :root {
+      --ink: #1c2430;
+      --muted: #5b6676;
+      --line: #dfe4ea;
+      --paper: #f6f7f9;
+      --card: #ffffff;
+      --brand: #0f5c63;
+      --brand-soft: #e3f0f0;
+      --warn: #8a5a00;
+      --warn-soft: #fff4dc;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif;
+      color: var(--ink);
+      background: var(--paper);
+      line-height: 1.5;
+    }
+    header {
+      background: var(--brand);
+      color: #fff;
+      padding: 1.5rem 2rem;
+    }
+    header .wrap { display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap; }
+    header h1 { margin: 0; font-size: 1.5rem; font-weight: 600; }
+    header p { margin: .2rem 0 0; opacity: .85; }
+    .badge {
+      background: rgba(255,255,255,.15);
+      border: 1px solid rgba(255,255,255,.35);
+      padding: .35rem .8rem;
+      border-radius: 999px;
+      font-size: .85rem;
+      white-space: nowrap;
+    }
+    .wrap { max-width: 1040px; margin: 0 auto; }
+    main { padding: 2rem; }
+    .notice {
+      background: var(--warn-soft);
+      color: var(--warn);
+      border-left: 4px solid var(--warn);
+      padding: .8rem 1rem;
+      border-radius: 4px;
+      margin-bottom: 1.5rem;
+      font-size: .95rem;
+    }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 1.2rem; }
+    section {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 1.2rem 1.4rem;
+    }
+    h2 { margin: 0 0 .8rem; font-size: 1.1rem; color: var(--brand); }
+    ul { margin: 0; padding-left: 1.1rem; }
+    li { margin: .35rem 0; }
+    .date { color: var(--muted); font-size: .85rem; display: block; }
+    table { width: 100%; border-collapse: collapse; font-size: .92rem; }
+    td { padding: .4rem 0; border-bottom: 1px solid var(--line); }
+    td:last-child { text-align: right; color: var(--muted); }
+    .tag { background: var(--brand-soft); color: var(--brand); padding: .1rem .5rem; border-radius: 4px; font-size: .8rem; }
+    footer {
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: .85rem;
+      padding: 1.2rem 2rem 2rem;
+    }
+    code { font-family: Consolas, "Courier New", monospace; font-size: .85rem; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <div>
+        <h1>Intranet de Recursos Humanos</h1>
+        <p>RedNova GT &middot; Portal interno para colaboradores</p>
+      </div>
+      <span class="badge">Red interna &middot; acceso restringido</span>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="notice">
+      Este portal solo está disponible desde las redes internas de Ventas, TI, Data Center y
+      Administración. No es accesible desde la red de Visitas, la DMZ ni Internet.
+    </div>
+
+    <div class="grid">
+      <section>
+        <h2>Comunicados</h2>
+        <ul>
+          <li><span class="date">14 de noviembre de 2026</span>Cierre de planilla de noviembre: enviar horas extra antes del día 20.</li>
+          <li><span class="date">10 de noviembre de 2026</span>Inicio del periodo de evaluación de desempeño anual.</li>
+          <li><span class="date">3 de noviembre de 2026</span>Actualización de la política de trabajo remoto.</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>Trámites</h2>
+        <table>
+          <tr><td>Solicitud de vacaciones</td><td>Formulario RH-01</td></tr>
+          <tr><td>Constancia laboral</td><td>Formulario RH-02</td></tr>
+          <tr><td>Boleta de pago</td><td>Mensual</td></tr>
+          <tr><td>Actualización de datos personales</td><td>Formulario RH-04</td></tr>
+          <tr><td>Reporte de incapacidad IGSS</td><td>Formulario RH-05</td></tr>
+        </table>
+      </section>
+
+      <section>
+        <h2>Políticas internas</h2>
+        <ul>
+          <li>Reglamento interno de trabajo <span class="tag">v3.2</span></li>
+          <li>Código de ética y conducta <span class="tag">v2.0</span></li>
+          <li>Política de uso aceptable de TI <span class="tag">v1.4</span></li>
+          <li>Política de trabajo remoto <span class="tag">v1.1</span></li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>Contacto de RR. HH.</h2>
+        <table>
+          <tr><td>Atención a colaboradores</td><td>Ext. 2100</td></tr>
+          <tr><td>Planillas y prestaciones</td><td>Ext. 2110</td></tr>
+          <tr><td>Reclutamiento y selección</td><td>Ext. 2120</td></tr>
+          <tr><td>Horario</td><td>L-V 8:00-17:00</td></tr>
+        </table>
+      </section>
+    </div>
+  </main>
+
+  <footer class="wrap">
+    Servidor <code>rrhh.rednova.internal</code> &middot; <code>10.10.0.165</code> &middot;
+    Data Center <code>10.10.0.160/28</code> &middot; Nombre resuelto por el DNS interno
+    <code>ns1.rednova.internal</code> (<code>10.10.0.164</code>).
+    Proyecto final CC3067 Redes &middot; Grupo 1.
+  </footer>
+</body>
+</html>

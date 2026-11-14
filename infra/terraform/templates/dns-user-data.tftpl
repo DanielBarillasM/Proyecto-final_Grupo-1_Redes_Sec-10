@@ -1,0 +1,55 @@
+#!/bin/bash
+# =============================================================================
+# user_data - DNS interno BIND9 (ns1.${internal_domain} / ${dns_ip})
+# Generado por Terraform a partir de services/dns/. No editar en la instancia.
+# =============================================================================
+set -euo pipefail
+exec > >(tee -a /var/log/rednova-dns-setup.log) 2>&1
+echo "[$(date -Is)] Inicio de configuración DNS interno"
+
+# Los paquetes llegan desde los repositorios de Amazon Linux 2023 en S3 mediante
+# el VPC Gateway Endpoint (la subred no tiene NAT ni Internet).
+for intento in 1 2 3 4 5; do
+  dnf -y install bind bind-utils && break
+  echo "dnf falló (intento $intento); reintento en 15 s"
+  sleep 15
+done
+rpm -q bind bind-utils
+
+# Configuración versionada en services/dns/.
+echo '${named_conf_b64}'   | base64 -d > /etc/named.conf
+echo '${zone_forward_b64}' | base64 -d > /var/named/db.rednova.internal
+echo '${zone_reverse_b64}' | base64 -d > /var/named/db.10.10.0
+
+# Permisos restrictivos: root escribe, el grupo named solo lee.
+chown root:named /etc/named.conf /var/named/db.rednova.internal /var/named/db.10.10.0
+chmod 0640       /etc/named.conf /var/named/db.rednova.internal /var/named/db.10.10.0
+install -d -o named -g named -m 0750 /var/named/data
+restorecon -R /etc/named.conf /var/named 2>/dev/null || true
+
+named-checkconf -z /etc/named.conf
+named-checkzone ${internal_domain} /var/named/db.rednova.internal
+named-checkzone 0.10.10.in-addr.arpa /var/named/db.10.10.0
+
+systemctl enable --now named
+
+# Hardening de SSH (complementa services/hardening/hardening.sh).
+cat > /etc/ssh/sshd_config.d/90-rednova.conf <<'EOF'
+PasswordAuthentication no
+KbdInteractiveAuthentication no
+PermitRootLogin no
+X11Forwarding no
+MaxAuthTries 3
+EOF
+sshd -t && systemctl reload sshd
+
+# El propio servidor también resuelve la zona interna.
+install -d -m 0755 /etc/systemd/resolved.conf.d
+printf '[Resolve]\nDNS=127.0.0.1\nDomains=~${internal_domain} ~0.10.10.in-addr.arpa\n' \
+  > /etc/systemd/resolved.conf.d/rednova-internal.conf
+systemctl restart systemd-resolved || true
+
+# Autoprueba registrada en el log de arranque.
+dig @127.0.0.1 rrhh.${internal_domain} A +short
+ss -lntup | grep ':53 ' || true
+echo "[$(date -Is)] DNS interno listo"

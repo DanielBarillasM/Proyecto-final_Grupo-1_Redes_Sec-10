@@ -1,0 +1,169 @@
+\chapter{DNS interno e intranet de Recursos Humanos}
+
+Responsable: Andrés Rafael Chivalán. Este capítulo describe el servicio de resolución de
+nombres interno y la intranet de Recursos Humanos alojados en la subred de Data Center
+\code{10.10.0.160/28}. Ambos servicios son privados: no tienen IPv4 pública, no tienen ruta
+hacia Internet y solo aceptan tráfico de las redes internas autorizadas.
+
+\section{Componentes}
+
+\begin{table}[H]
+\centering
+\caption{Servicios de Data Center}
+\small
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{2.5cm}p{4.3cm}p{2.1cm}>{\raggedright\arraybackslash}p{2.0cm}Y}
+\toprule
+\textbf{Servicio} & \textbf{Nombre} & \textbf{IP} & \textbf{Puerto} & \textbf{Software} \\
+\midrule
+DNS interno & \code{ns1.rednova.internal} & \code{10.10.0.164} & UDP/TCP 53 & BIND9, Amazon Linux 2023 \\
+Intranet RR. HH. & \code{rrhh.rednova.internal} & \code{10.10.0.165} & TCP 80 & Nginx, HTML estático \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Se eligió el dominio \code{rednova.internal} en lugar de \code{.local}, porque este último está
+reservado para DNS de multidifusión (mDNS, RFC 6762) y provoca resoluciones inconsistentes en
+clientes que implementan ese protocolo.
+
+\section{Funcionamiento del DNS interno}
+
+BIND9 cumple dos funciones. Es \emph{autoritativo} para la zona directa
+\code{rednova.internal} y para la zona inversa \code{0.10.10.in-addr.arpa}. Además es
+\emph{recursivo} para las redes autorizadas: los nombres que no pertenecen a la zona interna se
+reenvían al resolvedor de la VPC (\code{10.10.0.2}, Route 53 Resolver) con
+\code{forward only}. Así, un cliente interno puede usar BIND9 sin perder la resolución de
+nombres públicos.
+
+\begin{table}[H]
+\centering
+\caption{Registros de la zona \code{rednova.internal}}
+\begin{tabularx}{\textwidth}{p{3.2cm}C{1.6cm}p{4.2cm}Y}
+\toprule
+\textbf{Nombre} & \textbf{Tipo} & \textbf{Valor} & \textbf{Uso} \\
+\midrule
+\code{ns1} & A & \code{10.10.0.164} & Servidor DNS autoritativo \\
+\code{dns} & CNAME & \code{ns1} & Alias del servidor DNS \\
+\code{rrhh} & A & \code{10.10.0.165} & Intranet de Recursos Humanos \\
+\code{intranet} & CNAME & \code{rrhh} & Alias de la intranet \\
+\code{ti-cliente} & A & \code{10.10.0.132} & Cliente de pruebas de TI \\
+\code{web-dmz} & A & \code{10.10.0.196} & Nombre interno de la web pública \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{DNS dividido}
+
+No se modificó el \emph{DHCP Options Set} de la VPC, porque ese cambio afectaría también a
+Visitas y a la DMZ, cuyas políticas solo permiten consultar \code{10.10.0.2}. En su lugar, cada
+cliente interno recibe un archivo de \code{systemd-resolved} con
+\code{DNS=10.10.0.164} y \code{Domains=\textasciitilde{}rednova.internal}. Con esa
+configuración únicamente los nombres de la zona interna se envían a BIND9 y el resto sigue el
+resolvedor entregado por DHCP.
+
+\section{Funcionamiento de la intranet}
+
+Nginx publica una página HTML estática identificada como intranet de Recursos Humanos. El
+servidor virtual responde a \code{rrhh.rednova.internal}, \code{intranet.rednova.internal} y
+a la IP \code{10.10.0.165}; cualquier otro encabezado \code{Host} recibe el código 444 y la
+conexión se cierra. La página no carga fuentes, scripts ni imágenes externas, lo cual es
+coherente con una subred sin salida a Internet.
+
+\section{Control de acceso en capas}
+
+\begin{table}[H]
+\centering
+\caption{Controles aplicados al DNS y a la intranet}
+\begin{tabularx}{\textwidth}{p{3.4cm}p{3.4cm}Y}
+\toprule
+\textbf{Capa} & \textbf{Mecanismo} & \textbf{Regla} \\
+\midrule
+Red AWS & Security Group \code{dns} & UDP/TCP 53 solo desde Ventas, TI, Data Center y Administración \\
+Red AWS & Security Group \code{intranet} & TCP 80 solo desde las mismas cuatro redes \\
+Red AWS & Subred privada & Sin IP pública ni ruta \code{0.0.0.0/0} \\
+Red AWS & NACL de Visitas y DMZ & Denegación de salida hacia \code{10.10.0.0/24} \\
+Servicio & ACL de BIND9 & \code{allow-query} y \code{allow-recursion} limitados a \code{redes\_autorizadas}; otros orígenes reciben \code{REFUSED} \\
+Servicio & \code{allow}/\code{deny} de Nginx & Mismas cuatro redes; cualquier otro origen recibe 403 \\
+Administración & Security Group & SSH únicamente desde el Security Group del bastión \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Las reglas del servicio repiten las del Security Group a propósito. Si una regla de AWS se
+amplía por error, el servicio sigue rechazando los orígenes no autorizados.
+
+\section{Hardening aplicado}
+
+\begin{itemize}
+  \item BIND9 escucha solo en \code{127.0.0.1} y \code{10.10.0.164}; IPv6 deshabilitado.
+  \item Transferencias de zona y actualizaciones dinámicas deshabilitadas.
+  \item Versión, nombre de host e identificador del servidor ocultos en las respuestas.
+  \item Limitación de tasa de respuestas (\code{rate-limit}) para reducir amplificación.
+  \item Registro de consultas habilitado como evidencia de auditoría.
+  \item Nginx con \code{server\_tokens off}, solo métodos GET y HEAD, archivos ocultos denegados
+        y cabeceras \code{X-Frame-Options}, \code{X-Content-Type-Options},
+        \code{Referrer-Policy} y \code{Content-Security-Policy}.
+  \item Archivos de configuración propiedad de \code{root} con permisos \code{0640} o \code{0644}.
+  \item SSH solo con llave, sin acceso directo de \code{root} y con tres intentos como máximo.
+  \item IMDSv2 obligatorio y volumen EBS cifrado en ambas instancias.
+\end{itemize}
+
+\section{Instalación sin NAT Gateway}
+
+Data Center es una subred privada sin NAT, por lo que \code{dnf} no puede descargar paquetes
+desde Internet. Los repositorios de Amazon Linux 2023 se alojan en buckets S3 administrados por
+AWS. Por ello se agregó un \emph{VPC Gateway Endpoint} de S3 asociado a la tabla de rutas
+privada. Este tipo de endpoint no tiene costo y su política solo permite leer el bucket de
+repositorios de la región. Los Security Groups del DNS y de la intranet agregan una única
+salida TCP 443 hacia la lista de prefijos de S3.
+
+\begin{warningbox}[Alternativa descartada]
+Un NAT Gateway habría resuelto la instalación, pero tiene costo por hora y por GB procesado y
+abriría salida general a Internet desde redes que no la necesitan.
+\end{warningbox}
+
+\section{Automatización con Terraform}
+
+El archivo \code{services.tf} crea ambas instancias con IP privada fija, sin IPv4 pública y
+con \code{user\_data} generado desde \code{templates/}. Los archivos de \code{services/dns/} y
+\code{services/intranet/} se incrustan en base64, de modo que la instancia no depende de Git ni
+de Internet. Durante el arranque el script instala los paquetes, copia las configuraciones,
+ejecuta \code{named-checkconf}, \code{named-checkzone} y \code{nginx -t} y solo entonces
+habilita los servicios. Tres precondiciones detienen el plan si cambian las IP o el dominio sin
+actualizar las zonas, o si se activa la Fase 2 sin el bastión de la Fase 1.
+
+\section{Validación local}
+
+El script \code{scripts/validate-andres-phase2.py} comprueba la coherencia entre BIND9, Nginx,
+Terraform y el plan de direccionamiento, y ejecuta los validadores nativos disponibles. La
+salida se guarda en \code{evidence/fase-2/dns/andres-validation.txt}.
+
+\begin{infobox}[Resultado local]
+32 comprobaciones correctas y 0 fallidas: zonas cargadas con serial \code{2026111401},
+\code{named-checkconf -z} sin errores y sintaxis de Nginx correcta. Se verificó además, en un
+entorno local, que BIND9 responde \code{REFUSED} a un origen fuera de la ACL y que Nginx
+responde 403 a un origen no autorizado.
+\end{infobox}
+
+\section{Pruebas en AWS}
+
+\begin{table}[H]
+\centering
+\caption{Pruebas del DNS interno y la intranet}
+\small
+\begin{tabularx}{\textwidth}{C{1.1cm}p{2.3cm}p{6.4cm}p{2.3cm}Y}
+\toprule
+\textbf{ID} & \textbf{Origen} & \textbf{Comando} & \textbf{Esperado} & \textbf{Resultado} \\
+\midrule
+F2-01 & Ventas & \code{dnsquery.py rrhh.rednova.internal} & \code{10.10.0.165} & Pendiente \\
+F2-02 & Ventas & \code{curl http://rrhh.rednova.internal/} & HTTP 200 & Pendiente \\
+F2-03 & TI & \code{curl http://rrhh.rednova.internal/} & HTTP 200 & Pendiente \\
+F2-04 & Administración & \code{curl http://rrhh.rednova.internal/} & HTTP 200 & Pendiente \\
+F2-05 & Visitas & \code{curl -m 5 http://10.10.0.165/} & Tiempo agotado & Pendiente \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+% Reemplazar "Pendiente" por el resultado real y agregar las figuras
+% 07-dns-interno-exitoso.png y 08-intranet-interna-exitosa.png después de la ventana AWS.
+Los resultados se completarán únicamente con la salida real y las capturas obtenidas durante
+la ventana AWS autorizada.

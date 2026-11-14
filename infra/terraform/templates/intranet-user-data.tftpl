@@ -1,0 +1,48 @@
+#!/bin/bash
+# =============================================================================
+# user_data - Intranet de Recursos Humanos (rrhh.${internal_domain} / ${intranet_ip})
+# Generado por Terraform a partir de services/intranet/. No editar en la instancia.
+# =============================================================================
+set -euo pipefail
+exec > >(tee -a /var/log/rednova-intranet-setup.log) 2>&1
+echo "[$(date -Is)] Inicio de configuración de la intranet"
+
+# Paquetes desde los repositorios de Amazon Linux 2023 en S3 (VPC Gateway Endpoint).
+for intento in 1 2 3 4 5; do
+  dnf -y install nginx && break
+  echo "dnf falló (intento $intento); reintento en 15 s"
+  sleep 15
+done
+rpm -q nginx
+
+# Contenido y configuración versionados en services/intranet/.
+install -d -o root -g root -m 0755 /usr/share/nginx/html/rrhh
+echo '${index_html_b64}' | base64 -d > /usr/share/nginx/html/rrhh/index.html
+echo '${nginx_conf_b64}' | base64 -d > /etc/nginx/nginx.conf
+chown root:root /usr/share/nginx/html/rrhh/index.html /etc/nginx/nginx.conf
+chmod 0644      /usr/share/nginx/html/rrhh/index.html /etc/nginx/nginx.conf
+restorecon -R /usr/share/nginx/html /etc/nginx 2>/dev/null || true
+
+nginx -t
+systemctl enable --now nginx
+
+# Hardening de SSH (complementa services/hardening/hardening.sh).
+cat > /etc/ssh/sshd_config.d/90-rednova.conf <<'EOF'
+PasswordAuthentication no
+KbdInteractiveAuthentication no
+PermitRootLogin no
+X11Forwarding no
+MaxAuthTries 3
+EOF
+sshd -t && systemctl reload sshd
+
+# Resolución de la zona interna mediante BIND9.
+install -d -m 0755 /etc/systemd/resolved.conf.d
+printf '[Resolve]\nDNS=${dns_ip}\nDomains=~${internal_domain} ~0.10.10.in-addr.arpa\n' \
+  > /etc/systemd/resolved.conf.d/rednova-internal.conf
+systemctl restart systemd-resolved || true
+
+# Autoprueba registrada en el log de arranque.
+curl -s -o /dev/null -w 'HTTP local: %%{http_code}\n' -H 'Host: rrhh.${internal_domain}' http://127.0.0.1/
+ss -lntp | grep ':80 ' || true
+echo "[$(date -Is)] Intranet lista"

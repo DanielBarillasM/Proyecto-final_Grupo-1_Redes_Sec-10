@@ -1,0 +1,19 @@
+; =============================================================================
+; /var/named/db.10.10.0 - Zona inversa de la VPC 10.10.0.0/24
+; =============================================================================
+$TTL 300
+$ORIGIN 0.10.10.in-addr.arpa.
+
+@       IN  SOA ns1.rednova.internal. hostmaster.rednova.internal. (
+                2026111401  ; serial
+                3600        ; refresh
+                900         ; retry
+                604800      ; expire
+                300 )       ; TTL negativo
+
+        IN  NS      ns1.rednova.internal.
+
+132     IN  PTR     ti-cliente.rednova.internal.
+164     IN  PTR     ns1.rednova.internal.
+165     IN  PTR     rrhh.rednova.internal.
+196     IN  PTR     web-dmz.rednova.internal.

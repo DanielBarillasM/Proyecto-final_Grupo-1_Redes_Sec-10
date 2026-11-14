@@ -1,0 +1,29 @@
+; =============================================================================
+; /var/named/db.rednova.internal - Zona directa interna de RedNova GT
+; Autoritativa en ns1.rednova.internal (10.10.0.164)
+; Se evita .local porque está reservado para mDNS (RFC 6762).
+; Incremente el serial (AAAAMMDDnn) en cada cambio.
+; =============================================================================
+$TTL 300
+$ORIGIN rednova.internal.
+
+@           IN  SOA ns1.rednova.internal. hostmaster.rednova.internal. (
+                    2026111401  ; serial
+                    3600        ; refresh
+                    900         ; retry
+                    604800      ; expire
+                    300 )       ; TTL negativo
+
+            IN  NS      ns1.rednova.internal.
+
+; --- Data Center 10.10.0.160/28 ---------------------------------------------
+ns1         IN  A       10.10.0.164
+dns         IN  CNAME   ns1
+rrhh        IN  A       10.10.0.165     ; Intranet de Recursos Humanos
+intranet    IN  CNAME   rrhh
+
+; --- TI 10.10.0.128/27 ------------------------------------------------------
+ti-cliente  IN  A       10.10.0.132
+
+; --- DMZ 10.10.0.192/27 (nombre interno de administración) ------------------
+web-dmz     IN  A       10.10.0.196
