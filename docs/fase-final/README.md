@@ -3,7 +3,7 @@
 Esta carpeta contiene la documentación de integración de Fase 1 y Fase 2. El PDF final de
 Fase 1 en `output/pdf/` se conserva sin modificaciones.
 
-## Estado integrado de Pablo y Andrés
+## Estado integrado de Pablo, Andrés y Roberto
 
 Implementado localmente:
 
@@ -19,10 +19,11 @@ Implementado localmente:
 - Intranet privada de RR. HH. con Nginx y HTML estático.
 - EC2 privadas, `user_data` y endpoint Gateway de S3 para instalar paquetes sin NAT.
 - Validador local de coherencia entre DNS, Nginx, Terraform y controles de acceso.
+- Web pública de Ventas en la DMZ con EC2, Elastic IP temporal y Nginx.
+- `user_data`, hardening por capas, validador local y procedimiento de HTTPS opcional.
 
 Pendiente de otros bloques:
 
-- Web pública, dominio y hardening: Roberto.
 - Clientes de Visitas/TI, pruebas y evidencias: Genser.
 - Despliegue, capturas y resultados reales: ventana AWS autorizada.
 

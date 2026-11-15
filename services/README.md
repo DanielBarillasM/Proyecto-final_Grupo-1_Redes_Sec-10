@@ -1,5 +1,8 @@
 # Servicios de Data Center: DNS interno e intranet de RR. HH.
 
+La web pública de Roberto se documenta por separado en
+[`public-web/README.md`](public-web/README.md).
+
 **Responsable:** Andrés Rafael Chivalán · **Rama integrada:** `Andrés` (incluye `fase-2-pablo`)
 
 | Servicio | Host | IP | Puerto | Permitido desde |

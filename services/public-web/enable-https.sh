@@ -1,3 +1,4 @@
+#!/bin/bash
 set -euo pipefail
 DOMAIN="${1:?Indique el dominio público}"
 EMAIL="${2:?Indique un correo de contacto para Let Encrypt}"

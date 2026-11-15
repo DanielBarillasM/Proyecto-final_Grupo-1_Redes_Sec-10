@@ -6,9 +6,9 @@
 
 El repositorio contiene el informe técnico en LaTeX, diagramas, infraestructura como código con Terraform y evidencias de validación para la Fase 1.
 
-La rama `Andrés` integra la base de red asignada a Pablo Daniel Barillas Moreno (DMZ, rutas,
-NACL, Security Groups, variables y outputs) con el DNS interno y la intranet de Recursos
-Humanos asignados a Andrés Rafael Chivalán. La web pública de Roberto, los clientes y pruebas
+La rama `Roberto-Fasedos` integra la base de red asignada a Pablo Daniel Barillas Moreno (DMZ,
+rutas, NACL, Security Groups, variables y outputs), el DNS interno y la intranet de Recursos
+Humanos de Andrés Rafael Chivalán, y la web pública de Roberto en la DMZ. Los clientes y pruebas
 de Genser y las evidencias cloud se incorporarán antes del despliegue final.
 
 ## Entregables a revisar por parte del auxiliar o del docente correspondiente
@@ -23,6 +23,7 @@ de Genser y las evidencias cloud se incorporarán antes del despliegue final.
 - Terraform: [`infra/terraform/`](infra/terraform/)
 - Validación de red: `python scripts/validate-pablo-phase2.py`
 - Validación de DNS e intranet: `python scripts/validate-andres-phase2.py`
+- Validación de web pública y hardening: `python scripts/validate-roberto-phase2.py`
 
 No se debe ejecutar `terraform apply` desde una copia sin estado. Primero se debe auditar AWS
 y decidir entre recuperar el estado original, importar recursos existentes o realizar un

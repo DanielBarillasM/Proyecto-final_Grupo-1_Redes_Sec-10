@@ -119,6 +119,9 @@ def main() -> int:
           "NACL DMZ: la DMZ no inicia conexiones hacia la VPC (deny antes que Internet)")
 
     # --- Plantilla user_data ----------------------------------------------
+    check(tpl.startswith("#!/bin/bash\n"), "user_data comienza con #!/bin/bash para que cloud-init lo ejecute")
+    check(hard.startswith("#!/bin/bash\n"), "hardening.sh declara el intérprete Bash")
+    check(https.startswith("#!/bin/bash\n"), "enable-https.sh declara el intérprete Bash")
     tpl_call = re.search(r"templatefile\([^,]+,\s*\{(.*?)\n  \}\)", tf, re.S)
     provided = set(re.findall(r"^\s{4}(\w+)\s*=", tpl_call.group(1) if tpl_call else "", re.M))
     used = set(re.findall(r"(?<!\$)\$\{(\w+)", tpl)) - {"enable_https ?"}

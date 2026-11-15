@@ -57,6 +57,13 @@ instancia y nunca se versiona.
 
 \section{Pruebas previstas}
 
+\begin{infobox}[Resultado local]
+La integración pasó \code{terraform fmt}, \code{terraform validate} y 55 comprobaciones del
+validador de Roberto, con 3 pruebas nativas omitidas y 0 fallidas. Las omitidas corresponden a
+\code{nginx -t}, \code{nft -c} y el analizador opcional \code{python-hcl2} no instalados en el
+equipo Windows; Nginx y nftables se validan nuevamente dentro del \code{user\_data} en AWS.
+\end{infobox}
+
 \begin{table}[H]
 \centering
 \caption{Pruebas de la web pública}

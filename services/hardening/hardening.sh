@@ -1,4 +1,4 @@
-
+#!/bin/bash
 set -euo pipefail
 exec > >(tee -a /var/log/rednova-hardening.log) 2>&1
 
@@ -12,7 +12,7 @@ while [ $# -gt 0 ]; do
   esac
   shift
 done
-ADMIN_NET="10.10.0.176/28"  
+ADMIN_NET="10.10.0.176/28"
 echo "[$(date -Is)] Hardening: web=$WEB https=$HTTPS"
 
 cat > /etc/ssh/sshd_config.d/90-rednova.conf <<'CONF'

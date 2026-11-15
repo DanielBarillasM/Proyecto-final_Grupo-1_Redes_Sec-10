@@ -12,8 +12,9 @@ El bloque de Pablo agrega:
 - Variables de dominio, IP privadas, HTTPS y control de cómputo.
 - Outputs de DMZ, reserva, dominios, IP y NACL.
 
-Las instancias de DNS e intranet de Andrés ya están integradas en `services.tf`; los componentes
-de Roberto y Genser se agregarán en archivos separados.
+Las instancias de DNS e intranet de Andrés están integradas en `services.tf`; la web pública de
+Roberto está integrada en `public-web.tf`. Los clientes de Genser se agregarán en un archivo
+separado.
 `enable_compute` y `enable_phase2_compute` permanecen en `false` por defecto.
 
 ## Uso resumido
@@ -45,10 +46,10 @@ de Roberto y Genser se agregarán en archivos separados.
 
 ## Dependencias todavía no integradas
 
-- EC2, Elastic IP, Nginx, dominio y HTTPS: Roberto.
 - Clientes EC2 de Visitas/TI y pruebas automáticas: Genser.
 
-No se debe ejecutar `apply` hasta integrar y revisar estos componentes.
+No se debe ejecutar `apply` hasta integrar y revisar el bloque de Genser, auditar el estado real
+de AWS y obtener autorización de Andrés Rafael Chivalán.
 
 No publique `terraform.tfvars`, estados, planes guardados, archivos `.pem`, llaves privadas ni
 credenciales AWS.
