@@ -1,0 +1,50 @@
+#!/bin/bash
+# =============================================================================
+# user_data - Cliente temporal de pruebas: ${role} (${client_ip})
+# Generado por Terraform (infra/terraform/test-clients.tf). No editar en la instancia.
+# Responsable: Genser Catalán
+# =============================================================================
+set -euo pipefail
+exec > >(tee -a /var/log/rednova-test-client-setup.log) 2>&1
+echo "[$(date -Is)] Inicio de configuración del cliente de ${role}"
+
+# Herramientas versionadas: consulta DNS sin bind-utils y hardening común.
+install -d -o root -g root -m 0750 /opt/rednova
+echo '${dnsquery_b64}' | base64 -d > /usr/local/bin/rednova-dnsquery
+chmod 0755 /usr/local/bin/rednova-dnsquery
+echo '${hardening_b64}' | base64 -d > /opt/rednova/hardening.sh
+chmod 0750 /opt/rednova/hardening.sh
+
+%{ if wait_for_internet ~}
+# Visitas: la IPv4 pública temporal permite la salida a Internet. Se espera la
+# salida (hasta 5 min) y se instala nftables para el firewall del sistema operativo.
+for intento in $(seq 1 30); do
+  if curl -s -m 5 -o /dev/null https://aws.amazon.com/; then
+    echo "Salida a Internet disponible (intento $intento)"
+    break
+  fi
+  echo "Sin salida a Internet todavía (intento $intento); reintento en 10 s"
+  sleep 10
+done
+for intento in 1 2 3; do
+  dnf -y install nftables && break
+  echo "dnf falló (intento $intento); reintento en 15 s"
+  sleep 15
+done
+%{ endif ~}
+%{ if configure_internal_dns ~}
+# TI: *.${internal_domain} se resuelve con BIND9; el resto sigue en el resolvedor de la VPC.
+install -d -m 0755 /etc/systemd/resolved.conf.d
+printf '[Resolve]\nDNS=${dns_ip}\nDomains=~${internal_domain} ~0.10.10.in-addr.arpa\n' \
+  > /etc/systemd/resolved.conf.d/rednova-internal.conf
+systemctl restart systemd-resolved || true
+%{ endif ~}
+
+# Hardening común (SSH por llave, sysctl, servicios y nftables con SSH solo
+# desde Administración). Sin nftables instalado, hardening.sh lo advierte y continúa.
+/opt/rednova/hardening.sh || echo "ADVERTENCIA: hardening.sh terminó con error" >&2
+
+# Inventario de arranque: el cliente no debe escuchar en otro puerto que no sea SSH.
+ip -4 -brief addr || true
+ss -lntu || true
+echo "[$(date -Is)] Cliente de ${role} listo"
