@@ -1,4 +1,5 @@
 """Valida el bloque de Roberto (web pública, hardening, dominio) sin consultar AWS."""
+
 from __future__ import annotations
 
 import base64
@@ -133,21 +134,30 @@ def main() -> int:
         "index_html_b64": base64.b64encode(html.encode()).decode(),
         "nginx_conf_b64": base64.b64encode(nginx.encode()).decode(),
         "hardening_b64": base64.b64encode(hard.encode()).decode(),
-        "https_b64": base64.b64encode(https.encode()).decode(),
     }
     rendered = render_template(tpl, values)
-    with tempfile.TemporaryDirectory() as tmp:
-        for name, content in (("user-data.sh", rendered), ("hardening.sh", hard), ("enable-https.sh", https)):
-            path = Path(tmp) / name
-            path.write_text(content, encoding="utf-8")
-            ok, out = run(["bash", "-n", str(path)])
-            check(ok, f"bash -n {name}: " + ("sintaxis correcta" if ok else out))
-        values["enable_https"] = "true"
-        rendered_https = render_template(tpl, values)
-        p = Path(tmp) / "user-data-https.sh"
-        p.write_text(rendered_https, encoding="utf-8")
-        ok, out = run(["bash", "-n", str(p)])
-        check(ok, "bash -n user-data con enable_https = true: " + ("sintaxis correcta" if ok else out))
+    def bash_check(label: str, content: str) -> None:
+        # Se envía por stdin: funciona igual en Linux, macOS y bash de WSL (rutas C:\\ no).
+        if not shutil.which("bash"):
+            skip(f"bash no disponible: se omite bash -n {label}")
+            return
+        proc = subprocess.run(["bash", "-n"], input=content.replace("\r\n", "\n"),
+                              capture_output=True, text=True)
+        out = (proc.stdout + proc.stderr).strip()
+        check(proc.returncode == 0, f"bash -n {label}: " + ("sintaxis correcta" if proc.returncode == 0 else out))
+
+    bash_check("user-data.sh", rendered)
+    bash_check("hardening.sh", hard)
+    bash_check("enable-https.sh", https)
+    values["enable_https"] = "true"
+    bash_check("user-data con enable_https = true", render_template(tpl, values))
+
+    size = len(rendered.replace("\r\n", "\n").encode("utf-8"))
+    check(size <= 15500, f"user_data renderizado = {size} bytes (límite de EC2: 16384; margen mínimo exigido: 15500)")
+    crlf = [str(p.relative_to(ROOT)) for p in (WEB / "nginx.conf", WEB / "index.html", HARD / "hardening.sh",
+                                                WEB / "enable-https.sh", TF / "templates" / "public-web-user-data.tftpl")
+            if b"\r\n" in p.read_bytes()]
+    check(not crlf, f"Archivos incrustados en la EC2 con finales de línea LF, no CRLF ({crlf or 'ok'})")
 
     # --- Nginx -----------------------------------------------------------
     check("server_tokens         off;" in nginx, "Nginx oculta su versión")
