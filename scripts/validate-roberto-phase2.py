@@ -1,5 +1,4 @@
 """Valida el bloque de Roberto (web pública, hardening, dominio) sin consultar AWS."""
-
 from __future__ import annotations
 
 import base64
@@ -141,9 +140,10 @@ def main() -> int:
         if not shutil.which("bash"):
             skip(f"bash no disponible: se omite bash -n {label}")
             return
-        proc = subprocess.run(["bash", "-n"], input=content.replace("\r\n", "\n"),
-                              capture_output=True, text=True)
-        out = (proc.stdout + proc.stderr).strip()
+        # Bytes, no texto: en Windows el modo texto convertiría cada \n en \r\n y bash fallaría.
+        proc = subprocess.run(["bash", "-n"], input=content.replace("\r\n", "\n").encode("utf-8"),
+                              capture_output=True)
+        out = (proc.stdout + proc.stderr).decode("utf-8", errors="replace").strip()
         check(proc.returncode == 0, f"bash -n {label}: " + ("sintaxis correcta" if proc.returncode == 0 else out))
 
     bash_check("user-data.sh", rendered)
