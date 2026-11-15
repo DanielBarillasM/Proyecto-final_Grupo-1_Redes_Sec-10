@@ -78,6 +78,18 @@ resource "aws_security_group" "ti" {
     cidr_blocks = [var.vpc_cidr]
   }
 
+  dynamic "egress" {
+    for_each = aws_vpc_endpoint.s3[*].prefix_list_id
+
+    content {
+      description     = "HTTPS a repositorios AL2023 en S3 via Gateway Endpoint"
+      from_port       = 443
+      to_port         = 443
+      protocol        = "tcp"
+      prefix_list_ids = [egress.value]
+    }
+  }
+
   tags = merge(local.phase2_tags, {
     Name    = "${var.phase2_project_name}-ti-sg"
     Segment = "ti"

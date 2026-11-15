@@ -17,6 +17,7 @@ locals {
   test_client_common = {
     internal_domain = var.internal_domain
     dns_ip          = local.phase2_service_ips.dns
+    intranet_ip     = local.phase2_service_ips.intranet
     hardening_b64   = filebase64("${local.services_dir}/hardening/hardening.sh")
     dnsquery_b64    = filebase64("${local.services_dir}/dns/dnsquery.py")
   }
@@ -109,8 +110,9 @@ resource "aws_instance" "ti_client" {
     volume_type = "gp3"
   }
 
-  # TI resuelve *.rednova.internal con BIND9; conviene que el DNS exista primero.
-  depends_on = [aws_instance.dns]
+  # TI resuelve *.rednova.internal con BIND9 e instala nftables desde el
+  # repositorio AL2023 accesible exclusivamente mediante el endpoint S3.
+  depends_on = [aws_instance.dns, aws_vpc_endpoint.s3]
 
   lifecycle {
     precondition {

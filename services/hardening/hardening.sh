@@ -64,6 +64,10 @@ if [ "$WEB" -eq 1 ]; then
   [ "$HTTPS" = "on" ] && PORTS="80, 443"
 fi
 install -d -m 0755 /etc/nftables
+if ! command -v nft >/dev/null 2>&1; then
+  echo "ERROR: nftables no está instalado; no se puede aplicar el firewall del sistema operativo" >&2
+  exit 3
+fi
 {
   echo 'flush ruleset'
   echo 'table inet rednova {'
@@ -82,13 +86,11 @@ install -d -m 0755 /etc/nftables
 } > /etc/nftables/rednova.nft
 chmod 0600 /etc/nftables/rednova.nft
 
-if nft -c -f /etc/nftables/rednova.nft; then
-  echo 'include "/etc/nftables/rednova.nft"' > /etc/sysconfig/nftables.conf
-  systemctl enable nftables
-  nft -f /etc/nftables/rednova.nft
-  echo "nftables activo: SSH desde $ADMIN_NET${PORTS:+, TCP $PORTS públicos}"
-else
-  echo "ADVERTENCIA: la regla nftables no validó; el firewall del SO no se aplicó" >&2
-fi
+nft -c -f /etc/nftables/rednova.nft
+echo 'include "/etc/nftables/rednova.nft"' > /etc/sysconfig/nftables.conf
+systemctl enable nftables
+nft -f /etc/nftables/rednova.nft
+nft list table inet rednova >/dev/null
+echo "nftables activo: SSH desde $ADMIN_NET${PORTS:+, TCP $PORTS públicos}"
 
 echo "[$(date -Is)] Hardening completado"

@@ -1,4 +1,4 @@
-Validación local de clientes, políticas Visitas/TI y matriz de pruebas - 2026-11-15T00:20:26-06:00
+Validación local de clientes, políticas Visitas/TI y matriz de pruebas - 2026-11-15T12:16:13-06:00
 
 [OK] Cliente Visitas 10.10.0.4 pertenece a Visitas
 [OK] Cliente TI 10.10.0.132 pertenece a TI
@@ -27,10 +27,12 @@ Validación local de clientes, políticas Visitas/TI y matriz de pruebas - 2026-
 [OK] Visitas usa IPv4 efímera de la instancia, no una Elastic IP
 [OK] enable_phase2_compute = false por defecto
 [OK] Output test_clients con IPs y bastión de salto
+[OK] ti_client: espera el DNS y el endpoint S3 antes de arrancar
 [OK] SG visitas_client: ninguna entrada desde Internet (0.0.0.0/0)
 [OK] SG visitas_client: solo acepta tráfico del bastión y de TI
 [OK] SG ti: única entrada SSH desde el bastión
-[OK] SG ti: salida limitada a la VPC
+[OK] SG ti: salida general limitada a la VPC
+[OK] SG ti: HTTPS adicional únicamente al prefijo del Gateway Endpoint S3
 [OK] NACL asociadas a Visitas y TI
 [OK] ICMP echo desde TI aceptado en ventas, bastion, dns, intranet y public_web (['ventas', 'bastion', 'dns', 'intranet', 'public_web'])
 [OK] NACL TI: solo admite ICMP echo-reply (los echo-request hacia TI se deniegan)
@@ -38,13 +40,19 @@ Validación local de clientes, políticas Visitas/TI y matriz de pruebas - 2026-
 [OK] La plantilla solo usa variables entregadas por Terraform (ok)
 [OK] user_data sin llaves ni certificados
 [OK] bash -n user_data visitas: sintaxis correcta
-[OK] user_data visitas = 11314 bytes (límite EC2 16384)
+[OK] user_data visitas = 11601 bytes (límite EC2 16384)
 [OK] user_data visitas: DNS interno no configurado
-[OK] user_data visitas: dnf solo con salida a Internet
+[OK] user_data visitas: instala y verifica nftables
+[OK] user_data visitas: el hardening y el firewall son obligatorios
 [OK] bash -n user_data ti: sintaxis correcta
-[OK] user_data ti = 11068 bytes (límite EC2 16384)
+[OK] user_data ti = 12597 bytes (límite EC2 16384)
 [OK] user_data ti: DNS interno configurado
-[OK] user_data ti: dnf no se usa (TI sin Internet)
+[OK] user_data ti: instala y verifica nftables
+[OK] user_data ti: el hardening y el firewall son obligatorios
+[OK] user_data ti: espera una respuesta válida de BIND9
+[OK] user_data ti: autoprueba la resolución y aplica respaldo de resolv.conf
+[OK] user_data ti: no oculta fallos de systemd-resolved
+[OK] hardening.sh falla si nftables no está disponible o no queda cargado
 [OK] bash -n phase2-probe.sh: sintaxis correcta
 [OK] phase2-probe.sh es ASCII (se envía por stdin también desde Windows)
 [OK] Archivos enviados a las EC2 con finales LF (ok)
@@ -111,5 +119,5 @@ M15a      DMZ -> Ventas ICMP (icmp)                                  bloquear  b
 M15b      DMZ -> Ventas SSH (tcp/22)                                 bloquear  bloquear  SG public_web (salida)
 M15c      DMZ -> Internet HTTPS (actualizaciones/ACME) (tcp/443)     permitir  permitir  permitido por todas las capas
 
-Resultado: 57 correctas, 0 omitidas, 0 fallidas
+Resultado: 65 correctas, 0 omitidas, 0 fallidas
 Nota: la matriz modela lo declarado en Terraform; la evidencia real la produce scripts/test-phase2.ps1.

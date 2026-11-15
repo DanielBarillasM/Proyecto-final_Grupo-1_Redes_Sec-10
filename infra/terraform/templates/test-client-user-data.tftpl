@@ -17,7 +17,7 @@ chmod 0750 /opt/rednova/hardening.sh
 
 %{ if wait_for_internet ~}
 # Visitas: la IPv4 pública temporal permite la salida a Internet. Se espera la
-# salida (hasta 5 min) y se instala nftables para el firewall del sistema operativo.
+# salida antes de consultar los repositorios de Amazon Linux 2023.
 for intento in $(seq 1 30); do
   if curl -s -m 5 -o /dev/null https://aws.amazon.com/; then
     echo "Salida a Internet disponible (intento $intento)"
@@ -26,23 +26,56 @@ for intento in $(seq 1 30); do
   echo "Sin salida a Internet todavía (intento $intento); reintento en 10 s"
   sleep 10
 done
+%{ endif ~}
+
+# Ambos clientes deben tener firewall del sistema operativo. Visitas obtiene el
+# paquete por Internet y TI mediante el Gateway Endpoint privado de S3.
 for intento in 1 2 3; do
   dnf -y install nftables && break
   echo "dnf falló (intento $intento); reintento en 15 s"
   sleep 15
 done
-%{ endif ~}
+rpm -q nftables
+command -v nft >/dev/null
 %{ if configure_internal_dns ~}
-# TI: *.${internal_domain} se resuelve con BIND9; el resto sigue en el resolvedor de la VPC.
+# TI espera a que BIND9 responda antes de cambiar la resolución del sistema.
+dns_listo=0
+for intento in $(seq 1 30); do
+  if /usr/local/bin/rednova-dnsquery "rrhh.${internal_domain}" "${dns_ip}" --timeout 3 2>/dev/null | grep -q "${intranet_ip}"; then
+    dns_listo=1
+    break
+  fi
+  echo "DNS interno no disponible (intento $intento); reintento en 10 s"
+  sleep 10
+done
+[ "$dns_listo" -eq 1 ] || { echo "ERROR: BIND9 no respondió con ${intranet_ip}" >&2; exit 1; }
+
+# Se intenta split DNS con systemd-resolved. AL2023 puede operar con el stub
+# deshabilitado, por lo que se comprueba getent y se fija BIND9 como primer
+# resolvedor si el nombre interno todavía no se resuelve.
 install -d -m 0755 /etc/systemd/resolved.conf.d
 printf '[Resolve]\nDNS=${dns_ip}\nDomains=~${internal_domain} ~0.10.10.in-addr.arpa\n' \
   > /etc/systemd/resolved.conf.d/rednova-internal.conf
-systemctl restart systemd-resolved || true
+if systemctl list-unit-files --type=service | grep -q '^systemd-resolved.service'; then
+  systemctl restart systemd-resolved
+fi
+if ! getent ahostsv4 "rrhh.${internal_domain}" | awk '{print $1}' | grep -qx "${intranet_ip}"; then
+  cp -L /etc/resolv.conf /etc/resolv.conf.rednova.bak
+  rm -f /etc/resolv.conf
+  {
+    echo "nameserver ${dns_ip}"
+    grep -v "^nameserver ${dns_ip}$" /etc/resolv.conf.rednova.bak
+  } > /etc/resolv.conf
+  chmod 0644 /etc/resolv.conf
+fi
+getent ahostsv4 "rrhh.${internal_domain}" | awk '{print $1}' | grep -qx "${intranet_ip}"
 %{ endif ~}
 
 # Hardening común (SSH por llave, sysctl, servicios y nftables con SSH solo
-# desde Administración). Sin nftables instalado, hardening.sh lo advierte y continúa.
-/opt/rednova/hardening.sh || echo "ADVERTENCIA: hardening.sh terminó con error" >&2
+# desde Administración). Un fallo impide declarar listo al cliente.
+/opt/rednova/hardening.sh
+systemctl is-enabled nftables >/dev/null
+nft list table inet rednova >/dev/null
 
 # Inventario de arranque: el cliente no debe escuchar en otro puerto que no sea SSH.
 ip -4 -brief addr || true

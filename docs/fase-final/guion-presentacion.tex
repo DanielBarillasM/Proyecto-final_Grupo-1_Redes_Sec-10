@@ -1,0 +1,71 @@
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[a4paper,margin=2.5cm]{geometry}
+\usepackage{booktabs,array,longtable,xcolor,hyperref}
+\definecolor{Navy}{HTML}{0B1F33}
+\definecolor{Blue}{HTML}{16697A}
+\hypersetup{colorlinks=true,urlcolor=Blue}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.6em}
+
+\begin{document}
+
+{\LARGE\bfseries\color{Navy}Guion de presentación del proyecto final de Redes}\par
+{\large Fases 1 y 2 · Grupo 1 · Sección 10}
+
+\section*{Uso del guion}
+
+El guion sigue las doce diapositivas de \texttt{presentacion.html}. Cada integrante debe explicar
+las decisiones que implementó y reconocer la diferencia entre validación local y evidencia real en
+AWS. La duración sugerida es de 12 a 15 minutos, más preguntas.
+
+\begin{longtable}{@{}p{1.1cm}p{3.6cm}p{2.8cm}p{7.1cm}@{}}
+\toprule
+\textbf{N.} & \textbf{Tema} & \textbf{Presenta} & \textbf{Puntos de explicación} \\
+\midrule
+1 & Portada & Pablo & Identificar el curso, el equipo y el alcance acumulativo de las dos fases. \\
+2 & Objetivo & Pablo & Explicar la necesidad de segmentar usuarios, servicios, administración y exposición pública mediante infraestructura reproducible. \\
+3 & Fase 1 & Andrés Rafael & Resumir los 20 recursos desplegados y las dos pruebas ICMP conservadas como evidencia de la base. \\
+4 & Arquitectura Fase 2 & Pablo & Recorrer la DMZ, Data Center, clientes y dependencias sin presentar todavía resultados cloud de Fase 2. \\
+5 & Segmentación & Pablo & Justificar CIDR, capacidad, reserva y direcciones fijas de los servicios. \\
+6 & Seguridad & Genser & Diferenciar Security Groups, NACL y nftables. Explicar retornos efímeros e ICMP. \\
+7 & DNS e intranet & Andrés Rafael & Explicar BIND9, el nombre interno, redes autorizadas y el acceso HTTP a Recursos Humanos. \\
+8 & Web pública & Roberto & Explicar DMZ, Elastic IP temporal, Nginx, hardening y HTTPS opcional. \\
+9 & Visitas y TI & Genser & Describir el aislamiento de Visitas y la política asimétrica de TI. Mencionar la instalación privada de nftables y la autoprueba DNS. \\
+10 & Validación local & Pablo & Presentar los resultados reales de los validadores locales y aclarar que la suite AWS sigue pendiente. \\
+11 & Ventana AWS & Pablo y Andrés Rafael & Explicar que ambos ejecutarán las pruebas. Andrés controla identidad, permisos y estado; Pablo opera la suite y organiza evidencias. \\
+12 & Equipo y cierre & Pablo & Recordar el carné pendiente de Genser y enumerar la puerta de cierre: plan, apply, pruebas, retiro y revisión. \\
+\bottomrule
+\end{longtable}
+
+\section*{Preguntas previsibles}
+
+\textbf{¿Por qué no se utilizó NAT Gateway?} Las subredes privadas no requieren Internet general.
+Los paquetes de Amazon Linux llegan mediante un Gateway Endpoint de S3, que limita el acceso al
+repositorio y evita el costo horario de NAT.
+
+\textbf{¿Por qué Security Groups y NACL?} Los Security Groups aplican reglas stateful por interfaz.
+Las NACL agregan control stateless por subred y obligan a declarar el tráfico de retorno. nftables
+aporta una tercera capa en el sistema operativo.
+
+\textbf{¿Cómo se demuestra el aislamiento?} La suite ejecuta pruebas positivas y negativas desde
+el segmento correspondiente. Un resultado solo cuenta como evidencia cuando registra fecha,
+commit, origen, destino, comando, esperado, obtenido y veredicto.
+
+\textbf{¿Está terminada la Fase 2?} La implementación y validación local están preparadas. Falta la
+ventana AWS autorizada, sus evidencias, la auditoría de costos y el retiro confirmado de recursos.
+
+\textbf{¿Quién tomará las pruebas?} Pablo Daniel Barillas Moreno y Andrés Rafael Chivalán. Genser
+conserva la autoría de clientes, sondas y automatización; Roberto conserva la autoría de la web
+pública.
+
+\section*{Datos que deben confirmarse antes de entregar}
+
+\begin{itemize}
+  \item Carné de Genser Andree Catalán Espina.
+  \item Dominio público y decisión sobre HTTPS opcional.
+  \item Aceptación docente de Security Groups más NACL como firewall y ACL del ejercicio.
+  \item Resultados, capturas e inventarios de la ventana AWS.
+\end{itemize}
+
+\end{document}

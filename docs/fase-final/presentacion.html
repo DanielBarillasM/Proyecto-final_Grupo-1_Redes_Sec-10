@@ -1,0 +1,345 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Presentación acumulativa del proyecto final de Redes, Fases 1 y 2, Grupo 1.">
+  <title>Proyecto Final de Redes · Fases 1 y 2</title>
+  <style>
+    :root {
+      --navy: #0b1f33;
+      --blue: #16697a;
+      --cyan: #2ec4b6;
+      --sky: #4ea8de;
+      --coral: #e76f51;
+      --paper: #f7fafb;
+      --ink: #17212b;
+      --muted: #5c677d;
+      --line: #dbe6ea;
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; margin: 0; }
+    body {
+      background: #07131f;
+      color: var(--ink);
+      font-family: "Segoe UI", Arial, sans-serif;
+      overflow: hidden;
+    }
+    .deck { height: 100%; position: relative; }
+    .slide {
+      position: absolute;
+      inset: 0;
+      display: none;
+      padding: clamp(38px, 5vw, 76px) clamp(46px, 7vw, 112px) 82px;
+      background:
+        linear-gradient(135deg, rgba(46,196,182,.08), transparent 38%),
+        var(--paper);
+      overflow: auto;
+    }
+    .slide.active { display: block; }
+    .slide::after {
+      content: "";
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 8px;
+      background: linear-gradient(90deg, var(--cyan), var(--sky), var(--coral));
+    }
+    .eyebrow {
+      margin: 0 0 14px;
+      color: var(--blue);
+      font-weight: 700;
+      letter-spacing: .09em;
+      text-transform: uppercase;
+      font-size: clamp(13px, 1.2vw, 19px);
+    }
+    h1, h2 { margin: 0; color: var(--navy); line-height: 1.06; }
+    h1 { font-size: clamp(48px, 7vw, 104px); max-width: 1100px; }
+    h2 { font-size: clamp(38px, 5vw, 74px); max-width: 1100px; }
+    h3 { color: var(--blue); font-size: clamp(22px, 2.2vw, 34px); margin: 0 0 12px; }
+    p, li, td, th { font-size: clamp(18px, 1.65vw, 28px); line-height: 1.42; }
+    p { max-width: 1180px; }
+    .lead { color: var(--muted); font-size: clamp(24px, 2.5vw, 38px); max-width: 1050px; }
+    .title-slide {
+      color: white;
+      background:
+        linear-gradient(115deg, rgba(11,31,51,.96), rgba(22,105,122,.9)),
+        url("../fase-1/assets/generated/portada-red-nube.png") center/cover;
+    }
+    .title-slide h1, .title-slide h2 { color: white; }
+    .title-slide .eyebrow, .title-slide .lead { color: #d7f4f1; }
+    .title-meta { margin-top: 8vh; color: #d7e4ea; font-size: clamp(17px, 1.5vw, 24px); }
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: clamp(28px, 4vw, 68px);
+      align-items: start;
+      margin-top: 34px;
+    }
+    .plain-list { padding-left: 1.2em; max-width: 1100px; }
+    .plain-list li { margin: .5em 0; }
+    .metric {
+      border-left: 6px solid var(--cyan);
+      padding-left: 22px;
+      margin: 24px 0;
+    }
+    .metric strong { display: block; color: var(--navy); font-size: clamp(30px, 4vw, 58px); }
+    .metric span { color: var(--muted); font-size: clamp(17px, 1.4vw, 23px); }
+    table { width: 100%; border-collapse: collapse; margin-top: 28px; }
+    th { background: var(--navy); color: white; text-align: left; }
+    th, td { padding: 12px 16px; border: 1px solid var(--line); vertical-align: top; }
+    tr:nth-child(even) td { background: #edf6f9; }
+    code { color: var(--blue); font-family: Consolas, monospace; }
+    .diagram {
+      display: block;
+      max-width: 100%;
+      max-height: 58vh;
+      margin: 28px auto 0;
+      object-fit: contain;
+    }
+    .architecture-slide { overflow: hidden; }
+    .architecture-slide h2 { font-size: clamp(34px, 4vw, 58px); }
+    .architecture-slide .diagram {
+      width: 100%;
+      height: calc(100vh - 240px);
+      max-height: none;
+      margin-top: 12px;
+    }
+    .status-local { color: #12664f; font-weight: 700; }
+    .status-cloud { color: #a63d21; font-weight: 700; }
+    .team { margin-top: 34px; max-width: 1000px; }
+    .team div {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 24px;
+      border-bottom: 1px solid var(--line);
+      padding: 14px 0;
+      font-size: clamp(18px, 1.7vw, 28px);
+    }
+    .controls {
+      position: fixed;
+      z-index: 5;
+      left: 24px;
+      right: 24px;
+      bottom: 22px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      pointer-events: none;
+    }
+    .controls button {
+      pointer-events: auto;
+      border: 0;
+      border-radius: 50%;
+      width: 46px;
+      height: 46px;
+      background: var(--navy);
+      color: white;
+      font-size: 23px;
+      cursor: pointer;
+    }
+    .counter { color: var(--muted); background: rgba(255,255,255,.9); padding: 8px 14px; border-radius: 20px; }
+    @media (max-width: 850px) {
+      .grid-2 { grid-template-columns: 1fr; }
+      .slide { padding-left: 30px; padding-right: 30px; }
+      p, li, td, th { font-size: 17px; }
+    }
+    @media print {
+      body { overflow: visible; background: white; }
+      .slide { position: relative; display: block; page-break-after: always; min-height: 100vh; }
+      .controls { display: none; }
+    }
+  </style>
+</head>
+<body>
+<main class="deck" aria-label="Presentación del proyecto final de Redes">
+  <section class="slide title-slide active">
+    <p class="eyebrow">CC3067 Redes · Sección 10 · Grupo 1</p>
+    <h1>Proyecto Final de Redes</h1>
+    <h2>Fases 1 y 2</h2>
+    <p class="lead">Diseño e implementación acumulativa de una red empresarial segmentada en AWS para RedNova GT</p>
+    <p class="title-meta">Universidad del Valle de Guatemala · Noviembre de 2026</p>
+  </section>
+
+  <section class="slide">
+    <p class="eyebrow">Alcance acumulativo</p>
+    <h2>Objetivo de la solución</h2>
+    <div class="grid-2">
+      <div>
+        <h3>Necesidad</h3>
+        <p>Separar usuarios, servicios internos, administración y exposición pública sin perder trazabilidad ni control de costos.</p>
+      </div>
+      <div>
+        <h3>Resultado diseñado</h3>
+        <p>Una VPC <code>10.10.0.0/24</code> con siete bloques, controles stateful y stateless, DNS interno, intranet, DMZ y clientes reproducibles.</p>
+      </div>
+    </div>
+    <div class="metric"><strong>Infraestructura como código</strong><span>Terraform conserva direccionamiento, rutas, SG, NACL, EC2 y dependencias.</span></div>
+  </section>
+
+  <section class="slide">
+    <p class="eyebrow">Base demostrada</p>
+    <h2>Fase 1</h2>
+    <div class="grid-2">
+      <div>
+        <div class="metric"><strong>20 recursos</strong><span>Desplegados durante la ventana registrada de la Fase 1.</span></div>
+        <div class="metric"><strong>0 % pérdida</strong><span>Ping privado entre instancias de Ventas.</span></div>
+        <div class="metric"><strong>100 % bloqueo</strong><span>Intento ICMP desde el bastión hacia Ventas.</span></div>
+      </div>
+      <img class="diagram" src="../fase-1/assets/diagrams/arquitectura-vpc.png" alt="Arquitectura de la VPC de Fase 1">
+    </div>
+  </section>
+
+  <section class="slide architecture-slide">
+    <p class="eyebrow">Arquitectura ampliada</p>
+    <h2>Fase 2</h2>
+    <img class="diagram" src="assets/diagrams/arquitectura-fase2.png" alt="Arquitectura acumulativa de Fase 2">
+  </section>
+
+  <section class="slide">
+    <p class="eyebrow">Direccionamiento</p>
+    <h2>Segmentación de la VPC</h2>
+    <table>
+      <thead><tr><th>Segmento</th><th>CIDR</th><th>Uso</th><th>Exposición</th></tr></thead>
+      <tbody>
+        <tr><td>Visitas</td><td><code>10.10.0.0/26</code></td><td>Cliente temporal</td><td>Internet saliente</td></tr>
+        <tr><td>Ventas</td><td><code>10.10.0.64/26</code></td><td>Usuarios internos</td><td>Privada</td></tr>
+        <tr><td>TI</td><td><code>10.10.0.128/27</code></td><td>Pruebas autorizadas</td><td>Privada</td></tr>
+        <tr><td>Data Center</td><td><code>10.10.0.160/28</code></td><td>DNS e intranet</td><td>Privada</td></tr>
+        <tr><td>Administración</td><td><code>10.10.0.176/28</code></td><td>Bastión</td><td>SSH /32</td></tr>
+        <tr><td>DMZ</td><td><code>10.10.0.192/27</code></td><td>Web pública</td><td>HTTP y HTTPS</td></tr>
+        <tr><td>Reserva</td><td><code>10.10.0.224/27</code></td><td>Crecimiento</td><td>Sin asignar</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="slide">
+    <p class="eyebrow">Defensa por capas</p>
+    <h2>Security Groups, NACL y nftables</h2>
+    <ul class="plain-list">
+      <li>Los Security Groups controlan servicios por instancia y conservan estado.</li>
+      <li>Las NACL restringen flujos por subred y declaran retornos efímeros e ICMP.</li>
+      <li><code>nftables</code> aplica política <code>drop</code> en los clientes y servidores endurecidos.</li>
+      <li>TI obtiene <code>nftables</code> por el Gateway Endpoint de S3, sin Internet general.</li>
+      <li>SSH público permanece cerrado. El acceso administrativo pasa por el bastión.</li>
+    </ul>
+  </section>
+
+  <section class="slide">
+    <p class="eyebrow">Servicios internos</p>
+    <h2>DNS e intranet de Recursos Humanos</h2>
+    <div class="grid-2">
+      <div>
+        <h3>BIND9</h3>
+        <p><code>rrhh.rednova.internal</code> resuelve a <code>10.10.0.165</code>. Solo Ventas, TI, Data Center y Administración pueden consultar.</p>
+      </div>
+      <div>
+        <h3>Nginx interno</h3>
+        <p>La intranet responde por HTTP a redes autorizadas. Visitas, DMZ e Internet quedan bloqueados por varias capas.</p>
+      </div>
+    </div>
+    <p>TI espera a BIND9, comprueba la respuesta y valida la resolución del sistema antes de declararse listo.</p>
+  </section>
+
+  <section class="slide">
+    <p class="eyebrow">Servicio público</p>
+    <h2>Web de Ventas en la DMZ</h2>
+    <ul class="plain-list">
+      <li>EC2 en <code>10.10.0.196</code> con Elastic IP temporal.</li>
+      <li>HTTP público y HTTPS opcional cuando exista dominio autorizado.</li>
+      <li>Nginx limita métodos, oculta versión y añade cabeceras de seguridad.</li>
+      <li>La DMZ no inicia conexiones hacia redes internas.</li>
+      <li>El recurso se retira al cerrar la ventana para controlar costos.</li>
+    </ul>
+  </section>
+
+  <section class="slide">
+    <p class="eyebrow">Políticas de usuarios</p>
+    <h2>Visitas y TI</h2>
+    <div class="grid-2">
+      <div>
+        <h3>Visitas</h3>
+        <p>Accede a HTTP, HTTPS y DNS público. No entra a la VPC ni expone servicios a Internet.</p>
+      </div>
+      <div>
+        <h3>TI</h3>
+        <p>Inicia pruebas hacia todos los segmentos. Las demás redes no pueden iniciar conexiones laterales hacia TI.</p>
+      </div>
+    </div>
+    <div class="metric"><strong>50 de 50</strong><span>Flujos estáticos coinciden con la matriz definida.</span></div>
+  </section>
+
+  <section class="slide">
+    <p class="eyebrow">Comprobación local</p>
+    <h2>Estado verificado</h2>
+    <table>
+      <thead><tr><th>Control</th><th>Resultado</th></tr></thead>
+      <tbody>
+        <tr><td>Terraform format y validate</td><td class="status-local">Correcto</td></tr>
+        <tr><td>Validador de Pablo</td><td class="status-local">Sin fallas</td></tr>
+        <tr><td>Validador de Andrés</td><td class="status-local">28 correctas, 3 omitidas, 0 fallidas</td></tr>
+        <tr><td>Validador de Roberto</td><td class="status-local">55 correctas, 3 omitidas, 0 fallidas</td></tr>
+        <tr><td>Validador de clientes y matriz</td><td class="status-local">65 correctas, 0 omitidas, 0 fallidas</td></tr>
+        <tr><td>Pruebas reales F2-01 a F2-13</td><td class="status-cloud">Pendientes de ventana AWS autorizada</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="slide">
+    <p class="eyebrow">Ventana AWS</p>
+    <h2>Ejecución y evidencias</h2>
+    <div class="grid-2">
+      <div>
+        <h3>Pablo Daniel Barillas</h3>
+        <p>Opera la suite, organiza salidas F2-01 a F2-13 e integra capturas, informe y presentación.</p>
+      </div>
+      <div>
+        <h3>Andrés Rafael Chivalán</h3>
+        <p>Confirma identidad, región, permisos y estado. Participa en las pruebas y revisa secretos, recursos y costos.</p>
+      </div>
+    </div>
+    <p><strong>Plan, apply, pruebas, DNS y destroy requieren confirmaciones separadas.</strong></p>
+  </section>
+
+  <section class="slide">
+    <p class="eyebrow">Equipo</p>
+    <h2>Grupo 1 · Sección 10</h2>
+    <div class="team">
+      <div><span>Pablo Daniel Barillas Moreno</span><strong>22193</strong></div>
+      <div><span>Andrés Rafael Chivalán</span><strong>21534</strong></div>
+      <div><span>Roberto Emiliano Otoniel Camposeco Torres</span><strong>23968</strong></div>
+      <div><span>Genser Andree Catalán Espina</span><strong>Carné pendiente</strong></div>
+    </div>
+    <p class="lead">Siguiente puerta: ventana AWS autorizada, evidencias genuinas, retiro de recursos y revisión final.</p>
+  </section>
+</main>
+
+<nav class="controls" aria-label="Navegación de diapositivas">
+  <button id="prev" aria-label="Diapositiva anterior">‹</button>
+  <span class="counter" id="counter">1 / 12</span>
+  <button id="next" aria-label="Diapositiva siguiente">›</button>
+</nav>
+
+<script>
+  const slides = [...document.querySelectorAll('.slide')];
+  let current = 0;
+  function show(index) {
+    current = (index + slides.length) % slides.length;
+    slides.forEach((slide, i) => slide.classList.toggle('active', i === current));
+    document.getElementById('counter').textContent = `${current + 1} / ${slides.length}`;
+    history.replaceState(null, '', `#${current + 1}`);
+  }
+  document.getElementById('prev').addEventListener('click', () => show(current - 1));
+  document.getElementById('next').addEventListener('click', () => show(current + 1));
+  document.addEventListener('keydown', event => {
+    if (['ArrowRight', 'PageDown', ' '].includes(event.key)) show(current + 1);
+    if (['ArrowLeft', 'PageUp'].includes(event.key)) show(current - 1);
+    if (event.key === 'Home') show(0);
+    if (event.key === 'End') show(slides.length - 1);
+  });
+  const initial = Number(location.hash.slice(1));
+  show(Number.isInteger(initial) && initial > 0 ? initial - 1 : 0);
+</script>
+</body>
+</html>

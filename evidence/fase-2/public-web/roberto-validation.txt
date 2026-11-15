@@ -1,4 +1,4 @@
-Validación local web pública, hardening y dominio - 2026-11-14T19:49:39-06:00
+Validación local web pública, hardening y dominio - 2026-11-15T12:14:28-06:00
 
 [OK] Web pública 10.10.0.196 pertenece a la DMZ 10.10.0.192/27
 [OK] variables.tf asigna 10.10.0.196 a public_web
@@ -35,7 +35,7 @@ Validación local web pública, hardening y dominio - 2026-11-14T19:49:39-06:00
 [OK] bash -n hardening.sh: sintaxis correcta
 [OK] bash -n enable-https.sh: sintaxis correcta
 [OK] bash -n user-data con enable_https = true: sintaxis correcta
-[OK] user_data renderizado = 11303 bytes (límite de EC2: 16384; margen mínimo exigido: 15500)
+[OK] user_data renderizado = 11411 bytes (límite de EC2: 16384; margen mínimo exigido: 15500)
 [OK] Archivos incrustados en la EC2 con finales de línea LF, no CRLF (ok)
 [OK] Nginx oculta su versión
 [OK] server_name admite el dominio y el acceso por IP

@@ -1,20 +1,26 @@
-# Proyecto Final de Redes · Fase 1 y Fase 2 en integración
+# Proyecto Final de Redes · Fases 1 y 2 integradas
 
 > ### Diseño, subneteo e implementación base de una red empresarial segmentada en AWS.
 
 > ### **Universidad del Valle de Guatemala · CC3067 Redes · Sección 10 · Grupo 1**
 
-El repositorio contiene el informe técnico en LaTeX, diagramas, infraestructura como código con Terraform y evidencias de validación para la Fase 1.
+El repositorio contiene el informe técnico acumulativo en LaTeX y PDF, la presentación, los
+diagramas, la infraestructura como código con Terraform y las evidencias de validación local de
+ambas fases.
 
 La rama `fase-2-genser` integra la base de red asignada a Pablo Daniel Barillas Moreno (DMZ,
 rutas, NACL, Security Groups, variables y outputs), el DNS interno y la intranet de Recursos
 Humanos de Andrés Rafael Chivalán, la web pública de Roberto en la DMZ y los clientes de
-Visitas/TI con la suite de pruebas de Genser. Las evidencias cloud se incorporarán durante la
+Visitas/TI con la suite implementada por Genser. Pablo Daniel Barillas Moreno y Andrés Rafael
+Chivalán ejecutarán las pruebas y recopilarán sus evidencias. Las evidencias cloud se incorporarán durante la
 ventana AWS autorizada.
 
 ## Entregables a revisar por parte del auxiliar o del docente correspondiente
 
-- PDF final: [`output/pdf/Proyecto_Final_Fase_1_Grupo_1.pdf`](output/pdf/Proyecto_Final_Fase_1_Grupo_1.pdf)
+- PDF acumulativo: [`output/pdf/Proyecto_Final_Fases_1_y_2_Grupo_1.pdf`](output/pdf/Proyecto_Final_Fases_1_y_2_Grupo_1.pdf)
+- Presentación: [`docs/fase-final/presentacion.html`](docs/fase-final/presentacion.html)
+- Guion: [`docs/fase-final/guion-presentacion.tex`](docs/fase-final/guion-presentacion.tex)
+- Aportes: [`docs/fase-final/aportes-integrantes.docx`](docs/fase-final/aportes-integrantes.docx)
 - Infraestructura: [`infra/terraform/`](infra/terraform/)
 - Evidencias: [`evidence/`](evidence/)
 

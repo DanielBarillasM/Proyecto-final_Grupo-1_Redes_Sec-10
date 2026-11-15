@@ -1,7 +1,9 @@
 #Requires -Version 5.1
 <#
 .SYNOPSIS
-    Suite de pruebas de aceptación de la Fase 2 (F2-01 a F2-13). Responsable: Genser Catalán.
+    Suite de pruebas de aceptación de la Fase 2 (F2-01 a F2-13).
+    Implementación: Genser Andree Catalán Espina. Ejecución y evidencia: Pablo Daniel
+    Barillas Moreno y Andrés Rafael Chivalán.
 
 .DESCRIPTION
     Ejecuta cada prueba desde su segmento de origen (SSH a través del bastión) o desde el
@@ -137,45 +139,45 @@ function T {
     }
 }
 $catalog = @(
-    T 'F2-01'  'dns'          'Andrés'          'ventas'     'dns'     $Rrhh            53   'permitir' 'Ventas resuelve rrhh.rednova.internal con BIND9' $Ip.intranet
-    T 'F2-02'  'dns'          'Andrés'          'ventas'     'http'    "http://$($Ip.intranet)/" 80 'permitir' 'Ventas abre la intranet (HTTP 200)' $Rrhh
-    T 'F2-03a' 'connectivity' 'Andrés/Genser'   'ti'         'dns'     $Rrhh            53   'permitir' 'TI resuelve rrhh.rednova.internal con BIND9' $Ip.intranet
-    T 'F2-03b' 'connectivity' 'Andrés/Genser'   'ti'         'http'    "http://$Rrhh/"  80   'permitir' 'TI abre la intranet por nombre (HTTP 200)'
-    T 'F2-04'  'dns'          'Andrés'          'admin'      'http'    "http://$($Ip.intranet)/" 80 'permitir' 'Administración abre la intranet (HTTP 200)' $Rrhh
-    T 'F2-05a' 'connectivity' 'Genser'          'visitas'    'http'    "http://$($Ip.intranet)/" 80 'bloquear' 'Visitas NO abre la intranet' $Rrhh
-    T 'F2-05b' 'connectivity' 'Genser'          'visitas'    'dns'     $Rrhh            53   'bloquear' 'Visitas NO consulta el DNS interno'
-    T 'F2-05c' 'connectivity' 'Genser'          'visitas'    'tcp'     $Ip.intranet     22   'bloquear' 'Visitas NO alcanza SSH de la intranet'
-    T 'F2-05d' 'connectivity' 'Genser'          'dmz'        'http'    "http://$($Ip.intranet)/" 80 'bloquear' 'La DMZ NO abre la intranet' $Rrhh
-    T 'F2-06'  'security'     'Genser'          'local'      'lresolve' $Rrhh           53   'bloquear' 'rrhh.rednova.internal no existe en el DNS público'
-    T 'F2-07a' 'connectivity' 'Genser'          'visitas'    'resolve' 'example.com'    53   'permitir' 'Visitas resuelve nombres públicos (resolvedor VPC)'
-    T 'F2-07b' 'connectivity' 'Genser'          'visitas'    'http'    'https://example.com/' 443 'permitir' 'Visitas navega por HTTPS en Internet'
-    T 'F2-07c' 'connectivity' 'Genser'          'visitas'    'http'    'http://example.com/'  80  'permitir' 'Visitas navega por HTTP en Internet'
-    T 'F2-08a' 'connectivity' 'Genser'          'ti'         'icmp'    $Ip.visitas      $null 'permitir' 'TI inicia ICMP hacia Visitas'
-    T 'F2-08b' 'connectivity' 'Genser'          'ti'         'icmp'    $VentasIp        $null 'permitir' 'TI inicia ICMP hacia Ventas'
-    T 'F2-08c' 'connectivity' 'Genser'          'ti'         'icmp'    $BastionPrivateIp $null 'permitir' 'TI inicia ICMP hacia Administración'
-    T 'F2-08d' 'connectivity' 'Genser'          'ti'         'icmp'    $Ip.dns          $null 'permitir' 'TI inicia ICMP hacia Data Center (DNS)'
-    T 'F2-08e' 'connectivity' 'Genser'          'ti'         'tcp'     $Ip.dns          53   'permitir' 'TI inicia TCP/53 hacia el DNS'
-    T 'F2-08f' 'connectivity' 'Genser'          'ti'         'tcp'     $Ip.intranet     80   'permitir' 'TI inicia TCP/80 hacia la intranet'
-    T 'F2-08g' 'connectivity' 'Genser'          'ti'         'icmp'    $Ip.web          $null 'permitir' 'TI inicia ICMP hacia la DMZ'
-    T 'F2-08h' 'connectivity' 'Genser'          'ti'         'http'    "http://$($Ip.web)/" 80 'permitir' 'TI abre la web de la DMZ por IP privada'
-    T 'F2-09a' 'connectivity' 'Genser'          'ventas'     'icmp'    $Ip.ti           $null 'bloquear' 'Ventas NO inicia ICMP hacia TI'
-    T 'F2-09b' 'connectivity' 'Genser'          'ventas'     'tcp'     $Ip.ti           22   'bloquear' 'Ventas NO inicia SSH hacia TI'
-    T 'F2-09c' 'connectivity' 'Genser'          'ventas'     'tcp'     $Ip.ti           8080 'bloquear' 'Ventas NO inicia TCP alto hacia TI (lo detiene el SG)'
-    T 'F2-09d' 'connectivity' 'Genser'          'visitas'    'tcp'     $Ip.ti           22   'bloquear' 'Visitas NO inicia SSH hacia TI'
-    T 'F2-09e' 'connectivity' 'Genser'          'visitas'    'icmp'    $Ip.ti           $null 'bloquear' 'Visitas NO inicia ICMP hacia TI'
-    T 'F2-09f' 'connectivity' 'Genser'          'dmz'        'tcp'     $Ip.ti           22   'bloquear' 'La DMZ NO inicia SSH hacia TI'
-    T 'F2-09g' 'connectivity' 'Genser'          'datacenter' 'tcp'     $Ip.ti           22   'bloquear' 'Data Center NO inicia SSH hacia TI'
-    T 'F2-10a' 'public-web'   'Roberto'         'local'      'lhttp'   $(if ($PublicWebIp) { "http://$PublicWebIp/" }) 80 'permitir' 'Web pública por Elastic IP (HTTP 200)'
-    T 'F2-10b' 'public-web'   'Roberto'         'local'      'lhttp'   $(if ($PublicDomain) { "http://$PublicDomain/" }) 80 'permitir' 'Web pública por dominio (HTTP 200 o redirección a HTTPS)'
-    T 'F2-11a' 'security'     'Roberto/Genser'  'local'      'ltcp'    $PublicWebIp     22   'bloquear' 'SSH público hacia la DMZ bloqueado'
-    T 'F2-11b' 'security'     'Genser'          'local'      'ltcp'    $VisitasPublicIp 22   'bloquear' 'SSH público hacia el cliente de Visitas bloqueado'
-    T 'F2-12a' 'security'     'Roberto/Genser'  'local'      'lscan'   $PublicWebIp     $webPorts 'permitir' "Exterior: en la web solo están abiertos $webPorts"
-    T 'F2-12b' 'security'     'Genser'          'local'      'lscan'   $VisitasPublicIp ''   'permitir' 'Exterior: el cliente de Visitas no expone puertos'
-    T 'F2-12c' 'security'     'Genser'          'ti'         'scan'    $Ip.dns          '53' 'permitir' 'Desde TI: en el DNS solo está abierto 53'
-    T 'F2-12d' 'security'     'Genser'          'ti'         'scan'    $Ip.intranet     '80' 'permitir' 'Desde TI: en la intranet solo está abierto 80'
-    T 'F2-12e' 'security'     'Genser'          'ti'         'scan'    $Ip.web          $webPorts 'permitir' "Desde TI: en la web solo están abiertos $webPorts"
-    T 'F2-13a' 'public-web'   'Roberto'         'local'      'lhttp'   $(if ($PublicDomain) { "https://$PublicDomain/" }) 443 'permitir' 'HTTPS con certificado válido (opcional)' $null $true
-    T 'F2-13b' 'public-web'   'Roberto'         'local'      'lhttp'   $(if ($PublicDomain) { "http://$PublicDomain/" })  80 'redirigir' 'HTTP redirige a HTTPS (opcional)' $null $true
+    T 'F2-01'  'dns'          'Pablo/Andrés Rafael' 'ventas'     'dns'     $Rrhh            53   'permitir' 'Ventas resuelve rrhh.rednova.internal con BIND9' $Ip.intranet
+    T 'F2-02'  'dns'          'Pablo/Andrés Rafael' 'ventas'     'http'    "http://$($Ip.intranet)/" 80 'permitir' 'Ventas abre la intranet (HTTP 200)' $Rrhh
+    T 'F2-03a' 'connectivity' 'Pablo/Andrés Rafael' 'ti'         'dns'     $Rrhh            53   'permitir' 'TI resuelve rrhh.rednova.internal con BIND9' $Ip.intranet
+    T 'F2-03b' 'connectivity' 'Pablo/Andrés Rafael' 'ti'         'http'    "http://$Rrhh/"  80   'permitir' 'TI abre la intranet por nombre (HTTP 200)'
+    T 'F2-04'  'dns'          'Pablo/Andrés Rafael' 'admin'      'http'    "http://$($Ip.intranet)/" 80 'permitir' 'Administración abre la intranet (HTTP 200)' $Rrhh
+    T 'F2-05a' 'connectivity' 'Pablo/Andrés Rafael' 'visitas'    'http'    "http://$($Ip.intranet)/" 80 'bloquear' 'Visitas NO abre la intranet' $Rrhh
+    T 'F2-05b' 'connectivity' 'Pablo/Andrés Rafael' 'visitas'    'dns'     $Rrhh            53   'bloquear' 'Visitas NO consulta el DNS interno'
+    T 'F2-05c' 'connectivity' 'Pablo/Andrés Rafael' 'visitas'    'tcp'     $Ip.intranet     22   'bloquear' 'Visitas NO alcanza SSH de la intranet'
+    T 'F2-05d' 'connectivity' 'Pablo/Andrés Rafael' 'dmz'        'http'    "http://$($Ip.intranet)/" 80 'bloquear' 'La DMZ NO abre la intranet' $Rrhh
+    T 'F2-06'  'security'     'Pablo/Andrés Rafael' 'local'      'lresolve' $Rrhh           53   'bloquear' 'rrhh.rednova.internal no existe en el DNS público'
+    T 'F2-07a' 'connectivity' 'Pablo/Andrés Rafael' 'visitas'    'resolve' 'example.com'    53   'permitir' 'Visitas resuelve nombres públicos (resolvedor VPC)'
+    T 'F2-07b' 'connectivity' 'Pablo/Andrés Rafael' 'visitas'    'http'    'https://example.com/' 443 'permitir' 'Visitas navega por HTTPS en Internet'
+    T 'F2-07c' 'connectivity' 'Pablo/Andrés Rafael' 'visitas'    'http'    'http://example.com/'  80  'permitir' 'Visitas navega por HTTP en Internet'
+    T 'F2-08a' 'connectivity' 'Pablo/Andrés Rafael' 'ti'         'icmp'    $Ip.visitas      $null 'permitir' 'TI inicia ICMP hacia Visitas'
+    T 'F2-08b' 'connectivity' 'Pablo/Andrés Rafael' 'ti'         'icmp'    $VentasIp        $null 'permitir' 'TI inicia ICMP hacia Ventas'
+    T 'F2-08c' 'connectivity' 'Pablo/Andrés Rafael' 'ti'         'icmp'    $BastionPrivateIp $null 'permitir' 'TI inicia ICMP hacia Administración'
+    T 'F2-08d' 'connectivity' 'Pablo/Andrés Rafael' 'ti'         'icmp'    $Ip.dns          $null 'permitir' 'TI inicia ICMP hacia Data Center (DNS)'
+    T 'F2-08e' 'connectivity' 'Pablo/Andrés Rafael' 'ti'         'tcp'     $Ip.dns          53   'permitir' 'TI inicia TCP/53 hacia el DNS'
+    T 'F2-08f' 'connectivity' 'Pablo/Andrés Rafael' 'ti'         'tcp'     $Ip.intranet     80   'permitir' 'TI inicia TCP/80 hacia la intranet'
+    T 'F2-08g' 'connectivity' 'Pablo/Andrés Rafael' 'ti'         'icmp'    $Ip.web          $null 'permitir' 'TI inicia ICMP hacia la DMZ'
+    T 'F2-08h' 'connectivity' 'Pablo/Andrés Rafael' 'ti'         'http'    "http://$($Ip.web)/" 80 'permitir' 'TI abre la web de la DMZ por IP privada'
+    T 'F2-09a' 'connectivity' 'Pablo/Andrés Rafael' 'ventas'     'icmp'    $Ip.ti           $null 'bloquear' 'Ventas NO inicia ICMP hacia TI'
+    T 'F2-09b' 'connectivity' 'Pablo/Andrés Rafael' 'ventas'     'tcp'     $Ip.ti           22   'bloquear' 'Ventas NO inicia SSH hacia TI'
+    T 'F2-09c' 'connectivity' 'Pablo/Andrés Rafael' 'ventas'     'tcp'     $Ip.ti           8080 'bloquear' 'Ventas NO inicia TCP alto hacia TI (lo detiene el SG)'
+    T 'F2-09d' 'connectivity' 'Pablo/Andrés Rafael' 'visitas'    'tcp'     $Ip.ti           22   'bloquear' 'Visitas NO inicia SSH hacia TI'
+    T 'F2-09e' 'connectivity' 'Pablo/Andrés Rafael' 'visitas'    'icmp'    $Ip.ti           $null 'bloquear' 'Visitas NO inicia ICMP hacia TI'
+    T 'F2-09f' 'connectivity' 'Pablo/Andrés Rafael' 'dmz'        'tcp'     $Ip.ti           22   'bloquear' 'La DMZ NO inicia SSH hacia TI'
+    T 'F2-09g' 'connectivity' 'Pablo/Andrés Rafael' 'datacenter' 'tcp'     $Ip.ti           22   'bloquear' 'Data Center NO inicia SSH hacia TI'
+    T 'F2-10a' 'public-web'   'Pablo/Andrés Rafael' 'local'      'lhttp'   $(if ($PublicWebIp) { "http://$PublicWebIp/" }) 80 'permitir' 'Web pública por Elastic IP (HTTP 200)'
+    T 'F2-10b' 'public-web'   'Pablo/Andrés Rafael' 'local'      'lhttp'   $(if ($PublicDomain) { "http://$PublicDomain/" }) 80 'permitir' 'Web pública por dominio (HTTP 200 o redirección a HTTPS)'
+    T 'F2-11a' 'security'     'Pablo/Andrés Rafael' 'local'      'ltcp'    $PublicWebIp     22   'bloquear' 'SSH público hacia la DMZ bloqueado'
+    T 'F2-11b' 'security'     'Pablo/Andrés Rafael' 'local'      'ltcp'    $VisitasPublicIp 22   'bloquear' 'SSH público hacia el cliente de Visitas bloqueado'
+    T 'F2-12a' 'security'     'Pablo/Andrés Rafael' 'local'      'lscan'   $PublicWebIp     $webPorts 'permitir' "Exterior: en la web solo están abiertos $webPorts"
+    T 'F2-12b' 'security'     'Pablo/Andrés Rafael' 'local'      'lscan'   $VisitasPublicIp ''   'permitir' 'Exterior: el cliente de Visitas no expone puertos'
+    T 'F2-12c' 'security'     'Pablo/Andrés Rafael' 'ti'         'scan'    $Ip.dns          '53' 'permitir' 'Desde TI: en el DNS solo está abierto 53'
+    T 'F2-12d' 'security'     'Pablo/Andrés Rafael' 'ti'         'scan'    $Ip.intranet     '80' 'permitir' 'Desde TI: en la intranet solo está abierto 80'
+    T 'F2-12e' 'security'     'Pablo/Andrés Rafael' 'ti'         'scan'    $Ip.web          $webPorts 'permitir' "Desde TI: en la web solo están abiertos $webPorts"
+    T 'F2-13a' 'public-web'   'Pablo/Andrés Rafael' 'local'      'lhttp'   $(if ($PublicDomain) { "https://$PublicDomain/" }) 443 'permitir' 'HTTPS con certificado válido (opcional)' $null $true
+    T 'F2-13b' 'public-web'   'Pablo/Andrés Rafael' 'local'      'lhttp'   $(if ($PublicDomain) { "http://$PublicDomain/" })  80 'redirigir' 'HTTP redirige a HTTPS (opcional)' $null $true
 )
 
 # Con pwsh -File los arreglos llegan como 'a,b': se separan por comas.

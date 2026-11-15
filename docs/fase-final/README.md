@@ -1,7 +1,8 @@
 # Entrega final acumulativa
 
-Esta carpeta contiene la documentación de integración de Fase 1 y Fase 2. El PDF final de
-Fase 1 en `output/pdf/` se conserva sin modificaciones.
+Esta carpeta contiene la documentación acumulativa de Fase 1 y Fase 2. El documento maestro
+`main.tex` genera `output/pdf/Proyecto_Final_Fases_1_y_2_Grupo_1.pdf`; el PDF histórico de Fase 1
+se conserva como antecedente.
 
 ## Estado integrado de Pablo, Andrés, Roberto y Genser
 
@@ -23,7 +24,8 @@ Implementado localmente:
 - `user_data`, hardening por capas, validador local y procedimiento de HTTPS opcional.
 
 - Clientes temporales de Visitas y TI, sonda remota, suite `test-phase2.ps1` y validador con
-  matriz estática de tráfico (Genser).
+  matriz estática de tráfico (implementación de Genser; ejecución y evidencia a cargo de Pablo y
+  Andrés Rafael).
 
 Pendiente:
 
@@ -34,8 +36,14 @@ Pendiente:
 - `arquitectura-fase2.md`: diagrama y decisiones de red.
 - `assets/diagrams/arquitectura-fase2.pdf`: diagrama vectorial para el informe.
 - `assets/diagrams/arquitectura-fase2.png`: vista para revisión y presentación.
-- `sections/`: capítulos del reporte acumulativo; se completarán durante la integración final.
+- `main.tex` y `preamble.tex`: documento maestro acumulativo y estilo compartido.
+- `sections/`: capítulos integrados del reporte acumulativo.
 - `assets/`: diagramas renderizados y capturas redactadas.
+- `presentacion.html`: presentación autónoma de doce diapositivas.
+- `guion-presentacion.tex`: distribución y notas de exposición.
+- `aportes-integrantes.docx`: resumen editable de aportes y responsabilidades.
+
+La compilación reproducible se ejecuta con `pwsh scripts/build-final-report.ps1`.
 
 Los diagramas se regeneran con `python scripts/generate-phase2-figures.py`.
 

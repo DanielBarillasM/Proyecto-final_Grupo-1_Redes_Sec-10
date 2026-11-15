@@ -1,0 +1,23 @@
+\chapter{Conclusiones y estado de cierre}
+
+La solución acumulativa conserva la VPC y los controles demostrados en la Fase 1 y añade una DMZ,
+DNS interno, intranet de Recursos Humanos, web pública y clientes temporales de Visitas y TI. La
+infraestructura permanece reproducible en Terraform y el cómputo de la Fase 2 está deshabilitado de
+forma predeterminada para prevenir cargos accidentales.
+
+La revisión local comprobó formato y validez de Terraform, sintaxis de plantillas, reglas de
+retorno de las NACL, límites de los Security Groups y 50 flujos de la matriz estática. Los clientes
+temporales instalan \code{nftables}; TI usa el Gateway Endpoint de S3 para obtener el paquete sin
+salida general a Internet y valida la resolución interna antes de declararse listo.
+
+Pablo Daniel Barillas Moreno y Andrés Rafael Chivalán ejecutarán la suite F2-01 a F2-13 y
+recopilarán las evidencias. Andrés Rafael conserva la coordinación de identidad, permisos, región y
+ventanas de AWS. Ningún resultado cloud de la Fase 2 se declara completado mientras no exista salida
+real, captura revisada, inventario y confirmación del retiro de recursos temporales.
+
+\begin{warningbox}[Puerta de cierre]
+La implementación local está preparada para revisión. El cierre total requiere autorización de
+AWS, plan revisado, \code{apply}, pruebas reales, evidencia, auditoría de costos y \code{destroy} o
+retiro confirmado. También deben confirmarse el carné de Genser, el dominio público y la aceptación
+docente de Security Groups más NACL como firewall y ACL del ejercicio.
+\end{warningbox}

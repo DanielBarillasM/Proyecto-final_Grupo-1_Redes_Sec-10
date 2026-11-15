@@ -135,7 +135,7 @@ ssh ec2-user@10.10.0.164 'sudo tail -20 /var/named/data/queries.log'   # IP de c
 ssh ec2-user@10.10.0.165 'sudo tail -20 /var/log/nginx/access.log'     # 200 desde Ventas, TI y bastión
 ```
 
-### 5. Apoyo a las pruebas negativas de Genser (F2-05/F2-06)
+### 5. Apoyo a las pruebas negativas de Pablo y Andrés Rafael (F2-05/F2-06)
 
 Desde el cliente de Visitas (`10.10.0.4`), copiando `dnsquery.py`:
 

@@ -1,0 +1,71 @@
+\documentclass[11pt,oneside]{report}
+\input{preamble}
+
+\begin{document}
+
+\hypersetup{pageanchor=false}
+\begin{titlepage}
+  \thispagestyle{empty}
+  \centering
+  \textcolor{Blue}{\large Universidad del Valle de Guatemala}\\[2pt]
+  \textcolor{MidGray}{Facultad de Ingeniería · Departamento de Ciencias de la Computación}\\[2pt]
+  \textcolor{MidGray}{CC3067 Redes · Sección 10 · Grupo 1}
+
+  \vspace{0.7cm}
+  \HRule\\[0.45cm]
+  {\Huge\bfseries\textcolor{Navy}{Proyecto Final de Redes}}\\[0.3cm]
+  {\LARGE\bfseries\textcolor{Blue}{Fases 1 y 2}}\\[0.22cm]
+  {\large\textcolor{MidGray}{Red empresarial segmentada para RedNova GT en AWS}}
+  \vspace{0.35cm}
+
+  \includegraphics[width=0.61\textwidth,height=9.4cm,keepaspectratio]{portada-red-nube.png}
+
+  \vfill
+  \begin{tabular}{@{}ll@{}}
+    \textbf{Pablo Daniel Barillas Moreno} & 22193 \\
+    \textbf{Andrés Rafael Chivalán} & 21534 \\
+    \textbf{Roberto Emiliano Otoniel Camposeco Torres} & 23968 \\
+    \textbf{Genser Andree Catalán Espina} & Carné pendiente de confirmación \\
+  \end{tabular}
+
+  \vspace{0.45cm}
+  \textcolor{MidGray}{Guatemala, noviembre de 2026}
+\end{titlepage}
+
+\hypersetup{pageanchor=true}
+\pagenumbering{roman}
+\pagestyle{plain}
+\input{sections/00-control-final}
+\tableofcontents
+\listoffigures
+\listoftables
+\clearpage
+\pagenumbering{arabic}
+\pagestyle{headings}
+
+\input{../fase-1/sections/01-resumen}
+\input{../fase-1/sections/02-alcance}
+\input{../fase-1/sections/03-proveedor}
+\input{../fase-1/sections/04-requerimientos}
+\input{../fase-1/sections/05-diseno}
+\input{../fase-1/sections/06-subneteo}
+\input{../fase-1/sections/07-seguridad}
+\input{../fase-1/sections/08-implementacion}
+\input{../fase-1/sections/09-pruebas}
+\input{../fase-1/sections/10-planeacion}
+\input{../fase-1/sections/11-costos}
+\input{../fase-1/sections/12-conclusiones}
+
+\input{sections/15-arquitectura-fase2}
+\input{sections/16-firewall-nacl}
+\input{sections/17-integracion-terraform}
+\input{sections/18-dns-intranet}
+\input{sections/19-web-publica-hardening}
+\input{sections/20-pruebas-seguridad}
+\input{sections/21-conclusiones-fase-final}
+
+\appendix
+\input{../fase-1/sections/13-anexos}
+\input{../fase-1/sections/14-referencias}
+
+\end{document}

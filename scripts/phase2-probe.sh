@@ -1,6 +1,7 @@
 #!/bin/bash
 # =============================================================================
-# Sonda remota de la suite de Fase 2 (CC3067 - Grupo 1). Responsable: Genser Catalan
+# Sonda remota de la suite de Fase 2 (CC3067 - Grupo 1).
+# Implementacion: Genser Catalan. Ejecucion: Pablo Barillas y Andres Rafael Chivalan.
 #
 # test-phase2.ps1 la envia por stdin a la instancia de origen (ssh ... 'bash -s -- ...'),
 # por lo que no necesita estar instalada en las EC2. Solo usa herramientas presentes en

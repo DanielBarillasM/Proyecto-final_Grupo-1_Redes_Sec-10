@@ -1,8 +1,10 @@
 \chapter{Políticas de Visitas y TI, pruebas de seguridad y evidencias}
 
-Responsable: Genser Andree Catalán Espina. Este capítulo describe los clientes temporales que
-representan a los segmentos de Visitas y TI, las reglas que implementan sus políticas y la
-metodología con la que se comprueba toda la matriz de tráfico de la Fase 2. Su estado es de
+Implementación de clientes, automatización y matriz: Genser Andree Catalán Espina. Ejecución de
+pruebas y recopilación de evidencias: Pablo Daniel Barillas Moreno y Andrés Rafael Chivalán. Este
+capítulo describe los clientes temporales que representan a los segmentos de Visitas y TI, las
+reglas que implementan sus políticas y la metodología con la que se comprueba toda la matriz de
+tráfico de la Fase 2. Su estado es de
 \emph{implementación local validada}; los resultados en AWS se incorporan cuando existan salidas
 y capturas reales de la ventana autorizada.
 
@@ -28,8 +30,11 @@ y disco EBS cifrado, y se etiquetan como temporales. La subred de Visitas no asi
 por defecto, por lo que la salida a Internet se declara de forma explícita con
 \code{associate\_public\_ip\_address = true}; la dirección desaparece al destruir la instancia.
 El \code{user\_data} (\code{templates/test-client-user-data.tftpl}) instala la consulta DNS
-\code{rednova-dnsquery}, ejecuta el hardening común y, solo en TI, configura
-\code{systemd-resolved} para resolver \code{*.rednova.internal} con BIND9.
+\code{rednova-dnsquery}, instala y verifica \code{nftables} y ejecuta el hardening común. TI
+descarga el paquete mediante el Gateway Endpoint de S3, sin salida general a Internet. Además,
+espera una respuesta válida de BIND9, configura \code{systemd-resolved}, verifica la resolución
+con \code{getent} y usa una copia controlada de \code{/etc/resolv.conf} como respaldo si el modo
+de resolución de Amazon Linux no aplica el dominio de enrutamiento.
 
 \section{Implementación de las políticas}
 
@@ -72,6 +77,11 @@ la entrada estándar, de modo que no se instala nada en las instancias. El scrip
     con identificadores de cuenta redactados;
   \item termina con código 1 si algún resultado contradice la matriz.
 \end{itemize}
+
+Pablo opera la suite y organiza las salidas por identificador. Andrés Rafael confirma la identidad,
+región, estado y permisos de la ventana, participa en la ejecución y revisa que las evidencias no
+expongan secretos. Cada archivo registra a ambos como responsables operativos; la autoría técnica
+de los clientes y scripts permanece atribuida a Genser.
 
 Antes de la ventana, \code{scripts/validate-phase2.py} evalúa 50 flujos contra los Security
 Groups y NACL declarados en Terraform, capa por capa e incluyendo el tráfico de retorno.

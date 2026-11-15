@@ -18,6 +18,9 @@ Esta carpeta separa validaciones locales reproducibles de evidencias obtenidas e
 
 ## Generadas por `scripts/test-phase2.ps1` durante la ventana
 
+Pablo Daniel Barillas Moreno y Andrés Rafael Chivalán ejecutan la suite y recopilan estas
+evidencias. Genser Andree Catalán Espina conserva la autoría de los clientes y la automatización.
+
 - `pruebas-fase2.txt` y `pruebas-fase2.csv`: matriz con fecha, commit, autorización, origen,
   destino, esperado, obtenido y veredicto.
 - `connectivity/F2-0x*.txt`, `security/F2-06|11|12*.txt`, `dns/F2-01|02|04.txt` y

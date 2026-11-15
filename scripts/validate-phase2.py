@@ -388,6 +388,9 @@ def main() -> int:
     check(re.search(r'variable\s+"enable_phase2_compute"\s*\{[^}]*default\s*=\s*false', variables, re.S) is not None,
           "enable_phase2_compute = false por defecto")
     check('output "test_clients"' in tf and "bastion_private_ip" in tf, "Output test_clients con IPs y bastión de salto")
+    ti_body = INSTANCES.get("ti_client", "")
+    check("aws_instance.dns" in ti_body and "aws_vpc_endpoint.s3" in ti_body,
+          "ti_client: espera el DNS y el endpoint S3 antes de arrancar")
 
     # --- Reglas de los clientes ---------------------------------------------------------
     vis_in = SGS["visitas_client"]["ingress"]
@@ -398,7 +401,11 @@ def main() -> int:
     ti_in = SGS["ti"]["ingress"]
     check(len(ti_in) == 1 and ti_in[0].from_port == 22 and ti_in[0].sgs == ["bastion"],
           "SG ti: única entrada SSH desde el bastión")
-    check(all(c == VPC for r in SGS["ti"]["egress"] for c in r.cidrs), "SG ti: salida limitada a la VPC")
+    check(all(c == VPC for r in SGS["ti"]["egress"] for c in r.cidrs), "SG ti: salida general limitada a la VPC")
+    ti_sg_body = SG_BODIES.get("ti", "")
+    check("aws_vpc_endpoint.s3[*].prefix_list_id" in ti_sg_body and
+          'description     = "HTTPS a repositorios AL2023 en S3 via Gateway Endpoint"' in ti_sg_body,
+          "SG ti: HTTPS adicional únicamente al prefijo del Gateway Endpoint S3")
     check(SUBNET_NACL.get("visitas") == "visitas" and SUBNET_NACL.get("ti") == "ti", "NACL asociadas a Visitas y TI")
     icmp_ti = [n for n in ("ventas", "bastion", "dns", "intranet", "public_web")
                if any(r.proto == "icmp" and r.from_port == 8 and SUBNETS["ti"][0] in r.cidrs for r in SGS[n]["ingress"])]
@@ -415,6 +422,7 @@ def main() -> int:
     check(used <= provided, f"La plantilla solo usa variables entregadas por Terraform ({sorted(used - provided) or 'ok'})")
     check("BEGIN" not in tpl and "PRIVATE KEY" not in tpl, "user_data sin llaves ni certificados")
     base = {"internal_domain": "rednova.internal", "dns_ip": "10.10.0.164",
+            "intranet_ip": "10.10.0.165",
             "hardening_b64": base64.b64encode(hard.encode()).decode(),
             "dnsquery_b64": base64.b64encode(dnsq.encode()).decode()}
     for role, ip, inet, dns in (("visitas", VISITAS_IP, True, False), ("ti", TI_IP, False, True)):
@@ -424,7 +432,19 @@ def main() -> int:
         size = len(rendered.encode())
         check(size <= 15500, f"user_data {role} = {size} bytes (límite EC2 16384)")
         check(("rednova-internal.conf" in rendered) == dns, f"user_data {role}: DNS interno {'configurado' if dns else 'no configurado'}")
-        check(("dnf -y install" in rendered) == inet, f"user_data {role}: dnf {'solo con salida a Internet' if inet else 'no se usa (TI sin Internet)'}")
+        check("dnf -y install nftables" in rendered and "rpm -q nftables" in rendered,
+              f"user_data {role}: instala y verifica nftables")
+        check("/opt/rednova/hardening.sh ||" not in rendered and "nft list table inet rednova" in rendered,
+              f"user_data {role}: el hardening y el firewall son obligatorios")
+        if dns:
+            check("rednova-dnsquery" in rendered and "dns_listo" in rendered,
+                  "user_data ti: espera una respuesta válida de BIND9")
+            check("getent ahostsv4" in rendered and "/etc/resolv.conf.rednova.bak" in rendered,
+                  "user_data ti: autoprueba la resolución y aplica respaldo de resolv.conf")
+            check("systemctl restart systemd-resolved || true" not in rendered,
+                  "user_data ti: no oculta fallos de systemd-resolved")
+    check("command -v nft" in hard and "nft list table inet rednova" in hard and "ADVERTENCIA: la regla nftables" not in hard,
+          "hardening.sh falla si nftables no está disponible o no queda cargado")
     bash_syntax("phase2-probe.sh", probe)
     check(probe.isascii(), "phase2-probe.sh es ASCII (se envía por stdin también desde Windows)")
     crlf = [p.name for p in (TF / "templates" / "test-client-user-data.tftpl", SCRIPTS / "phase2-probe.sh",
