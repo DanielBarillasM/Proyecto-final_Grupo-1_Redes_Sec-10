@@ -1,0 +1,80 @@
+\chapter{Web pública, hardening y dominio}
+
+Responsable: Roberto Emiliano Otoniel Camposeco Torres. Este capítulo describe la web pública
+de Ventas, alojada en la zona desmilitarizada (DMZ) \code{10.10.0.192/27}, y las medidas de
+endurecimiento aplicadas. Su estado es de \emph{implementación local validada}; las pruebas en
+AWS se incorporan cuando existan salidas y capturas reales.
+
+\section{Componentes}
+
+\begin{table}[H]
+\centering
+\caption{Servicio público de la DMZ}
+\small
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{3.3cm}p{2.6cm}p{3.4cm}Y}
+\toprule
+\textbf{Servicio} & \textbf{IP privada} & \textbf{Puertos} & \textbf{Software} \\
+\midrule
+Web pública de Ventas & \code{10.10.0.196} & TCP 80; TCP 443 opcional & Nginx, Amazon Linux 2023 \\
+Administración & --- & TCP 22 solo desde el bastión & OpenSSH con llaves \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+La instancia no recibe una IPv4 automática. Su única dirección pública es una Elastic IP
+explícita, etiquetada como temporal y retirada al cerrar la ventana de trabajo. El registro A
+del dominio público apunta a esa dirección; Terraform solo informa el registro en el output
+\code{public\_dns\_record} y no modifica el DNS público.
+
+\section{Controles en capas}
+
+\begin{enumerate}
+  \item \textbf{Security Group} \code{public\_web}: HTTP público, HTTPS solo con
+    \code{enable\_https}, SSH únicamente desde el Security Group del bastión.
+  \item \textbf{NACL de la DMZ}: SSH solo desde Administración y una denegación hacia la VPC con
+    número menor que los permisos a Internet, de modo que la DMZ no inicia conexiones internas.
+  \item \textbf{nftables}: política \code{drop}, SSH desde \code{10.10.0.176/28} y puertos web.
+    La regla se valida con \code{nft -c} antes de cargarse.
+  \item \textbf{Nginx}: versión oculta, solo \code{GET} y \code{HEAD}, límites por IP, cuerpo de
+    petición de 16~KB, cabeceras de seguridad y bloqueo de archivos ocultos.
+\end{enumerate}
+
+\section{Hardening del sistema}
+
+El script \code{services/hardening/hardening.sh} es idempotente y deja registro en
+\code{/var/log/rednova-hardening.log}. Aplica: SSH solo por llave sin inicio directo de
+\code{root}; parámetros \code{sysctl} (SYN cookies, filtrado de ruta inversa, sin redirecciones);
+deshabilitación de servicios innecesarios si existen; permisos de solo lectura para el
+usuario sin privilegios de Nginx; IMDSv2 obligatorio y disco EBS cifrado desde Terraform.
+
+\section{Dominio y HTTPS}
+
+El dominio se valida primero por IP y después por nombre. El HTTPS es un punto extra: se
+activa solo cuando el dominio resuelve, con \code{enable\_https = true} (abre TCP 443) y el
+script \code{enable-https.sh}, que emite el certificado con Let's Encrypt, configura la
+redirección de HTTP a HTTPS y programa la renovación. La clave privada se genera en la
+instancia y nunca se versiona.
+
+\section{Pruebas previstas}
+
+\begin{table}[H]
+\centering
+\caption{Pruebas de la web pública}
+\small
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{1.6cm}p{3.2cm}p{4.5cm}Y}
+\toprule
+\textbf{ID} & \textbf{Origen} & \textbf{Prueba} & \textbf{Esperado} \\
+\midrule
+F2-10 & Internet & Abrir la web por dominio & HTTP 200 \\
+F2-11 & Internet & SSH hacia la Elastic IP & Bloqueado (tiempo agotado) \\
+F2-12 & Internet y bastión & Revisión de puertos & Solo los puertos previstos \\
+F2-13 & Internet & HTTPS y redirección & Certificado válido (opcional) \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{warningbox}[Estado de las evidencias]
+La validación local (\code{scripts/validate-roberto-phase2.py}) comprueba la configuración,
+pero no sustituye a las pruebas F2-10 a F2-13. Esas pruebas, sus capturas y el estado del
+dominio y de HTTPS deben registrarse con resultados reales de la ventana AWS autorizada.
+\end{warningbox}
