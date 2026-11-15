@@ -1,5 +1,3 @@
-
-
 locals {
   public_web_expected_ip = "10.10.0.196"
 
@@ -10,7 +8,6 @@ locals {
     index_html_b64 = filebase64("${local.services_dir}/public-web/index.html")
     nginx_conf_b64 = filebase64("${local.services_dir}/public-web/nginx.conf")
     hardening_b64  = filebase64("${local.services_dir}/hardening/hardening.sh")
-    https_b64      = filebase64("${local.services_dir}/public-web/enable-https.sh")
   })
 }
 
