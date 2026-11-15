@@ -1,0 +1,57 @@
+Validación local web pública, hardening y dominio - 2026-11-15T00:31:12+00:00
+
+[OK] Web pública 10.10.0.196 pertenece a la DMZ 10.10.0.192/27
+[OK] variables.tf asigna 10.10.0.196 a public_web
+[OK] Existe aws_instance.public_web
+[OK] La EC2 usa la subred DMZ
+[OK] La EC2 usa local.phase2_service_ips.public_web
+[OK] La EC2 usa aws_security_group.public_web
+[OK] EC2 condicionada por enable_phase2_compute
+[OK] Sin IPv4 automática: solo la Elastic IP explícita
+[OK] IMDSv2 obligatorio
+[OK] EBS cifrado
+[OK] Precondición: requiere enable_compute (llave y bastión)
+[OK] Precondición: HTTPS exige public_domain
+[OK] Existe aws_eip.public_web
+[OK] EIP condicionada por enable_phase2_compute
+[OK] EIP etiquetada como temporal con DeleteAfter
+[OK] EIP depende del Internet Gateway
+[OK] Outputs de IP, dominio y registro DNS
+[OK] enable_phase2_compute = false por defecto
+[OK] enable_https = false por defecto
+[OK] SG public_web: SSH solo desde el bastión (nunca 0.0.0.0/0)
+[OK] SG public_web: HTTP público
+[OK] SG public_web: 443 solo cuando enable_https = true
+[OK] NACL DMZ: SSH solo desde Administración
+[OK] NACL DMZ: la DMZ no inicia conexiones hacia la VPC (deny antes que Internet)
+[OK] La plantilla solo usa variables entregadas por Terraform (ok)
+[OK] Terraform incrusta los archivos versionados en base64
+[OK] user_data valida Nginx y ejecuta el hardening
+[OK] user_data sin llaves ni certificados
+[OK] bash -n user-data.sh: sintaxis correcta
+[OK] bash -n hardening.sh: sintaxis correcta
+[OK] bash -n enable-https.sh: sintaxis correcta
+[OK] bash -n user-data con enable_https = true: sintaxis correcta
+[OK] Nginx oculta su versión
+[OK] server_name admite el dominio y el acceso por IP
+[OK] Solo GET y HEAD
+[OK] Límites de peticiones y conexiones por IP
+[OK] Archivos ocultos denegados
+[OK] Nginx base escucha solo en 80 (443 lo agrega certbot)
+[OK] Nginx público no restringe por allow (es una web pública)
+[OK] Cabeceras de seguridad presentes
+[OK] El HTML público no depende de recursos externos
+[OK] SSH: sin contraseñas ni root
+[OK] nftables: política drop y SSH solo desde 10.10.0.176/28
+[OK] nftables se valida antes de cargarse (no corta el acceso)
+[OK] Parámetros de red endurecidos (sysctl)
+[OK] Firewall del SO sin SSH público
+[OK] El script falla ante errores
+[OK] Sin llaves, estados, planes ni .tfvars en el árbol (ok)
+[OK] Sin patrones de secretos en el código (ok)
+[OK] Sin marcadores de conflicto de merge (ok)
+[OMITIDA] nginx no instalado: se omite (se ejecuta con 'nginx -t' dentro del user_data)
+[OMITIDA] nft no instalado: se omite (hardening.sh ejecuta 'nft -c' antes de cargar la regla)
+[OK] public-web.tf es HCL sintácticamente válido (python-hcl2)
+
+Resultado: 51 correctas, 2 omitidas, 0 fallidas
