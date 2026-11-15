@@ -1,0 +1,51 @@
+
+set -euo pipefail
+exec > >(tee -a /var/log/rednova-public-web-setup.log) 2>&1
+echo "[$(date -Is)] Inicio de configuración de la web pública"
+
+# La IPv4 pública es una Elastic IP asociada después de crear la instancia.
+# Se espera salida a Internet (hasta 5 min) antes de usar dnf.
+for intento in $(seq 1 30); do
+  if curl -s -m 5 -o /dev/null https://aws.amazon.com/; then
+    echo "Salida a Internet disponible (intento $intento)"
+    break
+  fi
+  echo "Sin salida a Internet todavía (intento $intento); reintento en 10 s"
+  sleep 10
+done
+
+for intento in 1 2 3 4 5; do
+  dnf -y install nginx nftables && break
+  echo "dnf falló (intento $intento); reintento en 15 s"
+  sleep 15
+done
+rpm -q nginx nftables
+
+# Contenido y configuración versionados en services/public-web/.
+install -d -o root -g root -m 0755 /usr/share/nginx/html/ventas
+echo '${index_html_b64}' | base64 -d > /usr/share/nginx/html/ventas/index.html
+echo '${nginx_conf_b64}' | base64 -d > /etc/nginx/nginx.conf
+install -d -m 0750 /opt/rednova
+echo '${hardening_b64}'  | base64 -d > /opt/rednova/hardening.sh
+echo '${https_b64}'      | base64 -d > /opt/rednova/enable-https.sh
+chmod 0750 /opt/rednova/hardening.sh /opt/rednova/enable-https.sh
+
+# server_name: el dominio público (si existe) y cualquier otro Host (acceso por IP).
+sed -i 's/__PUBLIC_DOMAIN__/${public_domain}/' /etc/nginx/nginx.conf
+chown root:root /usr/share/nginx/html/ventas/index.html /etc/nginx/nginx.conf
+chmod 0644      /usr/share/nginx/html/ventas/index.html /etc/nginx/nginx.conf
+restorecon -R /usr/share/nginx/html /etc/nginx 2>/dev/null || true
+
+nginx -t
+systemctl enable --now nginx
+
+# Hardening común (SSH, sysctl, servicios, firewall del sistema operativo).
+/opt/rednova/hardening.sh --web --https ${enable_https ? "on" : "off"}
+
+# Autoprueba registrada en el log de arranque.
+curl -s -o /dev/null -w 'HTTP local: %%{http_code}\n' http://127.0.0.1/
+ss -lntp | grep -E ':(22|80|443) ' || true
+echo "[$(date -Is)] Web pública lista"
+%{ if enable_https ~}
+echo "HTTPS habilitado en Terraform: tras crear el registro DNS ejecute 'sudo /opt/rednova/enable-https.sh ${public_domain} <correo>'"
+%{ endif ~}
