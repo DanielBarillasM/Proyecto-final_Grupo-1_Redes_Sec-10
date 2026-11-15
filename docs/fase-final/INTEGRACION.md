@@ -7,6 +7,7 @@ Las secciones integradas de Pablo, Andrés y Roberto están preparadas en:
 3. `sections/17-integracion-terraform.tex`
 4. `sections/18-dns-intranet.tex`
 5. `sections/19-web-publica-hardening.tex`
+6. `sections/20-pruebas-seguridad.tex`
 
 Cuando los demás responsables entreguen sus capítulos, el documento maestro deberá incluir:
 
@@ -16,6 +17,7 @@ Cuando los demás responsables entreguen sus capítulos, el documento maestro de
 \input{sections/17-integracion-terraform}
 \input{sections/18-dns-intranet}
 \input{sections/19-web-publica-hardening}
+\input{sections/20-pruebas-seguridad}
 ```
 
 Estas secciones describen la arquitectura, las reglas de red, el DNS, la intranet y la web

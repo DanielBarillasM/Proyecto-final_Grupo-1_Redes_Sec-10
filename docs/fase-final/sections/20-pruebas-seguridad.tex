@@ -1,0 +1,103 @@
+\chapter{Políticas de Visitas y TI, pruebas de seguridad y evidencias}
+
+Responsable: Genser Andree Catalán Espina. Este capítulo describe los clientes temporales que
+representan a los segmentos de Visitas y TI, las reglas que implementan sus políticas y la
+metodología con la que se comprueba toda la matriz de tráfico de la Fase 2. Su estado es de
+\emph{implementación local validada}; los resultados en AWS se incorporan cuando existan salidas
+y capturas reales de la ventana autorizada.
+
+\section{Clientes de prueba}
+
+\begin{table}[H]
+\centering
+\caption{Clientes temporales de la Fase 2}
+\small
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{2.4cm}p{2.3cm}p{3.6cm}Y}
+\toprule
+\textbf{Cliente} & \textbf{IP privada} & \textbf{IPv4 pública} & \textbf{Security Group} \\
+\midrule
+Visitas & \code{10.10.0.4} & Efímera, solo durante la ventana & \code{visitas\_client}: sin entradas desde Internet \\
+TI & \code{10.10.0.132} & No & \code{ti}: única entrada SSH desde el bastión \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Ambos clientes se definen en \code{infra/terraform/test-clients.tf}, dependen de
+\code{enable\_phase2\_compute} (falso por defecto), usan Amazon Linux 2023 con IMDSv2 obligatorio
+y disco EBS cifrado, y se etiquetan como temporales. La subred de Visitas no asigna IPv4 pública
+por defecto, por lo que la salida a Internet se declara de forma explícita con
+\code{associate\_public\_ip\_address = true}; la dirección desaparece al destruir la instancia.
+El \code{user\_data} (\code{templates/test-client-user-data.tftpl}) instala la consulta DNS
+\code{rednova-dnsquery}, ejecuta el hardening común y, solo en TI, configura
+\code{systemd-resolved} para resolver \code{*.rednova.internal} con BIND9.
+
+\section{Implementación de las políticas}
+
+\begin{enumerate}
+  \item \textbf{Visitas sin acceso interno}: la NACL de Visitas deniega la VPC en la regla 100
+    antes de permitir HTTP y HTTPS hacia Internet en las reglas 110 y 120. Solo se exceptúan el
+    resolvedor de la VPC (\code{10.10.0.2}) y las respuestas a TI y al bastión. Su Security
+    Group, además, solo permite salida DNS al resolvedor y TCP 80/443.
+  \item \textbf{TI hacia todas las subredes}: el Security Group de TI permite iniciar cualquier
+    tráfico hacia la VPC. Para que las respuestas ICMP regresen, los Security Groups de Ventas,
+    bastión, DNS, intranet y web aceptan ICMP \emph{echo-request} desde \code{10.10.0.128/27}, y
+    las NACL de Visitas y DMZ (salida) y de TI (entrada) admiten únicamente ICMP
+    \emph{echo-reply} (tipo 0).
+  \item \textbf{Nadie inicia conexiones hacia TI}: la NACL de TI solo acepta SSH desde
+    Administración, puertos efímeros de retorno y \emph{echo-reply}; todo lo demás cae en la
+    regla 200. Un puerto alto que superara la NACL se detiene en el Security Group de TI, que
+    no tiene entradas salvo SSH desde el bastión.
+\end{enumerate}
+
+\begin{infobox}[Defecto detectado antes del despliegue]
+El validador estático mostró que, con las reglas heredadas, TI no podía hacer ping a ninguna
+subred: las NACL descartaban el \emph{echo-reply} y los Security Groups de destino no aceptaban
+ICMP. Se corrigió con los cambios mínimos descritos en el punto 2, sin abrir ninguna entrada
+hacia TI.
+\end{infobox}
+
+\section{Metodología de pruebas}
+
+La suite \code{scripts/test-phase2.ps1} ejecuta cada prueba desde su segmento de origen por SSH
+a través del bastión, o desde el equipo del operador para las pruebas desde Internet. Las sondas
+(\code{scripts/phase2-probe.sh}, \code{dnsquery.py} y \code{check-public-ports.py}) se envían por
+la entrada estándar, de modo que no se instala nada en las instancias. El script:
+
+\begin{itemize}
+  \item exige indicar quién autorizó la ventana y pide confirmación antes de generar tráfico;
+  \item no ejecuta Terraform ni modifica Security Groups, NACL o instancias;
+  \item distingue un bloqueo de red (tiempo agotado) de un destino alcanzado (respuesta o RST)
+    y de un error de configuración (SSH, DNS o ruta);
+  \item guarda por prueba fecha, commit, origen, destino, comando, salida, esperado y obtenido,
+    con identificadores de cuenta redactados;
+  \item termina con código 1 si algún resultado contradice la matriz.
+\end{itemize}
+
+Antes de la ventana, \code{scripts/validate-phase2.py} evalúa 50 flujos contra los Security
+Groups y NACL declarados en Terraform, capa por capa e incluyendo el tráfico de retorno.
+
+\begin{table}[H]
+\centering
+\caption{Pruebas de Visitas, TI y seguridad}
+\small
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{1.4cm}p{2.5cm}p{5.2cm}Y}
+\toprule
+\textbf{ID} & \textbf{Origen} & \textbf{Prueba} & \textbf{Esperado} \\
+\midrule
+F2-03 & TI & DNS y HTTP hacia \code{rrhh.rednova.internal} & Resuelve y HTTP 200 \\
+F2-05 & Visitas y DMZ & HTTP, DNS y SSH hacia la intranet & Bloqueado \\
+F2-06 & Internet & Resolver la intranet en el DNS público & Sin resolución \\
+F2-07 & Visitas & DNS público, HTTP y HTTPS hacia Internet & Permitido \\
+F2-08 & TI & ICMP y servicios en todas las subredes & Permitido \\
+F2-09 & Ventas, Visitas, DMZ, Data Center & ICMP, SSH y TCP alto hacia TI & Bloqueado \\
+F2-11 & Internet & SSH a la web y al cliente de Visitas & Bloqueado \\
+F2-12 & Internet y TI & Escaneo de 24 puertos comunes & Solo los puertos previstos \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{warningbox}[Estado de las evidencias]
+La validación local no sustituye a las pruebas reales. Las tablas de resultados y las capturas
+\code{09} a \code{12} y \code{14} se agregan únicamente con la salida de
+\code{test-phase2.ps1} obtenida en la ventana AWS autorizada.
+\end{warningbox}

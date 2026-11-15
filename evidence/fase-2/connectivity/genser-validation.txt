@@ -1,0 +1,115 @@
+Validación local de clientes, políticas Visitas/TI y matriz de pruebas - 2026-11-15T06:09:45+00:00
+
+[OK] Cliente Visitas 10.10.0.4 pertenece a Visitas
+[OK] Cliente TI 10.10.0.132 pertenece a TI
+[OK] variables.tf asigna 10.10.0.4 y 10.10.0.132 a los clientes
+[OK] La zona rednova.internal registra ti-cliente -> 10.10.0.132
+[OK] Existe aws_instance.visitas_client
+[OK] visitas_client: condicionado por enable_phase2_compute
+[OK] visitas_client: subred visitas
+[OK] visitas_client: IP desde local.phase2_service_ips.visitas_client
+[OK] visitas_client: Security Group visitas_client
+[OK] visitas_client: associate_public_ip_address = true
+[OK] visitas_client: IMDSv2 obligatorio
+[OK] visitas_client: EBS cifrado
+[OK] visitas_client: precondición enable_compute (llave y bastión)
+[OK] visitas_client: etiquetas Owner, Temporary y DeleteAfter
+[OK] Existe aws_instance.ti_client
+[OK] ti_client: condicionado por enable_phase2_compute
+[OK] ti_client: subred ti
+[OK] ti_client: IP desde local.phase2_service_ips.ti_client
+[OK] ti_client: Security Group ti
+[OK] ti_client: associate_public_ip_address = false
+[OK] ti_client: IMDSv2 obligatorio
+[OK] ti_client: EBS cifrado
+[OK] ti_client: precondición enable_compute (llave y bastión)
+[OK] ti_client: etiquetas Owner, Temporary y DeleteAfter
+[OK] Visitas usa IPv4 efímera de la instancia, no una Elastic IP
+[OK] enable_phase2_compute = false por defecto
+[OK] Output test_clients con IPs y bastión de salto
+[OK] SG visitas_client: ninguna entrada desde Internet (0.0.0.0/0)
+[OK] SG visitas_client: solo acepta tráfico del bastión y de TI
+[OK] SG ti: única entrada SSH desde el bastión
+[OK] SG ti: salida limitada a la VPC
+[OK] NACL asociadas a Visitas y TI
+[OK] ICMP echo desde TI aceptado en ventas, bastion, dns, intranet y public_web (['ventas', 'bastion', 'dns', 'intranet', 'public_web'])
+[OK] NACL TI: solo admite ICMP echo-reply (los echo-request hacia TI se deniegan)
+[OK] user_data de clientes comienza con #!/bin/bash
+[OK] La plantilla solo usa variables entregadas por Terraform (ok)
+[OK] user_data sin llaves ni certificados
+[OK] bash -n user_data visitas: sintaxis correcta
+[OK] user_data visitas = 11314 bytes (límite EC2 16384)
+[OK] user_data visitas: DNS interno no configurado
+[OK] user_data visitas: dnf solo con salida a Internet
+[OK] bash -n user_data ti: sintaxis correcta
+[OK] user_data ti = 11068 bytes (límite EC2 16384)
+[OK] user_data ti: DNS interno configurado
+[OK] user_data ti: dnf no se usa (TI sin Internet)
+[OK] bash -n phase2-probe.sh: sintaxis correcta
+[OK] phase2-probe.sh es ASCII (se envía por stdin también desde Windows)
+[OK] Archivos enviados a las EC2 con finales LF (ok)
+[OK] test-phase2.ps1 cubre F2-03, 05-09, 11 y 12 (39 pruebas)
+[OK] test-phase2.ps1 no ejecuta terraform ni modifica AWS
+[OK] test-phase2.ps1 exige autorización explícita antes de generar tráfico
+[OK] test-phase2.ps1 devuelve código distinto de cero ante contradicciones
+[OMITIDA] PowerShell no instalado: se omite el análisis sintáctico de test-phase2.ps1
+[OK] Matriz estática: 50/50 flujos coinciden con el hand-off
+[OK] Sin llaves, estados, planes ni .tfvars en el árbol (ok)
+[OK] Sin patrones de secretos en código y evidencias (ok)
+[OK] Sin marcadores de conflicto de merge (ok)
+
+MATRIZ ESTÁTICA DE TRÁFICO (SG + NACL + nftables declarados en Terraform)
+ID        FLUJO                                                      ESPERADO  OBTENIDO  MOTIVO
+M01       Internet -> web DMZ HTTP (tcp/80)                          permitir  permitir  permitido por todas las capas
+M02       Internet -> web DMZ SSH (tcp/22)                           bloquear  bloquear  NACL dmz entrada, regla * deny
+M03       Internet -> cliente Visitas SSH (tcp/22)                   bloquear  bloquear  NACL visitas entrada, regla * deny
+M04       Internet (IP no autorizada) -> bastión SSH (tcp/22)        bloquear  bloquear  SG bastion (entrada)
+M05       IP administrativa /32 -> bastión SSH (tcp/22)              permitir  permitir  permitido por todas las capas
+M06       Internet -> intranet HTTP (tcp/80)                         bloquear  bloquear  sin ruta: el destino no tiene IPv4 pública
+M07       Internet -> TI SSH (tcp/22)                                bloquear  bloquear  sin ruta: el destino no tiene IPv4 pública
+M08-ventas Bastión -> ventas SSH (administración) (tcp/22)            permitir  permitir  permitido por todas las capas
+M08-ti    Bastión -> ti SSH (administración) (tcp/22)                permitir  permitir  permitido por todas las capas
+M08-visitas Bastión -> visitas SSH (administración) (tcp/22)           permitir  permitir  permitido por todas las capas
+M08-dns   Bastión -> dns SSH (administración) (tcp/22)               permitir  permitir  permitido por todas las capas
+M08-intranet Bastión -> intranet SSH (administración) (tcp/22)          permitir  permitir  permitido por todas las capas
+M08-web   Bastión -> web SSH (administración) (tcp/22)               permitir  permitir  permitido por todas las capas
+M09a      Visitas -> Internet HTTPS (tcp/443)                        permitir  permitir  permitido por todas las capas
+M09b      Visitas -> Internet HTTP (tcp/80)                          permitir  permitir  permitido por todas las capas
+M10a      Visitas -> intranet HTTP (tcp/80)                          bloquear  bloquear  NACL visitas salida, regla 100 deny
+M10b      Visitas -> DNS interno UDP/53 (udp/53)                     bloquear  bloquear  SG visitas_client (salida)
+M10c      Visitas -> Ventas ICMP (icmp)                              bloquear  bloquear  SG visitas_client (salida)
+M10d      Visitas -> TI SSH (tcp/22)                                 bloquear  bloquear  SG visitas_client (salida)
+M10e      Visitas -> TI ICMP (icmp)                                  bloquear  bloquear  SG visitas_client (salida)
+M10f      Visitas -> web DMZ por IP privada (tcp/80)                 bloquear  bloquear  NACL visitas salida, regla 100 deny
+M10g      Visitas -> bastión SSH (tcp/22)                            bloquear  bloquear  SG visitas_client (salida)
+M11a      TI -> Visitas ICMP (icmp)                                  permitir  permitir  permitido por todas las capas
+M11b      TI -> Ventas ICMP (icmp)                                   permitir  permitir  permitido por todas las capas
+M11c      TI -> Administración ICMP (icmp)                           permitir  permitir  permitido por todas las capas
+M11d      TI -> DNS ICMP (icmp)                                      permitir  permitir  permitido por todas las capas
+M11e      TI -> DNS UDP/53 (udp/53)                                  permitir  permitir  permitido por todas las capas
+M11f      TI -> DNS TCP/53 (tcp/53)                                  permitir  permitir  permitido por todas las capas
+M11g      TI -> intranet ICMP (icmp)                                 permitir  permitir  permitido por todas las capas
+M11h      TI -> intranet HTTP (tcp/80)                               permitir  permitir  permitido por todas las capas
+M11i      TI -> web DMZ ICMP (icmp)                                  permitir  permitir  permitido por todas las capas
+M11j      TI -> web DMZ HTTP (tcp/80)                                permitir  permitir  permitido por todas las capas
+M12a      Ventas -> TI ICMP (icmp)                                   bloquear  bloquear  NACL ti entrada, regla 200 deny
+M12b      Ventas -> TI SSH (tcp/22)                                  bloquear  bloquear  NACL ti entrada, regla 200 deny
+M12c      Ventas -> TI TCP/8080 (tcp/8080)                           bloquear  bloquear  SG ti (entrada)
+M12d      Data Center (DNS) -> TI SSH (tcp/22)                       bloquear  bloquear  NACL ti entrada, regla 200 deny
+M12e      Data Center (intranet) -> TI HTTP (tcp/80)                 bloquear  bloquear  NACL ti entrada, regla 200 deny
+M12f      DMZ -> TI SSH (tcp/22)                                     bloquear  bloquear  SG public_web (salida)
+M12g      Administración -> TI ICMP (solo se permite SSH administrativo) (icmp) bloquear  bloquear  NACL ti entrada, regla 200 deny
+M13a      Ventas -> DNS UDP/53 (udp/53)                              permitir  permitir  permitido por todas las capas
+M13b      Data Center (intranet) -> DNS UDP/53 (udp/53)              permitir  permitir  permitido por todas las capas
+M13c      Administración -> DNS UDP/53 (udp/53)                      permitir  permitir  permitido por todas las capas
+M13d      DMZ -> DNS UDP/53 (udp/53)                                 bloquear  bloquear  SG public_web (salida)
+M14a      Ventas -> intranet HTTP (tcp/80)                           permitir  permitir  permitido por todas las capas
+M14b      Data Center (DNS) -> intranet HTTP (tcp/80)                permitir  permitir  permitido por todas las capas
+M14c      Administración -> intranet HTTP (tcp/80)                   permitir  permitir  permitido por todas las capas
+M14d      DMZ -> intranet HTTP (tcp/80)                              bloquear  bloquear  NACL dmz salida, regla 100 deny
+M15a      DMZ -> Ventas ICMP (icmp)                                  bloquear  bloquear  SG public_web (salida)
+M15b      DMZ -> Ventas SSH (tcp/22)                                 bloquear  bloquear  SG public_web (salida)
+M15c      DMZ -> Internet HTTPS (actualizaciones/ACME) (tcp/443)     permitir  permitir  permitido por todas las capas
+
+Resultado: 56 correctas, 1 omitidas, 0 fallidas
+Nota: la matriz modela lo declarado en Terraform; la evidencia real la produce scripts/test-phase2.ps1.

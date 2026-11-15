@@ -13,6 +13,16 @@ Esta carpeta separa validaciones locales reproducibles de evidencias obtenidas e
 - `public-web/roberto-validation.txt`: coherencia de EC2, Elastic IP, Nginx, hardening,
   `user_data`, scripts y controles de red; distingue las pruebas nativas omitidas.
 
+- `connectivity/genser-validation.txt`: clientes de Visitas/TI, plantilla `user_data`, script de
+  pruebas y matriz estática de 50 flujos evaluada contra los SG y NACL de Terraform.
+
+## Generadas por `scripts/test-phase2.ps1` durante la ventana
+
+- `pruebas-fase2.txt` y `pruebas-fase2.csv`: matriz con fecha, commit, autorización, origen,
+  destino, esperado, obtenido y veredicto.
+- `connectivity/F2-0x*.txt`, `security/F2-06|11|12*.txt`, `dns/F2-01|02|04.txt` y
+  `public-web/F2-10|13*.txt`: una evidencia de texto por prueba, con la salida redactada.
+
 ## Pendientes de una ventana AWS autorizada
 
 - `terraform-plan.txt` y plan revisado.

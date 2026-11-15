@@ -3,7 +3,7 @@
 Esta carpeta contiene la documentación de integración de Fase 1 y Fase 2. El PDF final de
 Fase 1 en `output/pdf/` se conserva sin modificaciones.
 
-## Estado integrado de Pablo, Andrés y Roberto
+## Estado integrado de Pablo, Andrés, Roberto y Genser
 
 Implementado localmente:
 
@@ -22,10 +22,12 @@ Implementado localmente:
 - Web pública de Ventas en la DMZ con EC2, Elastic IP temporal y Nginx.
 - `user_data`, hardening por capas, validador local y procedimiento de HTTPS opcional.
 
-Pendiente de otros bloques:
+- Clientes temporales de Visitas y TI, sonda remota, suite `test-phase2.ps1` y validador con
+  matriz estática de tráfico (Genser).
 
-- Clientes de Visitas/TI, pruebas y evidencias: Genser.
-- Despliegue, capturas y resultados reales: ventana AWS autorizada.
+Pendiente:
+
+- Despliegue, ejecución de la suite, capturas y resultados reales: ventana AWS autorizada.
 
 ## Archivos
 
