@@ -123,6 +123,14 @@ resource "aws_security_group" "dns" {
     security_groups = [aws_security_group.bastion.id]
   }
 
+  ingress {
+    description = "ICMP echo iniciado desde TI (matriz F2-08)"
+    from_port   = 8
+    to_port     = 0
+    protocol    = "icmp"
+    cidr_blocks = [local.subnets.ti.cidr]
+  }
+
   egress {
     description = "Comunicacion interna controlada"
     from_port   = 0
@@ -173,6 +181,14 @@ resource "aws_security_group" "intranet" {
     to_port         = 22
     protocol        = "tcp"
     security_groups = [aws_security_group.bastion.id]
+  }
+
+  ingress {
+    description = "ICMP echo iniciado desde TI (matriz F2-08)"
+    from_port   = 8
+    to_port     = 0
+    protocol    = "icmp"
+    cidr_blocks = [local.subnets.ti.cidr]
   }
 
   egress {
@@ -232,6 +248,14 @@ resource "aws_security_group" "public_web" {
     to_port         = 22
     protocol        = "tcp"
     security_groups = [aws_security_group.bastion.id]
+  }
+
+  ingress {
+    description = "ICMP echo iniciado desde TI (matriz F2-08)"
+    from_port   = 8
+    to_port     = 0
+    protocol    = "icmp"
+    cidr_blocks = [local.subnets.ti.cidr]
   }
 
   egress {

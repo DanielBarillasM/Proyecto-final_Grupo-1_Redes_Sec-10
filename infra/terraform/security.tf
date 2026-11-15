@@ -11,6 +11,14 @@ resource "aws_security_group" "bastion" {
     cidr_blocks = [var.admin_cidr]
   }
 
+  ingress {
+    description = "ICMP echo iniciado desde TI (matriz F2-08)"
+    from_port   = 8
+    to_port     = 0
+    protocol    = "icmp"
+    cidr_blocks = [local.subnets.ti.cidr]
+  }
+
   egress {
     description = "Salida para administrar las instancias privadas"
     from_port   = 0
@@ -43,6 +51,14 @@ resource "aws_security_group" "ventas" {
     to_port     = -1
     protocol    = "icmp"
     self        = true
+  }
+
+  ingress {
+    description = "ICMP echo iniciado desde TI (matriz F2-08)"
+    from_port   = 8
+    to_port     = 0
+    protocol    = "icmp"
+    cidr_blocks = [local.subnets.ti.cidr]
   }
 
   egress {

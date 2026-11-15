@@ -13,8 +13,8 @@ El bloque de Pablo agrega:
 - Outputs de DMZ, reserva, dominios, IP y NACL.
 
 Las instancias de DNS e intranet de Andrés están integradas en `services.tf`; la web pública de
-Roberto está integrada en `public-web.tf`. Los clientes de Genser se agregarán en un archivo
-separado.
+Roberto está integrada en `public-web.tf`. Los clientes temporales de Visitas (`10.10.0.4`, con
+IPv4 pública efímera) y TI (`10.10.0.132`, privado) de Genser están en `test-clients.tf`.
 `enable_compute` y `enable_phase2_compute` permanecen en `false` por defecto.
 
 ## Uso resumido
@@ -44,12 +44,16 @@ separado.
 - La DMZ permite HTTP público, HTTPS cuando se habilite y SSH solo desde el bastión. Su NACL
   bloquea conexiones iniciadas hacia la red interna antes de evaluar las salidas a Internet.
 
-## Dependencias todavía no integradas
+- TI inicia ICMP hacia todas las subredes. Para que la respuesta vuelva, los SG de Ventas,
+  bastión, DNS, intranet y web aceptan ICMP echo desde `10.10.0.128/27`, y las NACL de Visitas
+  y DMZ (salida) y de TI (entrada) admiten únicamente el ICMP echo-reply (tipo 0). Un
+  echo-request iniciado hacia TI sigue cayendo en la regla 200 de la NACL de TI.
 
-- Clientes EC2 de Visitas/TI y pruebas automáticas: Genser.
+## Estado de integración
 
-No se debe ejecutar `apply` hasta integrar y revisar el bloque de Genser, auditar el estado real
-de AWS y obtener autorización de Andrés Rafael Chivalán.
+Los cuatro bloques están integrados. `python scripts/validate-phase2.py` evalúa la matriz de
+tráfico completa contra los SG y NACL declarados. No se debe ejecutar `apply` sin auditar el
+estado real de AWS y obtener autorización de Andrés Rafael Chivalán.
 
 No publique `terraform.tfvars`, estados, planes guardados, archivos `.pem`, llaves privadas ni
 credenciales AWS.

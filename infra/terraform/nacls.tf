@@ -94,6 +94,18 @@ resource "aws_network_acl" "visitas" {
     to_port    = 65535
   }
 
+  # Respuesta ICMP (echo-reply) a pings iniciados por TI
+  egress {
+    protocol   = "icmp"
+    rule_no    = 93
+    action     = "allow"
+    cidr_block = local.subnets.ti.cidr
+    from_port  = 0
+    to_port    = 0
+    icmp_type  = 0
+    icmp_code  = 0
+  }
+
   egress {
     protocol   = "-1"
     rule_no    = 100
@@ -160,6 +172,18 @@ resource "aws_network_acl" "ti" {
     cidr_block = var.vpc_cidr
     from_port  = 1024
     to_port    = 65535
+  }
+
+  # Solo echo-reply: TI recibe respuestas a sus pings; los echo-request hacia TI caen en la regla 200
+  ingress {
+    protocol   = "icmp"
+    rule_no    = 130
+    action     = "allow"
+    cidr_block = var.vpc_cidr
+    from_port  = 0
+    to_port    = 0
+    icmp_type  = 0
+    icmp_code  = 0
   }
 
   ingress {
@@ -300,6 +324,18 @@ resource "aws_network_acl" "dmz" {
     cidr_block = local.subnets.ti.cidr
     from_port  = 1024
     to_port    = 65535
+  }
+
+  # Respuesta ICMP (echo-reply) a pings iniciados por TI
+  egress {
+    protocol   = "icmp"
+    rule_no    = 93
+    action     = "allow"
+    cidr_block = local.subnets.ti.cidr
+    from_port  = 0
+    to_port    = 0
+    icmp_type  = 0
+    icmp_code  = 0
   }
 
   egress {
