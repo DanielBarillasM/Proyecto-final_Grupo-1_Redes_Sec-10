@@ -212,7 +212,7 @@ Cada evidencia debe indicar como mínimo:
 | Pablo Daniel Barillas Moreno | 22193 | Arquitectura, revisión documental e integración final |
 | Andrés Rafael Chivalán | 21534 | DNS, intranet, ejecución AWS y recopilación de evidencias |
 | Roberto Emiliano Otoniel Camposeco Torres | 23968 | Web pública, DMZ y hardening |
-| Genser Andree Catalán Espina | Pendiente | Clientes, automatización y matriz de pruebas |
+| Genser Andree Catalán Espina | 23401 | Clientes, automatización y matriz de pruebas |
 
 ---
 
