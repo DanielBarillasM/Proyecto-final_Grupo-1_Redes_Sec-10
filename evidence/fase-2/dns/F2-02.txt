@@ -1,0 +1,19 @@
+﻿PRUEBA F2-02 - Ventas abre la intranet (HTTP 200)
+Responsable: Pablo/Andrés Rafael
+Fecha local: 2026-11-17 10:56:27 -06:00
+Commit: 44ebb38
+Autorizado por: Andrés Rafael Chivalán
+Origen: Ventas (instancia de Fase 1) [10.10.0.118]
+Destino: http://10.10.0.165/ puerto 80
+Comando: ssh [vía bastión] ec2-user@10.10.0.118 'bash -s -- http http://10.10.0.165/ 5 rrhh.rednova.internal'
+Esperado: permitir
+Obtenido: http_200
+Veredicto: OK
+Nota: 
+
+--- Salida ---
+# fecha=2026-11-17T16:56:25+00:00 origen_host=ip-10-10-0-118.ec2.internal origen_ip=10.10.0.118 sonda=http args=http://10.10.0.165/ 5 rrhh.rednova.internal
+# comando: curl -sS -o /dev/null -w %{http_code} --connect-timeout 5 --max-time 10 -H Host: rrhh.rednova.internal http://10.10.0.165/
+curl_exit=0 http_code=200
+RESULTADO=http_200
+bash: line 1: ﻿#!/bin/bash: No such file or directory

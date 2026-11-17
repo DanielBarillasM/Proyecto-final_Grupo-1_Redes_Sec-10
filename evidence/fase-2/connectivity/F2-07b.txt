@@ -1,0 +1,19 @@
+﻿PRUEBA F2-07b - Visitas navega por HTTPS en Internet
+Responsable: Pablo/Andrés Rafael
+Fecha local: 2026-11-17 10:57:06 -06:00
+Commit: 44ebb38
+Autorizado por: Andrés Rafael Chivalán
+Origen: Visitas (cliente temporal) [10.10.0.4]
+Destino: https://example.com/ puerto 443
+Comando: ssh [vía bastión] ec2-user@10.10.0.4 'bash -s -- http https://example.com/ 5'
+Esperado: permitir
+Obtenido: http_200
+Veredicto: OK
+Nota: 
+
+--- Salida ---
+bash: line 1: ﻿#!/bin/bash: No such file or directory
+# fecha=2026-11-17T16:57:04+00:00 origen_host=ip-10-10-0-4.ec2.internal origen_ip=10.10.0.4 sonda=http args=https://example.com/ 5
+# comando: curl -sS -o /dev/null -w %{http_code} --connect-timeout 5 --max-time 10 https://example.com/
+curl_exit=0 http_code=200
+RESULTADO=http_200

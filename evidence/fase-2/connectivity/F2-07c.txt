@@ -1,0 +1,19 @@
+﻿PRUEBA F2-07c - Visitas navega por HTTP en Internet
+Responsable: Pablo/Andrés Rafael
+Fecha local: 2026-11-17 10:57:08 -06:00
+Commit: 44ebb38
+Autorizado por: Andrés Rafael Chivalán
+Origen: Visitas (cliente temporal) [10.10.0.4]
+Destino: http://example.com/ puerto 80
+Comando: ssh [vía bastión] ec2-user@10.10.0.4 'bash -s -- http http://example.com/ 5'
+Esperado: permitir
+Obtenido: http_200
+Veredicto: OK
+Nota: 
+
+--- Salida ---
+# fecha=2026-11-17T16:57:06+00:00 origen_host=ip-10-10-0-4.ec2.internal origen_ip=10.10.0.4 sonda=http args=http://example.com/ 5
+# comando: curl -sS -o /dev/null -w %{http_code} --connect-timeout 5 --max-time 10 http://example.com/
+curl_exit=0 http_code=200
+RESULTADO=http_200
+bash: line 1: ﻿#!/bin/bash: No such file or directory

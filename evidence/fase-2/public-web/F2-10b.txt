@@ -1,0 +1,15 @@
+﻿PRUEBA F2-10b - Web pública por dominio (HTTP 200 o redirección a HTTPS)
+Responsable: Pablo/Andrés Rafael
+Fecha local: 2026-11-17 10:58:32 -06:00
+Commit: 44ebb38
+Autorizado por: Andrés Rafael Chivalán
+Origen: Internet (equipo del operador) [local]
+Destino:  puerto 80
+Comando: 
+Esperado: permitir
+Obtenido: 
+Veredicto: OMITIDA
+Nota: Falta un dato de la ventana (IP o dominio): revise OutputsJson o los parámetros.
+
+--- Salida ---
+

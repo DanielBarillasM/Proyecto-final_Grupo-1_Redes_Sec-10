@@ -174,6 +174,18 @@ resource "aws_network_acl" "ti" {
     to_port    = 65535
   }
 
+  # Retorno HTTPS de los repositorios AL2023 (S3 vía Gateway Endpoint). La NACL no admite
+  # prefix lists; el Security Group "ti" limita la salida 443 al prefijo de S3 y la tabla
+  # privada no tiene ruta a Internet, por lo que solo S3 puede responder por aquí.
+  ingress {
+    protocol   = "tcp"
+    rule_no    = 140
+    action     = "allow"
+    cidr_block = "0.0.0.0/0"
+    from_port  = 1024
+    to_port    = 65535
+  }
+
   # Solo echo-reply: TI recibe respuestas a sus pings; los echo-request hacia TI caen en la regla 200
   ingress {
     protocol   = "icmp"
@@ -202,6 +214,16 @@ resource "aws_network_acl" "ti" {
     cidr_block = var.vpc_cidr
     from_port  = 0
     to_port    = 0
+  }
+
+  # HTTPS hacia S3 (repositorios AL2023) mediante el Gateway Endpoint; ver regla de entrada 140.
+  egress {
+    protocol   = "tcp"
+    rule_no    = 110
+    action     = "allow"
+    cidr_block = "0.0.0.0/0"
+    from_port  = 443
+    to_port    = 443
   }
 
   tags = merge(local.phase2_tags, {

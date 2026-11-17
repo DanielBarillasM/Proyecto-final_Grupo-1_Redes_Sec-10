@@ -1,0 +1,20 @@
+﻿PRUEBA F2-05a - Visitas NO abre la intranet
+Responsable: Pablo/Andrés Rafael
+Fecha local: 2026-11-17 10:56:35 -06:00
+Commit: 44ebb38
+Autorizado por: Andrés Rafael Chivalán
+Origen: Visitas (cliente temporal) [10.10.0.4]
+Destino: http://10.10.0.165/ puerto 80
+Comando: ssh [vía bastión] ec2-user@10.10.0.4 'bash -s -- http http://10.10.0.165/ 5 rrhh.rednova.internal'
+Esperado: bloquear
+Obtenido: filtrado
+Veredicto: OK
+Nota: 
+
+--- Salida ---
+bash: line 1: ﻿#!/bin/bash: No such file or directory
+# fecha=2026-11-17T16:56:32+00:00 origen_host=ip-10-10-0-4.ec2.internal origen_ip=10.10.0.4 sonda=http args=http://10.10.0.165/ 5 rrhh.rednova.internal
+# comando: curl -sS -o /dev/null -w %{http_code} --connect-timeout 5 --max-time 10 -H Host: rrhh.rednova.internal http://10.10.0.165/
+curl: (28) Connection timed out after 5002 milliseconds
+curl_exit=28 http_code=000
+RESULTADO=filtrado

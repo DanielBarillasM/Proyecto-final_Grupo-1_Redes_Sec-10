@@ -1,0 +1,17 @@
+﻿PRUEBA F2-01 - Ventas resuelve rrhh.rednova.internal con BIND9
+Responsable: Pablo/Andrés Rafael
+Fecha local: 2026-11-17 10:56:25 -06:00
+Commit: 44ebb38
+Autorizado por: Andrés Rafael Chivalán
+Origen: Ventas (instancia de Fase 1) [10.10.0.118]
+Destino: rrhh.rednova.internal puerto 53
+Comando: ssh [vía bastión] ec2-user@10.10.0.118 'python3 - rrhh.rednova.internal 10.10.0.164 --timeout 5'
+Esperado: permitir
+Obtenido: resuelto
+Veredicto: OK
+Nota: 
+
+--- Salida ---
+; fecha=2026-11-17T16:56:23+00:00 origen=ip-10-10-0-118.ec2.internal servidor=10.10.0.164 consulta=rrhh.rednova.internal A
+; status=NOERROR autoritativa=si respuestas=1 tiempo=1.0 ms
+rrhh.rednova.internal.	300	IN	A	10.10.0.165

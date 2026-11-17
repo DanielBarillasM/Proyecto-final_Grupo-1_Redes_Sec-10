@@ -1,0 +1,18 @@
+﻿PRUEBA F2-08f - TI inicia TCP/80 hacia la intranet
+Responsable: Pablo/Andrés Rafael
+Fecha local: 2026-11-17 10:57:29 -06:00
+Commit: 44ebb38
+Autorizado por: Andrés Rafael Chivalán
+Origen: TI (cliente temporal) [10.10.0.132]
+Destino: 10.10.0.165 puerto 80
+Comando: ssh [vía bastión] ec2-user@10.10.0.132 'bash -s -- tcp 10.10.0.165 80 5'
+Esperado: permitir
+Obtenido: abierto
+Veredicto: OK
+Nota: 
+
+--- Salida ---
+# fecha=2026-11-17T16:57:26+00:00 origen_host=ip-10-10-0-132.ec2.internal origen_ip=10.10.0.132 sonda=tcp args=10.10.0.165 80 5
+# comando: timeout 5 bash -c 'exec 3<>/dev/tcp/10.10.0.165/80'
+RESULTADO=abierto
+bash: line 1: ﻿#!/bin/bash: No such file or directory

@@ -1,0 +1,15 @@
+﻿PRUEBA F2-13b - HTTP redirige a HTTPS (opcional)
+Responsable: Pablo/Andrés Rafael
+Fecha local: 2026-11-17 11:02:41 -06:00
+Commit: 44ebb38
+Autorizado por: Andrés Rafael Chivalán
+Origen: Internet (equipo del operador) [local]
+Destino:  puerto 80
+Comando: 
+Esperado: redirigir
+Obtenido: 
+Veredicto: OMITIDA
+Nota: Prueba opcional: HTTPS no habilitado (enable_https = false).
+
+--- Salida ---
+

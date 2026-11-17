@@ -1,0 +1,26 @@
+﻿PRUEBA F2-08g - TI inicia ICMP hacia la DMZ
+Responsable: Pablo/Andrés Rafael
+Fecha local: 2026-11-17 10:57:31 -06:00
+Commit: 44ebb38
+Autorizado por: Andrés Rafael Chivalán
+Origen: TI (cliente temporal) [10.10.0.132]
+Destino: 10.10.0.196
+Comando: ssh [vía bastión] ec2-user@10.10.0.132 'bash -s -- icmp 10.10.0.196 5'
+Esperado: permitir
+Obtenido: respuesta
+Veredicto: OK
+Nota: 
+
+--- Salida ---
+# fecha=2026-11-17T16:57:28+00:00 origen_host=ip-10-10-0-132.ec2.internal origen_ip=10.10.0.132 sonda=icmp args=10.10.0.196 5
+# comando: ping -c 3 -W 5 10.10.0.196
+PING 10.10.0.196 (10.10.0.196) 56(84) bytes of data.
+64 bytes from 10.10.0.196: icmp_seq=1 ttl=127 time=0.570 ms
+bash: line 1: ﻿#!/bin/bash: No such file or directory
+64 bytes from 10.10.0.196: icmp_seq=2 ttl=127 time=0.238 ms
+64 bytes from 10.10.0.196: icmp_seq=3 ttl=127 time=0.229 ms
+
+--- 10.10.0.196 ping statistics ---
+3 packets transmitted, 3 received, 0% packet loss, time 2076ms
+rtt min/avg/max/mdev = 0.229/0.345/0.570/0.158 ms
+RESULTADO=respuesta

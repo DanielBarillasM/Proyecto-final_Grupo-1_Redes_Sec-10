@@ -1,0 +1,18 @@
+﻿PRUEBA F2-09d - Visitas NO inicia SSH hacia TI
+Responsable: Pablo/Andrés Rafael
+Fecha local: 2026-11-17 10:58:01 -06:00
+Commit: 44ebb38
+Autorizado por: Andrés Rafael Chivalán
+Origen: Visitas (cliente temporal) [10.10.0.4]
+Destino: 10.10.0.132 puerto 22
+Comando: ssh [vía bastión] ec2-user@10.10.0.4 'bash -s -- tcp 10.10.0.132 22 5'
+Esperado: bloquear
+Obtenido: filtrado
+Veredicto: OK
+Nota: 
+
+--- Salida ---
+# fecha=2026-11-17T16:57:58+00:00 origen_host=ip-10-10-0-4.ec2.internal origen_ip=10.10.0.4 sonda=tcp args=10.10.0.132 22 5
+# comando: timeout 5 bash -c 'exec 3<>/dev/tcp/10.10.0.132/22'
+bash: line 1: ﻿#!/bin/bash: No such file or directory
+RESULTADO=filtrado

@@ -1,4 +1,4 @@
-Validación local de clientes, políticas Visitas/TI y matriz de pruebas - 2026-11-15T12:16:13-06:00
+Validación local de clientes, políticas Visitas/TI y matriz de pruebas - 2026-11-17T09:37:50-06:00
 
 [OK] Cliente Visitas 10.10.0.4 pertenece a Visitas
 [OK] Cliente TI 10.10.0.132 pertenece a TI
@@ -62,7 +62,7 @@ Validación local de clientes, políticas Visitas/TI y matriz de pruebas - 2026-
 [OK] test-phase2.ps1 devuelve código distinto de cero ante contradicciones
 [OK] test-phase2.ps1 analiza sin errores de sintaxis
 [OK] Matriz estática: 50/50 flujos coinciden con el hand-off
-[OK] Sin llaves, estados, planes ni .tfvars en el árbol (ok)
+[FALLA] Sin llaves, estados, planes ni .tfvars en el árbol (['infra\\terraform\\terraform.tfstate'])
 [OK] Sin patrones de secretos en código y evidencias (ok)
 [OK] Sin marcadores de conflicto de merge (ok)
 
@@ -119,5 +119,5 @@ M15a      DMZ -> Ventas ICMP (icmp)                                  bloquear  b
 M15b      DMZ -> Ventas SSH (tcp/22)                                 bloquear  bloquear  SG public_web (salida)
 M15c      DMZ -> Internet HTTPS (actualizaciones/ACME) (tcp/443)     permitir  permitir  permitido por todas las capas
 
-Resultado: 65 correctas, 0 omitidas, 0 fallidas
+Resultado: 64 correctas, 0 omitidas, 1 fallidas
 Nota: la matriz modela lo declarado en Terraform; la evidencia real la produce scripts/test-phase2.ps1.

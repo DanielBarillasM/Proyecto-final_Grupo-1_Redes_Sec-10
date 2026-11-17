@@ -40,6 +40,10 @@ resource "aws_instance" "public_web" {
   }
 
   lifecycle {
+    # Al asociar la Elastic IP, AWS informa associate_public_ip_address = true y Terraform
+    # intentaría reemplazar la instancia en cada plan. La IPv4 sigue siendo solo la EIP.
+    ignore_changes = [associate_public_ip_address]
+
     precondition {
       condition     = var.enable_compute
       error_message = "enable_phase2_compute requiere enable_compute = true (llave SSH y bastión de Fase 1)."

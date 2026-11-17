@@ -1,0 +1,15 @@
+﻿PRUEBA F2-06 - rrhh.rednova.internal no existe en el DNS público
+Responsable: Pablo/Andrés Rafael
+Fecha local: 2026-11-17 10:57:04 -06:00
+Commit: 44ebb38
+Autorizado por: Andrés Rafael Chivalán
+Origen: Internet (equipo del operador) [local]
+Destino: rrhh.rednova.internal puerto 53
+Comando: [System.Net.Dns]::GetHostAddresses('rrhh.rednova.internal')
+Esperado: bloquear
+Obtenido: no_resuelto
+Veredicto: OK
+Nota: 
+
+--- Salida ---
+Excepción al llamar a "GetHostAddresses" con los argumentos "1": "Host desconocido"

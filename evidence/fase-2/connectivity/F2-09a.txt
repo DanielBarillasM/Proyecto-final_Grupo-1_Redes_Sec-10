@@ -1,0 +1,23 @@
+﻿PRUEBA F2-09a - Ventas NO inicia ICMP hacia TI
+Responsable: Pablo/Andrés Rafael
+Fecha local: 2026-11-17 10:57:37 -06:00
+Commit: 44ebb38
+Autorizado por: Andrés Rafael Chivalán
+Origen: Ventas (instancia de Fase 1) [10.10.0.118]
+Destino: 10.10.0.132
+Comando: ssh [vía bastión] ec2-user@10.10.0.118 'bash -s -- icmp 10.10.0.132 5'
+Esperado: bloquear
+Obtenido: sin_respuesta
+Veredicto: OK
+Nota: 
+
+--- Salida ---
+bash: line 1: ﻿#!/bin/bash: No such file or directory
+# fecha=2026-11-17T16:57:35+00:00 origen_host=ip-10-10-0-118.ec2.internal origen_ip=10.10.0.118 sonda=icmp args=10.10.0.132 5
+# comando: ping -c 3 -W 5 10.10.0.132
+PING 10.10.0.132 (10.10.0.132) 56(84) bytes of data.
+
+--- 10.10.0.132 ping statistics ---
+3 packets transmitted, 0 received, 100% packet loss, time 2069ms
+
+RESULTADO=sin_respuesta

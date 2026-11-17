@@ -1,0 +1,42 @@
+﻿PRUEBA F2-12d - Desde TI: en la intranet solo está abierto 80
+Responsable: Pablo/Andrés Rafael
+Fecha local: 2026-11-17 11:01:04 -06:00
+Commit: 44ebb38
+Autorizado por: Andrés Rafael Chivalán
+Origen: TI (cliente temporal) [10.10.0.132]
+Destino: 10.10.0.165 puerto 80
+Comando: ssh [vía bastión] ec2-user@10.10.0.132 'python3 - 10.10.0.165 --expect-open '80' --timeout 2'
+Esperado: permitir
+Obtenido: conforme
+Veredicto: OK
+Nota: 
+
+--- Salida ---
+# 2026-11-17T17:01:02+00:00 destino=10.10.0.165 esperado_abierto=[80]
+ PUERTO  OBTENIDO  ESPERADO  RESULTADO
+     21  filtrado  no-abierto OK
+     22  filtrado  no-abierto OK
+     23  filtrado  no-abierto OK
+     25  filtrado  no-abierto OK
+     53  filtrado  no-abierto OK
+     80  abierto   abierto   OK
+    110  filtrado  no-abierto OK
+    111  filtrado  no-abierto OK
+    135  filtrado  no-abierto OK
+    139  filtrado  no-abierto OK
+    143  filtrado  no-abierto OK
+    443  filtrado  no-abierto OK
+    445  filtrado  no-abierto OK
+    993  filtrado  no-abierto OK
+    995  filtrado  no-abierto OK
+   1433  filtrado  no-abierto OK
+   3306  filtrado  no-abierto OK
+   3389  filtrado  no-abierto OK
+   5432  filtrado  no-abierto OK
+   5900  filtrado  no-abierto OK
+   6379  filtrado  no-abierto OK
+   8080  filtrado  no-abierto OK
+   8443  filtrado  no-abierto OK
+  27017  filtrado  no-abierto OK
+
+Resultado: 24 conformes, 0 no conformes

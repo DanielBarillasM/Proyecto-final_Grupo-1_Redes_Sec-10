@@ -1,0 +1,15 @@
+﻿PRUEBA F2-11a - SSH público hacia la DMZ bloqueado
+Responsable: Pablo/Andrés Rafael
+Fecha local: 2026-11-17 10:58:32 -06:00
+Commit: 44ebb38
+Autorizado por: Andrés Rafael Chivalán
+Origen: Internet (equipo del operador) [local]
+Destino: 52.70.19.135 puerto 22
+Comando: TcpClient.ConnectAsync(52.70.19.135, 22) timeout 5 s
+Esperado: bloquear
+Obtenido: filtrado
+Veredicto: OK
+Nota: 
+
+--- Salida ---
+Conexión TCP local a 52.70.19.135:22 -> filtrado

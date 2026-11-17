@@ -1,0 +1,17 @@
+﻿PRUEBA F2-10a - Web pública por Elastic IP (HTTP 200)
+Responsable: Pablo/Andrés Rafael
+Fecha local: 2026-11-17 10:58:31 -06:00
+Commit: 44ebb38
+Autorizado por: Andrés Rafael Chivalán
+Origen: Internet (equipo del operador) [local]
+Destino: http://52.70.19.135/ puerto 80
+Comando: HttpClient GET http://52.70.19.135/ (sin seguir redirecciones)
+Esperado: permitir
+Obtenido: http_200
+Veredicto: OK
+Nota: 
+
+--- Salida ---
+HTTP 200 OK
+Server: nginx
+Location: 

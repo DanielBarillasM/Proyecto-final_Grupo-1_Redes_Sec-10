@@ -1,0 +1,16 @@
+﻿PRUEBA F2-05b - Visitas NO consulta el DNS interno
+Responsable: Pablo/Andrés Rafael
+Fecha local: 2026-11-17 10:56:42 -06:00
+Commit: 44ebb38
+Autorizado por: Andrés Rafael Chivalán
+Origen: Visitas (cliente temporal) [10.10.0.4]
+Destino: rrhh.rednova.internal puerto 53
+Comando: ssh [vía bastión] ec2-user@10.10.0.4 'python3 - rrhh.rednova.internal 10.10.0.164 --timeout 5'
+Esperado: bloquear
+Obtenido: tiempo_agotado
+Veredicto: OK
+Nota: 
+
+--- Salida ---
+; fecha=2026-11-17T16:56:40+00:00 origen=ip-10-10-0-4.ec2.internal servidor=10.10.0.164 consulta=rrhh.rednova.internal A
+; RESULTADO: tiempo agotado (5 s) - sin respuesta del servidor

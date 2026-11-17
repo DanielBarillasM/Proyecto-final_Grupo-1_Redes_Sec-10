@@ -1,0 +1,26 @@
+﻿PRUEBA F2-08c - TI inicia ICMP hacia Administración
+Responsable: Pablo/Andrés Rafael
+Fecha local: 2026-11-17 10:57:19 -06:00
+Commit: 44ebb38
+Autorizado por: Andrés Rafael Chivalán
+Origen: TI (cliente temporal) [10.10.0.132]
+Destino: 10.10.0.188
+Comando: ssh [vía bastión] ec2-user@10.10.0.132 'bash -s -- icmp 10.10.0.188 5'
+Esperado: permitir
+Obtenido: respuesta
+Veredicto: OK
+Nota: 
+
+--- Salida ---
+# fecha=2026-11-17T16:57:16+00:00 origen_host=ip-10-10-0-132.ec2.internal origen_ip=10.10.0.132 sonda=icmp args=10.10.0.188 5
+# comando: ping -c 3 -W 5 10.10.0.188
+PING 10.10.0.188 (10.10.0.188) 56(84) bytes of data.
+64 bytes from 10.10.0.188: icmp_seq=1 ttl=127 time=0.159 ms
+bash: line 1: ﻿#!/bin/bash: No such file or directory
+64 bytes from 10.10.0.188: icmp_seq=2 ttl=127 time=0.254 ms
+64 bytes from 10.10.0.188: icmp_seq=3 ttl=127 time=0.207 ms
+
+--- 10.10.0.188 ping statistics ---
+3 packets transmitted, 3 received, 0% packet loss, time 2091ms
+rtt min/avg/max/mdev = 0.159/0.206/0.254/0.038 ms
+RESULTADO=respuesta

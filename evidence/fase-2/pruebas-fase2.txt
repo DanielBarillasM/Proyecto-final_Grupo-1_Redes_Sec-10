@@ -1,0 +1,50 @@
+﻿MATRIZ DE PRUEBAS - CC3067 FASE 2 - GRUPO 1
+Fecha local: 2026-11-17 11:02:41 -06:00
+Commit: 44ebb38
+Autorizado por: Andrés Rafael Chivalán
+Bastión: 44.192.127.143   Web pública: 52.70.19.135   Dominio: n/d
+
+Id     Origen                         Destino                       Puerto Esperado  Obtenido               Veredicto Responsable        
+--     ------                         -------                       ------ --------  --------               --------- -----------        
+F2-01  Ventas (instancia de Fase 1)   rrhh.rednova.internal             53 permitir  resuelto               OK        Pablo/Andrés Rafael
+F2-02  Ventas (instancia de Fase 1)   http://10.10.0.165/               80 permitir  http_200               OK        Pablo/Andrés Rafael
+F2-03a TI (cliente temporal)          rrhh.rednova.internal             53 permitir  resuelto               OK        Pablo/Andrés Rafael
+F2-03b TI (cliente temporal)          http://rrhh.rednova.internal/     80 permitir  http_200               OK        Pablo/Andrés Rafael
+F2-04  Administración (bastión)       http://10.10.0.165/               80 permitir  http_200               OK        Pablo/Andrés Rafael
+F2-05a Visitas (cliente temporal)     http://10.10.0.165/               80 bloquear  filtrado               OK        Pablo/Andrés Rafael
+F2-05b Visitas (cliente temporal)     rrhh.rednova.internal             53 bloquear  tiempo_agotado         OK        Pablo/Andrés Rafael
+F2-05c Visitas (cliente temporal)     10.10.0.165                       22 bloquear  filtrado               OK        Pablo/Andrés Rafael
+F2-05d DMZ (web pública)              http://10.10.0.165/               80 bloquear  filtrado               OK        Pablo/Andrés Rafael
+F2-06  Internet (equipo del operador) rrhh.rednova.internal             53 bloquear  no_resuelto            OK        Pablo/Andrés Rafael
+F2-07a Visitas (cliente temporal)     example.com                       53 permitir  resuelto:104.20.23.154 OK        Pablo/Andrés Rafael
+F2-07b Visitas (cliente temporal)     https://example.com/             443 permitir  http_200               OK        Pablo/Andrés Rafael
+F2-07c Visitas (cliente temporal)     http://example.com/               80 permitir  http_200               OK        Pablo/Andrés Rafael
+F2-08a TI (cliente temporal)          10.10.0.4                            permitir  respuesta              OK        Pablo/Andrés Rafael
+F2-08b TI (cliente temporal)          10.10.0.118                          permitir  respuesta              OK        Pablo/Andrés Rafael
+F2-08c TI (cliente temporal)          10.10.0.188                          permitir  respuesta              OK        Pablo/Andrés Rafael
+F2-08d TI (cliente temporal)          10.10.0.164                          permitir  respuesta              OK        Pablo/Andrés Rafael
+F2-08e TI (cliente temporal)          10.10.0.164                       53 permitir  abierto                OK        Pablo/Andrés Rafael
+F2-08f TI (cliente temporal)          10.10.0.165                       80 permitir  abierto                OK        Pablo/Andrés Rafael
+F2-08g TI (cliente temporal)          10.10.0.196                          permitir  respuesta              OK        Pablo/Andrés Rafael
+F2-08h TI (cliente temporal)          http://10.10.0.196/               80 permitir  http_200               OK        Pablo/Andrés Rafael
+F2-09a Ventas (instancia de Fase 1)   10.10.0.132                          bloquear  sin_respuesta          OK        Pablo/Andrés Rafael
+F2-09b Ventas (instancia de Fase 1)   10.10.0.132                       22 bloquear  filtrado               OK        Pablo/Andrés Rafael
+F2-09c Ventas (instancia de Fase 1)   10.10.0.132                     8080 bloquear  filtrado               OK        Pablo/Andrés Rafael
+F2-09d Visitas (cliente temporal)     10.10.0.132                       22 bloquear  filtrado               OK        Pablo/Andrés Rafael
+F2-09e Visitas (cliente temporal)     10.10.0.132                          bloquear  sin_respuesta          OK        Pablo/Andrés Rafael
+F2-09f DMZ (web pública)              10.10.0.132                       22 bloquear  filtrado               OK        Pablo/Andrés Rafael
+F2-09g Data Center (DNS interno)      10.10.0.132                       22 bloquear  filtrado               OK        Pablo/Andrés Rafael
+F2-10a Internet (equipo del operador) http://52.70.19.135/              80 permitir  http_200               OK        Pablo/Andrés Rafael
+F2-10b Internet (equipo del operador)                                   80 permitir                         OMITIDA   Pablo/Andrés Rafael
+F2-11a Internet (equipo del operador) 52.70.19.135                      22 bloquear  filtrado               OK        Pablo/Andrés Rafael
+F2-11b Internet (equipo del operador) 34.236.242.59                     22 bloquear  filtrado               OK        Pablo/Andrés Rafael
+F2-12a Internet (equipo del operador) 52.70.19.135                      80 permitir  conforme               OK        Pablo/Andrés Rafael
+F2-12b Internet (equipo del operador) 34.236.242.59                        permitir  conforme               OK        Pablo/Andrés Rafael
+F2-12c TI (cliente temporal)          10.10.0.164                       53 permitir  conforme               OK        Pablo/Andrés Rafael
+F2-12d TI (cliente temporal)          10.10.0.165                       80 permitir  conforme               OK        Pablo/Andrés Rafael
+F2-12e TI (cliente temporal)          10.10.0.196                       80 permitir  conforme               OK        Pablo/Andrés Rafael
+F2-13a Internet (equipo del operador)                                  443 permitir                         OMITIDA   Pablo/Andrés Rafael
+F2-13b Internet (equipo del operador)                                   80 redirigir                        OMITIDA   Pablo/Andrés Rafael
+
+
+Totales: OK=36, OMITIDA=3

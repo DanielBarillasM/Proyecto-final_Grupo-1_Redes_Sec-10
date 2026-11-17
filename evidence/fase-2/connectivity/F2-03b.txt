@@ -1,0 +1,19 @@
+﻿PRUEBA F2-03b - TI abre la intranet por nombre (HTTP 200)
+Responsable: Pablo/Andrés Rafael
+Fecha local: 2026-11-17 10:56:32 -06:00
+Commit: 44ebb38
+Autorizado por: Andrés Rafael Chivalán
+Origen: TI (cliente temporal) [10.10.0.132]
+Destino: http://rrhh.rednova.internal/ puerto 80
+Comando: ssh [vía bastión] ec2-user@10.10.0.132 'bash -s -- http http://rrhh.rednova.internal/ 5'
+Esperado: permitir
+Obtenido: http_200
+Veredicto: OK
+Nota: 
+
+--- Salida ---
+bash: line 1: ﻿#!/bin/bash: No such file or directory
+# fecha=2026-11-17T16:56:29+00:00 origen_host=ip-10-10-0-132.ec2.internal origen_ip=10.10.0.132 sonda=http args=http://rrhh.rednova.internal/ 5
+# comando: curl -sS -o /dev/null -w %{http_code} --connect-timeout 5 --max-time 10 http://rrhh.rednova.internal/
+curl_exit=0 http_code=200
+RESULTADO=http_200
