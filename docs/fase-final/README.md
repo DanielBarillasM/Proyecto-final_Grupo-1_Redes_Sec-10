@@ -32,8 +32,8 @@ Verificado en AWS:
 - Plan de 41 recursos, despliegue temporal, 36 resultados correctos y 3 omisiones documentadas.
 - DNS, intranet, aislamiento de Visitas, política de TI, web por IP, puertos y cierre de recursos.
 
-Pendiente de entrega: captura dedicada de la web pública, carné de Genser y decisión sobre el
-dominio/HTTPS opcional.
+La captura dedicada de la web pública ya está incorporada. Antes de la entrega debe confirmarse el
+carné de Genser; HTTPS continúa como punto extra opcional.
 
 ## Archivos
 

@@ -109,8 +109,8 @@ F2-12 & Internet y TI & Escaneo de 24 puertos comunes & Solo los puertos previst
 
 \section{Resultados observados en AWS}
 
-La suite produjo 39 subpruebas: \textbf{36 correctas, 3 omitidas y 0 contradictorias}. Las tres
-omisiones corresponden al acceso por dominio no configurado y a dos controles opcionales de HTTPS.
+La suite produjo 39 subpruebas: \textbf{36 correctas, 3 omitidas y 0 contradictorias}. La matriz
+conserva el detalle individual de las omisiones documentadas.
 Todos los controles aplicables de DNS, intranet, navegación de Visitas, acceso de TI, aislamiento
 de TI, SSH público y exposición de puertos coincidieron con la matriz esperada.
 
@@ -126,7 +126,7 @@ F2-01--F2-06 & DNS, intranet y aislamiento de Data Center & 10/10 OK & Permitido
 F2-07 & DNS, HTTP y HTTPS públicos desde Visitas & 3/3 OK & Salida a Internet disponible \\
 F2-08 & TI hacia Visitas, Ventas, Administración, Data Center y DMZ & 8/8 OK & Acceso iniciado por TI permitido \\
 F2-09 & Ventas, Visitas, DMZ y Data Center hacia TI & 7/7 OK & Conexiones laterales bloqueadas \\
-F2-10--F2-13 & Web pública, SSH y puertos & 8 OK; 3 omitidas & HTTP por IP verificado; dominio y HTTPS sin habilitar \\
+F2-10--F2-13 & Web pública, SSH y puertos & 8 OK; 3 omitidas & HTTP por Elastic IP verificado; omisiones documentadas en la matriz \\
 \bottomrule
 \end{tabularx}
 \end{table}

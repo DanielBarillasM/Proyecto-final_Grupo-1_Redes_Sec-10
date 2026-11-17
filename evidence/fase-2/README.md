@@ -32,12 +32,11 @@ de la versión de la suite utilizada.
 
 Las capturas verificadas se encuentran en `screenshots/`, con nombres correlativos y descriptivos.
 Documentan el plan, los outputs del despliegue, la identidad operativa, el inventario posterior al
-cierre, DNS, intranet, Visitas, TI, el resumen de la suite y `nftables`.
+cierre, DNS, intranet, Visitas, TI, el resumen de la suite, `nftables` y la página pública cargada
+mediante la Elastic IP temporal (`13-web-publica-elastic-ip.jpeg`).
 
 ## Pendientes antes de la entrega
 
-- Captura dedicada de la página pública por Elastic IP.
-- Dominio público y F2-10b, únicamente si el equipo decide configurarlo.
 - HTTPS y F2-13a/F2-13b, únicamente si se activa el punto opcional.
 
 Un archivo de plan guardado, un estado, `.tfvars`, claves o credenciales no deben almacenarse

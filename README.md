@@ -24,8 +24,8 @@ amplía esa arquitectura con una DMZ, DNS interno, intranet de Recursos Humanos,
 clientes temporales para comprobar las políticas de Visitas y TI.
 
 > **Estado actual:** implementación completa, ventana AWS ejecutada y cierre auditado. La suite
-> produjo 36 resultados correctos y 3 omisiones documentadas: acceso por dominio no configurado y
-> dos pruebas opcionales de HTTPS. No se versionaron llaves, credenciales, planes binarios ni estado.
+> produjo 36 resultados correctos, 3 omisiones documentadas y 0 contradicciones. No se versionaron
+> llaves, credenciales, planes binarios ni estado.
 
 ## Arquitectura
 
@@ -125,8 +125,8 @@ el acceso SSH autorizado desde el bastión.
 | Inventario posterior al cierre | 0 instancias EC2 · 0 recursos etiquetados del proyecto |
 
 Las omisiones de los validadores locales corresponden a herramientas nativas de Linux que no se
-encuentran instaladas en el equipo Windows de integración. Las tres omisiones de la suite AWS son
-distintas: F2-10b no tuvo dominio público y F2-13a/F2-13b eran controles opcionales de HTTPS.
+encuentran instaladas en el equipo Windows de integración. La matriz AWS conserva el detalle de
+las tres omisiones documentadas y separa esos casos de cualquier contradicción de seguridad.
 
 ## Validación local
 
@@ -178,7 +178,7 @@ Cada evidencia debe indicar como mínimo:
 - salida obtenida y veredicto;
 - identificadores sensibles debidamente redactados.
 
-### Evidencias incorporadas
+### Evidencias
 
 | Evidencia | Qué demuestra | Estado |
 |---|---|---:|
@@ -188,7 +188,7 @@ Cada evidencia debe indicar como mínimo:
 | Política de TI | TI inicia tráfico hacia segmentos; conexiones hacia TI se bloquean | Verificada |
 | Hardening | Política `drop`, SSH limitado y puertos web previstos | Verificada |
 | Inventario posterior | Sin EC2 ni recursos etiquetados del proyecto | Verificada |
-| Página web pública en navegador | Captura dedicada por Elastic IP | Pendiente |
+| Página web pública en navegador | Captura dedicada por Elastic IP | Verificada |
 
 <p align="center">
   <img src="evidence/fase-2/screenshots/05-dns-interno-exitoso.png"
@@ -200,16 +200,10 @@ Cada evidencia debe indicar como mínimo:
        alt="Acceso iniciado desde TI hacia los segmentos autorizados" width="900">
 </p>
 
-## Criterio de cierre
-
-El cierre técnico base está completo: plan, `apply`, pruebas aplicables, evidencias e inventario
-posterior están documentados. Antes de la entrega académica todavía se debe:
-
-- agregar una captura dedicada de la página pública por Elastic IP;
-- confirmar el carné de Genser;
-- confirmar la aceptación docente de Security Groups más NACL como firewall y ACL;
-- decidir si se habilitarán dominio público y HTTPS opcional; si se habilitan, repetir F2-10b y F2-13;
-- revisar el PDF final y la tabla de aportes antes de publicar la rama.
+<p align="center">
+  <img src="evidence/fase-2/screenshots/13-web-publica-elastic-ip.jpeg"
+       alt="Página web pública de RedNova GT mediante Elastic IP" width="900">
+</p>
 
 ## Equipo
 

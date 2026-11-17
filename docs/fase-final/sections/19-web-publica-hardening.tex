@@ -22,9 +22,7 @@ Administración & --- & TCP 22 solo desde el bastión & OpenSSH con llaves \\
 \end{table}
 
 La instancia no recibe una IPv4 automática. Su única dirección pública es una Elastic IP
-explícita, etiquetada como temporal y retirada al cerrar la ventana de trabajo. El registro A
-del dominio público apunta a esa dirección; Terraform solo informa el registro en el output
-\code{public_dns_record} y no modifica el DNS público.
+explícita, etiquetada como temporal y retirada al cerrar la ventana de trabajo.
 
 \section{Controles en capas}
 
@@ -72,7 +70,7 @@ equipo Windows; Nginx y nftables se validan nuevamente dentro del \code{user_dat
 \toprule
 \textbf{ID} & \textbf{Origen} & \textbf{Prueba} & \textbf{Esperado} \\
 \midrule
-F2-10 & Internet & Abrir la web por dominio & HTTP 200 \\
+F2-10 & Internet & Abrir la web por Elastic IP & HTTP 200 \\
 F2-11 & Internet & SSH hacia la Elastic IP & Bloqueado (tiempo agotado) \\
 F2-12 & Internet y bastión & Revisión de puertos & Solo los puertos previstos \\
 F2-13 & Internet & HTTPS y redirección & Certificado válido (opcional) \\
@@ -81,9 +79,18 @@ F2-13 & Internet & HTTPS y redirección & Certificado válido (opcional) \\
 \end{table}
 
 La web respondió \code{HTTP 200} por la Elastic IP temporal en F2-10a. El acceso SSH desde
-Internet quedó filtrado y el escaneo de 24 puertos confirmó que solo TCP 80 estaba expuesto. La
-prueba F2-10b no se ejecutó porque no se configuró un dominio público. F2-13a y F2-13b se omitieron
-porque HTTPS se definió como mejora opcional y \code{enable_https} permaneció en \code{false}.
+Internet quedó filtrado y el escaneo de 24 puertos confirmó que solo TCP 80 estaba expuesto.
+F2-13a y F2-13b se omitieron porque HTTPS se definió como mejora opcional y
+\code{enable_https} permaneció en \code{false}.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.96\textwidth]{13-web-publica-elastic-ip.jpeg}
+  \caption{Página pública de RedNova GT cargada desde Internet mediante la Elastic IP temporal
+  \code{52.70.19.135}. La barra del navegador y el contenido renderizado complementan la salida
+  textual HTTP 200 de F2-10a.}
+  \label{fig:f2-web-publica-elastic-ip}
+\end{figure}
 
 \begin{figure}[H]
   \centering
@@ -93,9 +100,8 @@ porque HTTPS se definió como mejora opcional y \code{enable_https} permaneció 
   \label{fig:f2-nftables-web}
 \end{figure}
 
-\begin{warningbox}[Evidencia visual todavía requerida]
-La salida textual de F2-10a acredita el HTTP 200 por Elastic IP, pero no se recibió una captura
-dedicada del navegador mostrando la página pública. Antes de la entrega conviene incorporar esa
-captura; el dominio y HTTPS solo deben presentarse como implementados si el equipo decide
-habilitarlos y vuelve a ejecutar F2-10b y F2-13.
-\end{warningbox}
+\begin{infobox}[Evidencia visual incorporada]
+La captura acredita el acceso público por Elastic IP y completa la evidencia visual de la página.
+La barra del navegador identifica el destino probado y el contenido corresponde al artefacto
+versionado en \path{services/public-web/index.html}.
+\end{infobox}

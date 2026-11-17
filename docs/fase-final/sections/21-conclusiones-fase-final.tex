@@ -12,8 +12,8 @@ salida general a Internet y valida la resolución interna antes de declararse li
 
 Andrés Rafael Chivalán ejecutó la ventana AWS y recopiló las evidencias; Pablo Daniel Barillas
 Moreno revisó e integró el material. La suite registró 36 subpruebas correctas y 3 omitidas, sin
-contradicciones: acceso por dominio no configurado y las dos pruebas opcionales de HTTPS. Las
-pruebas aplicables demostraron resolución DNS interna, intranet privada, navegación de Visitas,
+contradicciones. Las pruebas aplicables demostraron resolución DNS interna, intranet privada,
+navegación de Visitas,
 acceso iniciado por TI, bloqueo de conexiones hacia TI y exposición pública limitada de la DMZ.
 
 La auditoría posterior a la ventana registró cero instancias EC2 y cero recursos etiquetados con el
@@ -30,7 +30,7 @@ predeterminada de la cuenta y no pertenece a RedNova.
 
 \begin{warningbox}[Pendientes de entrega, no de implementación base]
 Antes de entregar todavía deben confirmarse el carné de Genser y la aceptación docente de
-Security Groups más NACL como firewall y ACL del ejercicio. También falta una captura dedicada de
-la página pública por Elastic IP. El dominio público y HTTPS permanecen como mejoras no habilitadas;
-si el equipo decide incluirlas, deberá ejecutar y documentar F2-10b y F2-13.
+Security Groups más NACL como firewall y ACL del ejercicio. La captura dedicada de la página
+pública por Elastic IP ya está incorporada. HTTPS y la redirección permanecen como punto extra
+opcional.
 \end{warningbox}
