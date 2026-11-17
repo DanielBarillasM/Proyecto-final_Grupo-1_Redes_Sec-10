@@ -482,9 +482,15 @@ def main() -> int:
     check(mismatches == 0, f"Matriz estática: {len(MATRIX) - mismatches}/{len(MATRIX)} flujos coinciden con el hand-off")
 
     # --- Higiene del repositorio --------------------------------------------------------
-    forbidden = [p for p in ROOT.rglob("*") if p.is_file() and ".terraform" not in p.parts and ".git" not in p.parts and (
-        p.suffix in {".pem", ".key", ".tfstate", ".tfplan", ".tfvars"} or p.name.startswith("terraform.tfstate"))]
-    check(not forbidden, f"Sin llaves, estados, planes ni .tfvars en el árbol ({[str(f.relative_to(ROOT)) for f in forbidden] or 'ok'})")
+    tracked_proc = subprocess.run(
+        ["git", "-C", str(ROOT), "ls-files", "-z"], capture_output=True, text=True
+    )
+    tracked = [ROOT / rel for rel in tracked_proc.stdout.split("\0") if rel] if tracked_proc.returncode == 0 else []
+    forbidden = [p for p in tracked if (
+        p.suffix in {".pem", ".key", ".tfstate", ".tfplan", ".tfvars"}
+        or p.name.startswith("terraform.tfstate")
+    )]
+    check(not forbidden, f"Sin llaves, estados, planes ni .tfvars versionados ({[str(f.relative_to(ROOT)) for f in forbidden] or 'ok'})")
     scan = [p for p in ROOT.rglob("*") if p.is_file() and ".git" not in p.parts and ".terraform" not in p.parts
             and p.suffix in {".tf", ".tftpl", ".sh", ".ps1", ".py", ".md", ".tex", ".txt", ".csv"}]
     secret_re = re.compile(r"BEGIN (RSA |EC |OPENSSH )?PRIVATE KEY|AKIA[0-9A-Z]{16}|aws_secret_access_key\s*=")

@@ -10,14 +10,27 @@ retorno de las NACL, límites de los Security Groups y 50 flujos de la matriz es
 temporales instalan \code{nftables}; TI usa el Gateway Endpoint de S3 para obtener el paquete sin
 salida general a Internet y valida la resolución interna antes de declararse listo.
 
-Pablo Daniel Barillas Moreno y Andrés Rafael Chivalán ejecutarán la suite F2-01 a F2-13 y
-recopilarán las evidencias. Andrés Rafael conserva la coordinación de identidad, permisos, región y
-ventanas de AWS. Ningún resultado cloud de la Fase 2 se declara completado mientras no exista salida
-real, captura revisada, inventario y confirmación del retiro de recursos temporales.
+Andrés Rafael Chivalán ejecutó la ventana AWS y recopiló las evidencias; Pablo Daniel Barillas
+Moreno revisó e integró el material. La suite registró 36 subpruebas correctas y 3 omitidas, sin
+contradicciones: acceso por dominio no configurado y las dos pruebas opcionales de HTTPS. Las
+pruebas aplicables demostraron resolución DNS interna, intranet privada, navegación de Visitas,
+acceso iniciado por TI, bloqueo de conexiones hacia TI y exposición pública limitada de la DMZ.
 
-\begin{warningbox}[Puerta de cierre]
-La implementación local está preparada para revisión. El cierre total requiere autorización de
-AWS, plan revisado, \code{apply}, pruebas reales, evidencia, auditoría de costos y \code{destroy} o
-retiro confirmado. También deben confirmarse el carné de Genser, el dominio público y la aceptación
-docente de Security Groups más NACL como firewall y ACL del ejercicio.
+La auditoría posterior a la ventana registró cero instancias EC2 y cero recursos etiquetados con el
+proyecto en \code{us-east-1}. La VPC \code{172.31.0.0/16} que aparece en el inventario es la VPC
+predeterminada de la cuenta y no pertenece a RedNova.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.92\textwidth]{04-inventario-aws-posterior-al-cierre.png}
+  \caption{Inventario posterior al cierre: sin Elastic IP, sin recursos con la etiqueta del
+  proyecto y sin instancias EC2 en las regiones consultadas.}
+  \label{fig:f2-cierre-aws}
+\end{figure}
+
+\begin{warningbox}[Pendientes de entrega, no de implementación base]
+Antes de entregar todavía deben confirmarse el carné de Genser y la aceptación docente de
+Security Groups más NACL como firewall y ACL del ejercicio. También falta una captura dedicada de
+la página pública por Elastic IP. El dominio público y HTTPS permanecen como mejoras no habilitadas;
+si el equipo decide incluirlas, deberá ejecutar y documentar F2-10b y F2-13.
 \end{warningbox}

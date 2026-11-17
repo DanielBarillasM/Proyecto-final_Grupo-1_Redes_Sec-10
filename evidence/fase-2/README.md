@@ -18,22 +18,27 @@ Esta carpeta separa validaciones locales reproducibles de evidencias obtenidas e
 
 ## Generadas por `scripts/test-phase2.ps1` durante la ventana
 
-Pablo Daniel Barillas Moreno y Andrés Rafael Chivalán ejecutan la suite y recopilan estas
-evidencias. Genser Andree Catalán Espina conserva la autoría de los clientes y la automatización.
+Andrés Rafael Chivalán ejecutó la ventana y recopiló las capturas; Pablo Daniel Barillas Moreno
+revisó e integró el material. Genser Andree Catalán Espina conserva la autoría de los clientes y la
+automatización. La etiqueta `Pablo/Andrés Rafael` de las salidas se conserva como registro histórico
+de la versión de la suite utilizada.
 
 - `pruebas-fase2.txt` y `pruebas-fase2.csv`: matriz con fecha, commit, autorización, origen,
   destino, esperado, obtenido y veredicto.
 - `connectivity/F2-0x*.txt`, `security/F2-06|11|12*.txt`, `dns/F2-01|02|04.txt` y
   `public-web/F2-10|13*.txt`: una evidencia de texto por prueba, con la salida redactada.
 
-## Pendientes de una ventana AWS autorizada
+## Capturas organizadas
 
-- `terraform-plan.txt` y plan revisado.
-- `terraform-apply.txt`.
-- Outputs reales sin secretos.
-- Capturas de DMZ, rutas, NACL y Security Groups.
-- Pruebas de DNS, intranet, Visitas, TI y web pública.
-- Auditoría de recursos y cierre de costos.
+Las capturas verificadas se encuentran en `screenshots/`, con nombres correlativos y descriptivos.
+Documentan el plan, los outputs del despliegue, la identidad operativa, el inventario posterior al
+cierre, DNS, intranet, Visitas, TI, el resumen de la suite y `nftables`.
+
+## Pendientes antes de la entrega
+
+- Captura dedicada de la página pública por Elastic IP.
+- Dominio público y F2-10b, únicamente si el equipo decide configurarlo.
+- HTTPS y F2-13a/F2-13b, únicamente si se activa el punto opcional.
 
 Un archivo de plan guardado, un estado, `.tfvars`, claves o credenciales no deben almacenarse
 en Git.

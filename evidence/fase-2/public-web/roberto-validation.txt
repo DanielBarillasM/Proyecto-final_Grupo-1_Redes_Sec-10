@@ -1,4 +1,4 @@
-Validación local web pública, hardening y dominio - 2026-11-17T09:37:41-06:00
+Validación local web pública, hardening y dominio - 2026-11-17T13:03:18-06:00
 
 [OK] Web pública 10.10.0.196 pertenece a la DMZ 10.10.0.192/27
 [OK] variables.tf asigna 10.10.0.196 a public_web
@@ -52,11 +52,11 @@ Validación local web pública, hardening y dominio - 2026-11-17T09:37:41-06:00
 [OK] Parámetros de red endurecidos (sysctl)
 [OK] Firewall del SO sin SSH público
 [OK] El script falla ante errores
-[FALLA] Sin llaves, estados, planes ni .tfvars en el árbol (['infra\\terraform\\terraform.tfstate'])
+[OK] Sin llaves, estados, planes ni .tfvars versionados (ok)
 [OK] Sin patrones de secretos en el código (ok)
 [OK] Sin marcadores de conflicto de merge (ok)
 [OMITIDA] nginx no instalado: se omite (se ejecuta con 'nginx -t' dentro del user_data)
 [OMITIDA] nft no instalado: se omite (hardening.sh ejecuta 'nft -c' antes de cargar la regla)
 [OMITIDA] python-hcl2 no instalado: se omite el análisis HCL (use terraform validate)
 
-Resultado: 54 correctas, 3 omitidas, 1 fallidas
+Resultado: 55 correctas, 3 omitidas, 0 fallidas

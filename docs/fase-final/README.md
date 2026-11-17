@@ -24,12 +24,16 @@ Implementado localmente:
 - `user_data`, hardening por capas, validador local y procedimiento de HTTPS opcional.
 
 - Clientes temporales de Visitas y TI, sonda remota, suite `test-phase2.ps1` y validador con
-  matriz estática de tráfico (implementación de Genser; ejecución y evidencia a cargo de Pablo y
-  Andrés Rafael).
+  matriz estática de tráfico (implementación de Genser; ejecución y evidencia a cargo de Andrés
+  Rafael; revisión documental de Pablo).
 
-Pendiente:
+Verificado en AWS:
 
-- Despliegue, ejecución de la suite, capturas y resultados reales: ventana AWS autorizada.
+- Plan de 41 recursos, despliegue temporal, 36 resultados correctos y 3 omisiones documentadas.
+- DNS, intranet, aislamiento de Visitas, política de TI, web por IP, puertos y cierre de recursos.
+
+Pendiente de entrega: captura dedicada de la web pública, carné de Genser y decisión sobre el
+dominio/HTTPS opcional.
 
 ## Archivos
 
@@ -49,5 +53,5 @@ Los diagramas se regeneran con `python scripts/generate-phase2-figures.py`.
 
 ## Regla de cierre
 
-Un `terraform plan` no demuestra que la infraestructura exista. El reporte solo debe marcar un
-requisito como verificado cuando exista salida real de la prueba y su evidencia correspondiente.
+Un `terraform plan` no demuestra que la infraestructura exista. El reporte marca cada requisito
+como verificado únicamente cuando existe salida real de la prueba y evidencia correspondiente.

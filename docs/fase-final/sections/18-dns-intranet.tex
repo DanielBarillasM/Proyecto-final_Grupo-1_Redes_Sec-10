@@ -56,7 +56,7 @@ nombres públicos.
 No se modificó el \emph{DHCP Options Set} de la VPC, porque ese cambio afectaría también a
 Visitas y a la DMZ, cuyas políticas solo permiten consultar \code{10.10.0.2}. En su lugar, cada
 cliente interno recibe un archivo de \code{systemd-resolved} con
-\code{DNS=10.10.0.164} y \code{Domains=\textasciitilde{}rednova.internal}. Con esa
+\code{DNS=10.10.0.164} y \texttt{Domains=\textasciitilde{}rednova.internal}. Con esa
 configuración únicamente los nombres de la zona interna se envían a BIND9 y el resto sigue el
 resolvedor entregado por DHCP.
 
@@ -81,7 +81,7 @@ Red AWS & Security Group \code{dns} & UDP/TCP 53 solo desde Ventas, TI, Data Cen
 Red AWS & Security Group \code{intranet} & TCP 80 solo desde las mismas cuatro redes \\
 Red AWS & Subred privada & Sin IP pública ni ruta \code{0.0.0.0/0} \\
 Red AWS & NACL de Visitas y DMZ & Denegación de salida hacia \code{10.10.0.0/24} \\
-Servicio & ACL de BIND9 & \code{allow-query} y \code{allow-recursion} limitados a \code{redes\_autorizadas}; otros orígenes reciben \code{REFUSED} \\
+Servicio & ACL de BIND9 & \code{allow-query} y \code{allow-recursion} limitados a \code{redes_autorizadas}; otros orígenes reciben \code{REFUSED} \\
 Servicio & \code{allow}/\code{deny} de Nginx & Mismas cuatro redes; cualquier otro origen recibe 403 \\
 Administración & Security Group & SSH únicamente desde el Security Group del bastión \\
 \bottomrule
@@ -99,7 +99,7 @@ amplía por error, el servicio sigue rechazando los orígenes no autorizados.
   \item Versión, nombre de host e identificador del servidor ocultos en las respuestas.
   \item Limitación de tasa de respuestas (\code{rate-limit}) para reducir amplificación.
   \item Registro de consultas habilitado como evidencia de auditoría.
-  \item Nginx con \code{server\_tokens off}, solo métodos GET y HEAD, archivos ocultos denegados
+  \item Nginx con \code{server_tokens off}, solo métodos GET y HEAD, archivos ocultos denegados
         y cabeceras \code{X-Frame-Options}, \code{X-Content-Type-Options},
         \code{Referrer-Policy} y \code{Content-Security-Policy}.
   \item Archivos de configuración propiedad de \code{root} con permisos \code{0640} o \code{0644}.
@@ -124,7 +124,7 @@ abriría salida general a Internet desde redes que no la necesitan.
 \section{Automatización con Terraform}
 
 El archivo \code{services.tf} crea ambas instancias con IP privada fija, sin IPv4 pública y
-con \code{user\_data} generado desde \code{templates/}. Los archivos de \code{services/dns/} y
+con \code{user_data} generado desde \code{templates/}. Los archivos de \code{services/dns/} y
 \code{services/intranet/} se incrustan en base64, de modo que la instancia no depende de Git ni
 de Internet. Durante el arranque el script instala los paquetes, copia las configuraciones,
 ejecuta \code{named-checkconf}, \code{named-checkzone} y \code{nginx -t} y solo entonces
@@ -140,8 +140,8 @@ salida se guarda en \code{evidence/fase-2/dns/andres-validation.txt}.
 \begin{infobox}[Resultado local]
 28 comprobaciones estructurales correctas, 3 omitidas y 0 fallidas. El entorno Windows de
 integración no dispone de \code{named-checkconf}, \code{named-checkzone} ni \code{nginx}; por ello esas pruebas
-nativas se ejecutan en el \code{user\_data} antes de habilitar cada servicio. Las respuestas DNS,
-HTTP y los bloqueos reales permanecen pendientes de la ventana AWS autorizada.
+nativas se ejecutan en el \code{user_data} antes de habilitar cada servicio. Las respuestas DNS,
+HTTP y los bloqueos se validaron después en AWS mediante la suite de aceptación.
 \end{infobox}
 
 \section{Pruebas en AWS}
@@ -154,16 +154,42 @@ HTTP y los bloqueos reales permanecen pendientes de la ventana AWS autorizada.
 \toprule
 \textbf{ID} & \textbf{Origen} & \textbf{Comando} & \textbf{Esperado} & \textbf{Resultado} \\
 \midrule
-F2-01 & Ventas & \code{dnsquery.py rrhh.rednova.internal} & \code{10.10.0.165} & Pendiente \\
-F2-02 & Ventas & \code{curl http://rrhh.rednova.internal/} & HTTP 200 & Pendiente \\
-F2-03 & TI & \code{curl http://rrhh.rednova.internal/} & HTTP 200 & Pendiente \\
-F2-04 & Administración & \code{curl http://rrhh.rednova.internal/} & HTTP 200 & Pendiente \\
-F2-05 & Visitas & \code{curl -m 5 http://10.10.0.165/} & Tiempo agotado & Pendiente \\
+F2-01 & Ventas & \code{dnsquery.py rrhh.rednova.internal} & \code{10.10.0.165} & OK: resuelto \\
+F2-02 & Ventas & \code{curl http://rrhh.rednova.internal/} & HTTP 200 & OK: HTTP 200 \\
+F2-03 & TI & DNS y HTTP por nombre interno & Resolución y HTTP 200 & OK: 2 de 2 \\
+F2-04 & Administración & \code{curl http://10.10.0.165/} & HTTP 200 & OK: HTTP 200 \\
+F2-05 & Visitas y DMZ & DNS, HTTP y SSH internos & Filtrado o tiempo agotado & OK: 4 de 4 \\
 \bottomrule
 \end{tabularx}
 \end{table}
 
-% Reemplazar "Pendiente" por el resultado real y agregar las figuras
-% 07-dns-interno-exitoso.png y 08-intranet-interna-exitosa.png después de la ventana AWS.
-Los resultados se completarán únicamente con la salida real y las capturas obtenidas durante
-la ventana AWS autorizada.
+La consulta de Ventas recibió una respuesta autoritativa de \code{10.10.0.164} y resolvió
+\path{rrhh.rednova.internal} como \code{10.10.0.165}.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{05-dns-interno-exitoso.png}
+  \caption{Resolución DNS interna exitosa desde una red autorizada. La respuesta contiene un
+  registro A para la intranet y el estado \code{NOERROR}.}
+  \label{fig:f2-dns-ok}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{06-intranet-interna-exitosa.png}
+  \caption{Acceso HTTP exitoso a la intranet de Recursos Humanos desde TI. Nginx devuelve
+  \code{HTTP/1.1 200 OK} y el contenido esperado.}
+  \label{fig:f2-intranet-ok}
+\end{figure}
+
+La prueba negativa desde Visitas agotó el tiempo tanto para el servicio HTTP como para la consulta
+al DNS interno. El resultado confirma que la navegación pública permitida a Visitas no abre acceso
+lateral hacia Data Center.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{07-intranet-bloqueada-desde-visitas.png}
+  \caption{Bloqueo desde Visitas hacia la intranet y el DNS interno. El código HTTP \code{000} y
+  el tiempo agotado son coherentes con filtrado de red, no con una respuesta del servicio.}
+  \label{fig:f2-visitas-bloqueo-interno}
+\end{figure}

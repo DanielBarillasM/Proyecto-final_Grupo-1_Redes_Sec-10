@@ -20,8 +20,21 @@
 \path{scripts/generate-figures.py} & Generación reproducible de figuras con Matplotlib. \\
 \path{scripts/validate-network.py} & Pruebas matemáticas del direccionamiento. \\
 \path{scripts/test-connectivity.ps1} & Ping privado con salto SSH y registro de evidencia. \\
+\path{infra/terraform/dmz.tf} & Ruta y asociación pública de la DMZ. \\
+\path{infra/terraform/nacls.tf} & ACL de Visitas, TI y DMZ, incluidos flujos de retorno. \\
+\path{infra/terraform/phase2-security.tf} & Security Groups de los servicios y clientes de Fase 2. \\
+\path{infra/terraform/services.tf} & DNS interno e intranet de Data Center. \\
+\path{infra/terraform/public-web.tf} & Web pública, Elastic IP temporal y asociación en la DMZ. \\
+\path{infra/terraform/test-clients.tf} & Clientes temporales de Visitas y TI. \\
+\path{services/dns/} & Configuración BIND9, zonas directa e inversa. \\
+\path{services/intranet/} & Configuración y contenido de la intranet de RR. HH. \\
+\path{services/public-web/} & Configuración y contenido de la web pública. \\
+\path{services/hardening/} & Hardening común y reglas nftables de los servidores. \\
+\path{scripts/test-phase2.ps1} & Suite F2-01 a F2-13 y generación de evidencia detallada. \\
+\path{scripts/phase2-probe.sh} & Sondas remotas de DNS, HTTP, TCP e ICMP. \\
+\path{scripts/validate-phase2.py} & Matriz estática de 50 flujos y controles de Visitas/TI. \\
 \path{scripts/build-report.ps1} & Generación de figuras, validación y compilación del PDF. \\
-\path{evidence/} & Resultados verificables, salidas de Terraform y capturas genuinas de AWS. \\
+\path{evidence/fase-2/} & Matriz, salidas individuales y capturas genuinas de la ventana AWS. \\
 \path{output/pdf/} & PDF final estable. \\
 \href{https://github.com/DanielBarillasM/Proyecto-final_Grupo-1_Redes_Sec-10.git}{Repositorio GitHub del proyecto} & Código fuente, informe, scripts, evidencia permitida e historial de versiones. \\
 \bottomrule
@@ -78,9 +91,10 @@ output "ventas_private_ips" {
   \item Ejecutar \code{terraform init}, \code{fmt}, \code{validate} y \code{plan}.
   \item Revisar el plan con otro integrante.
   \item Aplicar y esperar estado saludable de las instancias.
-  \item Ejecutar \code{scripts/test-connectivity.ps1} con las salidas obtenidas.
+  \item Ejecutar \code{scripts/test-connectivity.ps1} para los controles heredados de Fase 1.
+  \item Ejecutar \code{scripts/test-phase2.ps1} para F2-01 a F2-13 y revisar el resumen.
   \item Capturar VPC, subredes, rutas, reglas, instancias y resultados.
-  \item Ejecutar \code{terraform destroy}.
+  \item Ejecutar \code{terraform destroy} y conservar la confirmación del cierre.
   \item Auditar la ausencia de recursos etiquetados.
   \item Recompilar, inspeccionar el PDF y publicar el repositorio.
 \end{enumerate}

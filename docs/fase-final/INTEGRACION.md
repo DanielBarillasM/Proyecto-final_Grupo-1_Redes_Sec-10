@@ -22,8 +22,8 @@ El documento maestro incluye:
 ```
 
 Estas secciones describen la arquitectura, las reglas de red, el DNS, la intranet y la web
-pública ya verificados localmente. No deben marcar el
-despliegue cloud como completado hasta incorporar el plan, `apply`, outputs, pruebas y
-capturas genuinas. Pablo Daniel Barillas Moreno y Andrés Rafael Chivalán son los responsables de
-ejecutar F2-01 a F2-13 y recopilar la evidencia; Genser mantiene la automatización si aparece un
-defecto reproducible.
+pública verificados localmente y en la ventana AWS del 17 de noviembre de 2026. Andrés Rafael
+Chivalán ejecutó las pruebas y recopiló la evidencia; Pablo Daniel Barillas Moreno revisó e integró
+los resultados. Genser mantiene la automatización si aparece un defecto reproducible. La versión
+final registra 36 resultados correctos, 3 omisiones documentadas y el inventario posterior al
+cierre.

@@ -11,17 +11,44 @@ La infraestructura nueva se separa en archivos con responsabilidades claras:
   \item \code{outputs.tf}: identificadores y datos de integración.
 \end{itemize}
 
-La variable \code{enable\_phase2\_compute} utiliza \code{false} como valor predeterminado.
+La variable \code{enable_phase2_compute} utiliza \code{false} como valor predeterminado.
 Agregarla no habilita recursos por sí mismo: los archivos de cómputo de los demás responsables
 deben condicionar sus instancias con esta variable.
 
 La validación local se ejecutó con Terraform 1.17.2 y el proveedor oficial AWS 6.73.0. El
 formato recursivo y \code{terraform validate} finalizaron correctamente. Además,
-\code{scripts/validate-pablo-phase2.py} verificó contención, no solapamiento, capacidad,
+\path{scripts/validate-pablo-phase2.py} verificó contención, no solapamiento, capacidad,
 direcciones asignables y presencia de los controles estructurales esperados.
 
-\begin{warningbox}[Plan y despliegue pendientes]
-La validación sintáctica no consulta la cuenta AWS. El plan requiere una identidad autorizada y
-la resolución previa del estado de Fase 1. No se ejecutó \code{terraform apply} durante el
-trabajo local.
-\end{warningbox}
+\section{Plan y despliegue observado en AWS}
+
+Durante la ventana autorizada del 17 de noviembre de 2026 se generó un plan guardado con
+\textbf{41 recursos por agregar, 0 por modificar y 0 por destruir}. La revisión mostró las siete
+redes del diseño, los clientes temporales y las direcciones previstas antes de autorizar el
+\code{apply}.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{01b-terraform-plan-resumen.png}
+  \caption{Resumen del plan Terraform de Fase 2. La salida acredita 41 altas sin cambios ni
+  destrucciones sobre el estado utilizado en la ventana.}
+  \label{fig:f2-terraform-plan}
+\end{figure}
+
+El \code{apply} produjo identificadores reales para la VPC y las subredes, las IP privadas de los
+clientes y una IP pública temporal para Visitas. La captura siguiente documenta los outputs usados
+por la suite; los archivos de estado y el plan binario no se versionaron.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.98\textwidth]{02-terraform-apply-outputs.png}
+  \caption{Outputs obtenidos después del despliegue. Se observan las subredes, los clientes de TI
+  y Visitas y las direcciones utilizadas para las pruebas.}
+  \label{fig:f2-terraform-apply}
+\end{figure}
+
+\begin{infobox}[Trazabilidad]
+Las capturas acreditan el plan y los outputs del despliegue; los resultados funcionales se
+demuestran por separado con \code{evidence/fase-2/pruebas-fase2.csv} y los archivos individuales
+F2-01 a F2-13. Esta separación evita presentar el \code{apply} como sustituto de las pruebas.
+\end{infobox}

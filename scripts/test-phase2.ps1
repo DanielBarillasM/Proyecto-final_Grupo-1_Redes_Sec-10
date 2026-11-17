@@ -2,8 +2,8 @@
 <#
 .SYNOPSIS
     Suite de pruebas de aceptación de la Fase 2 (F2-01 a F2-13).
-    Implementación: Genser Andree Catalán Espina. Ejecución y evidencia: Pablo Daniel
-    Barillas Moreno y Andrés Rafael Chivalán.
+    Implementación: Genser Andree Catalán Espina. Ejecución y evidencia AWS: Andrés Rafael
+    Chivalán. Revisión documental: Pablo Daniel Barillas Moreno.
 
 .DESCRIPTION
     Ejecuta cada prueba desde su segmento de origen (SSH a través del bastión) o desde el
@@ -134,7 +134,7 @@ $webPorts = if ($EnableHttps) { '80,443' } else { '80' }
 function T {
     param($Id, $Group, $Resp, $Origin, $Kind, $Target, $Port, $Expect, $Desc, $Extra = $null, $Optional = $false)
     [pscustomobject]@{
-        Id = $Id; Group = $Group; Resp = $Resp; Origin = $Origin; Kind = $Kind; Target = $Target
+        Id = $Id; Group = $Group; Resp = 'Andrés Rafael'; Origin = $Origin; Kind = $Kind; Target = $Target
         Port = $Port; Expect = $Expect; Desc = $Desc; Extra = $Extra; Optional = $Optional
     }
 }

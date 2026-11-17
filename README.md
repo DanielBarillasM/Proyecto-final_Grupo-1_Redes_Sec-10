@@ -23,8 +23,9 @@ La Fase 1 establece el direccionamiento, las subredes, las rutas y la conectivid
 amplía esa arquitectura con una DMZ, DNS interno, intranet de Recursos Humanos, web pública y
 clientes temporales para comprobar las políticas de Visitas y TI.
 
-> **Estado actual:** implementación y validación local completas. El despliegue final, las pruebas
-> F2-01 a F2-13 y la recopilación de evidencia real requieren una ventana AWS autorizada.
+> **Estado actual:** implementación completa, ventana AWS ejecutada y cierre auditado. La suite
+> produjo 36 resultados correctos y 3 omisiones documentadas: acceso por dominio no configurado y
+> dos pruebas opcionales de HTTPS. No se versionaron llaves, credenciales, planes binarios ni estado.
 
 ## Arquitectura
 
@@ -119,11 +120,13 @@ el acceso SSH autorizado desde el bastión.
 | Web pública y hardening | 55 correctas · 3 omitidas · 0 fallidas |
 | Clientes, políticas y matriz | 65 correctas · 0 omitidas · 0 fallidas |
 | Flujos de la matriz estática | 50 de 50 coinciden |
-| Pruebas reales en AWS | Pendientes |
+| Plan Terraform observado | 41 altas · 0 cambios · 0 destrucciones |
+| Pruebas reales en AWS | 36 correctas · 3 omitidas · 0 contradictorias |
+| Inventario posterior al cierre | 0 instancias EC2 · 0 recursos etiquetados del proyecto |
 
-Las comprobaciones omitidas corresponden a herramientas nativas de Linux que no se encuentran
-instaladas en el equipo Windows de integración. Estas validaciones se ejecutan dentro de las EC2
-durante su inicialización y deberán conservarse como evidencia de la ventana AWS.
+Las omisiones de los validadores locales corresponden a herramientas nativas de Linux que no se
+encuentran instaladas en el equipo Windows de integración. Las tres omisiones de la suite AWS son
+distintas: F2-10b no tuvo dominio público y F2-13a/F2-13b eran controles opcionales de HTTPS.
 
 ## Validación local
 
@@ -159,10 +162,13 @@ pwsh scripts/build-final-report.ps1
 
 ## Pruebas y evidencias
 
-Pablo Daniel Barillas Moreno y Andrés Rafael Chivalán ejecutarán las pruebas F2-01 a F2-13.
-Pablo operará la suite y organizará las salidas; Andrés confirmará el entorno AWS, participará en
-la ejecución y revisará recursos, permisos y costos. Ambos deberán validar los resultados y el
-retiro de los recursos temporales.
+Andrés Rafael Chivalán ejecutó la ventana AWS, recopiló las capturas y revisó el inventario de
+cierre. Pablo Daniel Barillas Moreno revisó e integró el material al informe. Genser conserva la
+autoría de los clientes y la suite; Roberto conserva la autoría de la web pública.
+
+La suite usada durante la ventana registró la etiqueta histórica `Pablo/Andrés Rafael` en sus
+archivos. Esas salidas no se reescribieron: se preservan como evidencia original y esta sección
+documenta la asignación final de responsabilidades.
 
 Cada evidencia debe indicar como mínimo:
 
@@ -172,46 +178,45 @@ Cada evidencia debe indicar como mínimo:
 - salida obtenida y veredicto;
 - identificadores sensibles debidamente redactados.
 
-### Capturas pendientes de la ventana AWS
+### Evidencias incorporadas
 
-| Espacio reservado | Evidencia que deberá incorporarse | Estado |
+| Evidencia | Qué demuestra | Estado |
 |---|---|---:|
-| Captura 01 | Identidad autorizada, región y revisión del plan | Pendiente |
-| Captura 02 | VPC, subredes, rutas y asociaciones desplegadas | Pendiente |
-| Captura 03 | DNS interno e intranet funcionando | Pendiente |
-| Captura 04 | Web pública disponible desde Internet | Pendiente |
-| Captura 05 | Pruebas permitidas y bloqueadas de Visitas y TI | Pendiente |
-| Captura 06 | Inventario final y retiro de recursos temporales | Pendiente |
+| Plan y outputs Terraform | 41 recursos previstos y direcciones reales del despliegue | Verificada |
+| DNS e intranet | Resolución interna y HTTP 200 desde redes autorizadas | Verificada |
+| Aislamiento de Visitas | Acceso interno filtrado y navegación pública permitida | Verificada |
+| Política de TI | TI inicia tráfico hacia segmentos; conexiones hacia TI se bloquean | Verificada |
+| Hardening | Política `drop`, SSH limitado y puertos web previstos | Verificada |
+| Inventario posterior | Sin EC2 ni recursos etiquetados del proyecto | Verificada |
+| Página web pública en navegador | Captura dedicada por Elastic IP | Pendiente |
 
-<!--
-Al disponer de las capturas reales, agregarlas debajo de esta sección con un nombre descriptivo.
-No mostrar IDs completos de cuenta, tokens, direcciones administrativas, llaves ni secretos.
-
-Ejemplo:
 <p align="center">
-  <img src="evidence/fase-2/screenshots/01-arquitectura-desplegada.png"
-       alt="Arquitectura desplegada en AWS" width="900">
+  <img src="evidence/fase-2/screenshots/05-dns-interno-exitoso.png"
+       alt="Resolución DNS interna exitosa" width="900">
 </p>
--->
+
+<p align="center">
+  <img src="evidence/fase-2/screenshots/09-ti-acceso-a-subredes-exitoso.png"
+       alt="Acceso iniciado desde TI hacia los segmentos autorizados" width="900">
+</p>
 
 ## Criterio de cierre
 
-El proyecto se considerará terminado cuando se cumplan todas estas condiciones:
+El cierre técnico base está completo: plan, `apply`, pruebas aplicables, evidencias e inventario
+posterior están documentados. Antes de la entrega académica todavía se debe:
 
-- el plan de Terraform haya sido revisado y aprobado;
-- la infraestructura se despliegue en la cuenta y región autorizadas;
-- las pruebas F2-01 a F2-13 tengan resultados y evidencias reales;
-- las capturas hayan sido revisadas y redactadas;
-- los recursos temporales y costos hayan sido auditados;
-- el informe final refleje los resultados obtenidos;
-- la rama de integración haya sido revisada antes del merge a `main`.
+- agregar una captura dedicada de la página pública por Elastic IP;
+- confirmar el carné de Genser;
+- confirmar la aceptación docente de Security Groups más NACL como firewall y ACL;
+- decidir si se habilitarán dominio público y HTTPS opcional; si se habilitan, repetir F2-10b y F2-13;
+- revisar el PDF final y la tabla de aportes antes de publicar la rama.
 
 ## Equipo
 
 | Integrante | Carné | Participación principal |
 |---|---:|---|
-| Pablo Daniel Barillas Moreno | 22193 | Arquitectura, integración y coordinación de evidencias |
-| Andrés Rafael Chivalán | 21534 | DNS, intranet y coordinación del entorno AWS |
+| Pablo Daniel Barillas Moreno | 22193 | Arquitectura, revisión documental e integración final |
+| Andrés Rafael Chivalán | 21534 | DNS, intranet, ejecución AWS y recopilación de evidencias |
 | Roberto Emiliano Otoniel Camposeco Torres | 23968 | Web pública, DMZ y hardening |
 | Genser Andree Catalán Espina | Pendiente | Clientes, automatización y matriz de pruebas |
 

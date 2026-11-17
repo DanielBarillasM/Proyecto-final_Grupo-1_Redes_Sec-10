@@ -26,15 +26,15 @@ AWS. La duración sugerida es de 12 a 15 minutos, más preguntas.
 1 & Portada & Pablo & Identificar el curso, el equipo y el alcance acumulativo de las dos fases. \\
 2 & Objetivo & Pablo & Explicar la necesidad de segmentar usuarios, servicios, administración y exposición pública mediante infraestructura reproducible. \\
 3 & Fase 1 & Andrés Rafael & Resumir los 20 recursos desplegados y las dos pruebas ICMP conservadas como evidencia de la base. \\
-4 & Arquitectura Fase 2 & Pablo & Recorrer la DMZ, Data Center, clientes y dependencias sin presentar todavía resultados cloud de Fase 2. \\
+4 & Arquitectura Fase 2 & Pablo & Recorrer la DMZ, Data Center, clientes y dependencias desplegados durante la ventana temporal. \\
 5 & Segmentación & Pablo & Justificar CIDR, capacidad, reserva y direcciones fijas de los servicios. \\
 6 & Seguridad & Genser & Diferenciar Security Groups, NACL y nftables. Explicar retornos efímeros e ICMP. \\
 7 & DNS e intranet & Andrés Rafael & Explicar BIND9, el nombre interno, redes autorizadas y el acceso HTTP a Recursos Humanos. \\
 8 & Web pública & Roberto & Explicar DMZ, Elastic IP temporal, Nginx, hardening y HTTPS opcional. \\
 9 & Visitas y TI & Genser & Describir el aislamiento de Visitas y la política asimétrica de TI. Mencionar la instalación privada de nftables y la autoprueba DNS. \\
-10 & Validación local & Pablo & Presentar los resultados reales de los validadores locales y aclarar que la suite AWS sigue pendiente. \\
-11 & Ventana AWS & Pablo y Andrés Rafael & Explicar que ambos ejecutarán las pruebas. Andrés controla identidad, permisos y estado; Pablo opera la suite y organiza evidencias. \\
-12 & Equipo y cierre & Pablo & Recordar el carné pendiente de Genser y enumerar la puerta de cierre: plan, apply, pruebas, retiro y revisión. \\
+10 & Validación & Pablo & Presentar los validadores locales y el resultado AWS: 36 correctas, 3 omitidas y 0 contradictorias. \\
+11 & Ventana AWS & Andrés Rafael & Explicar la ejecución, identidad, permisos, evidencias, inventario y retiro; Pablo revisó e integró la documentación. \\
+12 & Equipo y cierre & Pablo & Recordar el carné pendiente de Genser, la captura de la web y la decisión sobre dominio y HTTPS opcional. \\
 \bottomrule
 \end{longtable}
 
@@ -52,12 +52,13 @@ aporta una tercera capa en el sistema operativo.
 el segmento correspondiente. Un resultado solo cuenta como evidencia cuando registra fecha,
 commit, origen, destino, comando, esperado, obtenido y veredicto.
 
-\textbf{¿Está terminada la Fase 2?} La implementación y validación local están preparadas. Falta la
-ventana AWS autorizada, sus evidencias, la auditoría de costos y el retiro confirmado de recursos.
+\textbf{¿Está terminada la Fase 2?} La implementación base, el despliegue temporal y las pruebas
+aplicables están completos. Faltan para la entrega una captura dedicada de la web, el carné de
+Genser y la decisión sobre dominio y HTTPS opcional.
 
-\textbf{¿Quién tomará las pruebas?} Pablo Daniel Barillas Moreno y Andrés Rafael Chivalán. Genser
-conserva la autoría de clientes, sondas y automatización; Roberto conserva la autoría de la web
-pública.
+\textbf{¿Quién tomó las pruebas?} Andrés Rafael Chivalán ejecutó la ventana y recopiló las
+capturas; Pablo Daniel Barillas Moreno revisó e integró la documentación. Genser conserva la
+autoría de clientes, sondas y automatización; Roberto conserva la autoría de la web pública.
 
 \section*{Datos que deben confirmarse antes de entregar}
 
@@ -65,7 +66,7 @@ pública.
   \item Carné de Genser Andree Catalán Espina.
   \item Dominio público y decisión sobre HTTPS opcional.
   \item Aceptación docente de Security Groups más NACL como firewall y ACL del ejercicio.
-  \item Resultados, capturas e inventarios de la ventana AWS.
+  \item Captura dedicada de la página pública por Elastic IP.
 \end{itemize}
 
 \end{document}
